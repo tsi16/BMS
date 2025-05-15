@@ -1,0 +1,157 @@
+﻿@model IEnumerable<NEXT_BMS.Models.Tenant>
+
+@using Insya.Localization
+@using Microsoft.Extensions.Options
+
+@{
+    ViewData["Title"] = "Index";
+    var approvedRoomRentalRequests = ViewBag.ApprovedRoomRentalRequests as List<int>;
+}
+
+
+<div class="card py-0">
+        <div class="card-header bg-light header-elements-inline py-2">
+            <h5 class="card-title">
+              
+             List Of Building Tenates
+            </h5>
+            <div class="header-elements">
+            <div class="mr-4">
+                <form id="filterForm" asp-action="Index" asp-controller="Tenants" method="get">
+                    <div class="input-group input-group-sm ">
+                        <select name="buildingId" id="buildingId" class="select-search" asp-items="ViewBag.BuildingId" onchange="this.form.submit()">
+                            <option value="">-- Select a Building --</option>
+                        </select>
+
+                    </div>
+                </form>
+                </div>
+           
+               
+                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal_addTenante">
+                        <i class="icon-plus"></i> @Html.Raw(Localization.Get("Add Tenants"))
+                    </button>
+               
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row g-3 align-items-center">
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        @foreach (var te in Model)
+        {
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
+                    <div class="card-header bg-light border-0 rounded-top-4 py-2 px-3">
+                        <h6 class="mb-0 fw-semibold text-dark text-truncate">@te.Name</h6>
+                    </div>
+                    <div class="card-body small text-secondary px-3 py-2">
+                        <p class="mb-1"><strong>Building:</strong> @te.Building?.Name</p>
+                        <p class="mb-1"><strong>Type:</strong> @te.TenantType?.Name</p>
+                        <p class="mb-1"><strong>Contact:</strong> @te.Contact</p>
+                        <p class="mb-0"><strong>TIN:</strong> @te.Tin</p>
+                    </div>
+                    <div class="card-footer bg-white border-0 text-end py-2 px-3">
+                    <a asp-action="Details" asp-controller="Tenants" asp-route-id="@te.Id" class="btn btn-sm btn-outline-primary">
+                            View
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+
+
+<div class="modal fade" id="modal_addTenante" tabindex="-1" aria-labelledby="modal_addTenanteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content rounded-4 shadow-sm">
+            <div class="modal-header bg-primary text-white rounded-top-4">
+                <h5 class="modal-title"><i class="icon-plus2 me-2"></i>@Html.Raw(Localization.Get("Add Tenants"))</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="add-tenant-form">
+                    <div class="mb-3">
+                        <label for="BuildingId" class="form-label">@Html.Raw(Localization.Get("buildings"))</label>
+                        <select name="BuildingId" id="BuildingId" class="form-select" asp-items="ViewBag.BuildingId"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="TenantTypeId" class="form-label">@Html.Raw(Localization.Get("tenanteTypes"))</label>
+                        <select name="TenantTypeId" id="TenantTypeId" class="form-select" asp-items="ViewBag.TenantTypeId"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Name" class="form-label">@Html.Raw(Localization.Get("Name"))</label>
+                        <input type="text" id="Name" name="Name" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="Tin" class="form-label">@Html.Raw(Localization.Get("Tin"))</label>
+                        <input type="text" id="Tin" name="Tin" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="Description" class="form-label">@Html.Raw(Localization.Get("Description"))</label>
+                        <input type="text" id="Description" name="Description" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="Contact" class="form-label">@Html.Raw(Localization.Get("Contact"))</label>
+                        <input type="text" id="Contact" name="Contact" class="form-control" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light rounded-bottom-4">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" onclick="SaveTenant()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("js/_select2");
+
+
+    }
+    <script>
+
+             document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('buildingId')?.addEventListener('change', function () {
+                document.getElementById('filterForm').submit();
+            });
+        });
+
+
+       
+        function SaveTenant() {
+            let buildingId = $('#BuildingId').val();
+            let tenantTypeId = $('#TenantTypeId').val();
+            let name = $('#Name').val();
+            let tin = $('#Tin').val();
+            let description = $('#Description').val();
+            let contact = $('#Contact').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/Administrator/Tenants/AddTenant',
+                data: {
+                    'BuildingId': buildingId,
+                    'TenantTypeId': tenantTypeId,
+                    'Name': name,
+                    'Tin': tin,
+                    'Description': description,
+                    'Contact': contact
+                },
+                success: function () {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error adding tenant.');
+                }
+            });
+        }
+    </script>
+}

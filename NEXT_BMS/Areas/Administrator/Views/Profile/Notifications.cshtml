@@ -1,0 +1,198 @@
+﻿@model IEnumerable<NEXT_BMS.Models.Notification>
+
+<div class="modal fade" id="modal_read" tabindex="-1" aria-labelledby="modal_readLable" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Notification</h1>
+                <button type="button" onclick="Reload()" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body " id="mes">
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="Reload()" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+
+    </div>
+    <div class="card-body">
+        <table class="table table-hover table-sm" style="color: black">
+            <thead>
+                <tr>
+                    @* <th style="width: 35px">Message</th> *@
+                    <th>NotificationStatus</th>
+                    <th>NotificationType</th>
+                    <th>NotificationDate</th>
+
+
+                    <th class="p-0 nosort text-center" style="width: 30px;">
+                        <i class="icon-menu-open2"></i>
+                        <button type="button" class=" btn btn-outline-dark position-relative">
+                            Tot
+                           
+                            @if (Model.Any(x => x.NotificationStatus != null && x.NotificationStatus.Id == 1))
+                            {
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    @Model.Count(x => x.NotificationStatus != null && x.NotificationStatus.Id == 1)
+                                </span>
+                            }
+                        </button>
+
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var notification in Model)
+                {
+
+                    <tr>
+
+                        <td>@notification.NotificationStatus.Name</td>
+                        <td> @notification.NotificationType.Name</td>
+                        <td> @notification.NotificationDate</td>
+                        <td>
+
+
+                            <a href="#" class="btn btn-outline-info position-relative" data-toggle="modal" data-target="#modal_read" onclick="ChangeStatus('@notification.Id', '@notification.Message')">
+                                @if (notification.NotificationStatus.Id == 1)
+                                {
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        New
+                                    </span>
+                                }
+
+                                <i class="icon-checkmark3 font-size-base mr-1"></i> Read
+                            </a>
+
+                        </td>
+                    </tr>
+
+                }
+
+
+
+            </tbody>
+        </table>
+
+    </div>
+</div>
+ 
+
+
+
+
+<div class="modal fade" id="editmodal_read" tabindex="-1" aria-labelledby="modal_readLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">edit Profile</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="mes">
+                <form method="post" enctype="multipart/form-data" asp-action="EditProfile" asp-controller="Profile">
+                    <div class="form-group">
+                        <input type="file" name="image" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" name="imagedescription" id="imageDescription" class="form-control" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Scripts {
+    <link href="~/css/pro.css" rel="stylesheet" />
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft.signalr/3.1.10/signalr.min.js"></script>
+    <script>
+        $(function () {
+            let connection = new signalR.HubConnectionBuilder()
+                .withUrl("/NotificationHub")
+                .build();
+
+            connection.start().then(function () {
+                console.log("SignalR Connected.");
+            }).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            connection.on("ReceiveNotification", function (message) {
+                alert(message);
+                $("#notifications").append(`<tr><td>New Notification: ${message}</td></tr>`);
+                
+            });
+
+            connection.onclose(function () {
+                console.log("SignalR Connection closed. Trying to reconnect...");
+                setTimeout(function () {
+                    connection.start();
+                }, 5000);
+            });
+        });
+    </script>
+
+
+
+
+    <script>
+
+        function ChangeStatus(id ,Message) {
+          $("#mes").append(`<p>${Message}</p>`)
+
+            $.ajax({
+                type: 'POST',
+                url: '/Administrator/Notifications/MakeAsRead',
+                data: {
+                    'id': id
+                   
+                    },
+                success: function (response) {
+
+                   // location.reload();
+                },
+                error: function () {
+                    alert('Error .');
+                }
+            });
+        }
+        function Reload() {
+            location.reload();
+        }
+    
+    </script>
+    <script>
+        function openEditModal(imagePath, imageDescription) {
+            
+            $('#imageDescription').val(imageDescription);
+
+           
+            if (imagePath) {
+                $('#modal_read').find('.modal-body').prepend(`<img src="${imagePath}" alt="Profile Image" style="max-width:200px; max-height:200px;" />`);
+            }
+
+            // Show the modal
+            $('#modal_read').modal('show');
+        }
+
+</script>
+
+}

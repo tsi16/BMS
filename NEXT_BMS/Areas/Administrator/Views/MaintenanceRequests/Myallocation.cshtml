@@ -1,0 +1,46 @@
+﻿@model IEnumerable<NEXT_BMS.Models.MaintenanceRequest>
+@using Insya.Localization
+@using Microsoft.Extensions.Options
+<div class="card">
+    <div class="card-header bg-light header-elements-inline py-2">
+        <h4 class="card-title">
+            My Allocations
+        </h4>
+
+        <div class="header-elements">
+         
+        </div>
+    </div>
+     <div class="table-responsive">
+        <table class="table table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Status</th>
+                        <th>Type</th>
+                        <th>Room</th>
+                        <th>User</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var request in Model)
+                    {
+                        <tr>
+                            <td>@request.Id</td>
+                            <td>@request.MaintenanceStatus.Name</td>
+                            <td>@request.MaintenanceType.Name</td>
+                            <td>@request.Room.Name</td>
+                            <td>@request.User.FirstName</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@request.Id" class="btn btn-outline-info btn-sm">View Details</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+</div>
+@section Scripts{
+ 
+}

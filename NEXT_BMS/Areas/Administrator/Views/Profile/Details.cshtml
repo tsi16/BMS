@@ -1,0 +1,489 @@
+﻿@* @model BuildingManagment.Models.User
+
+@{
+    ViewData["Title"] = "Details";
+} *@
+
+@model NEXT_BMS.Models.Building
+@{
+    ViewData["Title"] = "Details";
+}
+<div style="background-color: #f8f9fa; min-height: 100vh; padding: 20px;">
+    <div class="mt-4 text-end">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            Back to List
+        </a>
+        <a asp-action="Employees" asp-controller="Buildings" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+            Employees
+        </a>
+    </div>
+<div class="container my-5">
+   
+    <div class="row g-4">
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded">
+                <div class="card-header text-dark text-center" style="background-color:lightseagreen;">
+                    <h5 class="card-title mb-0">Building Info</h5>
+                </div>
+
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold">Name:</span>
+                            <span>@Model.Name</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold">Construction Year:</span>
+                            <span>@Model.ConstractionYear</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold">Floors:</span>
+                            <span>@Model.Floors.Count()</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+       
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded">
+                <div class="card-header text-dark text-center" style="background-color:lightseagreen;">
+                    <h5 class="card-title mb-0">Ownership & Location</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold">Owner:</span>
+                            <span>@Model.Owner.FullName</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold">City:</span>
+                            <span>@Model.City.Name</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold">Location:</span>
+                            <span>@Model.Location.Name</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+           
+            <div class="card shadow-sm border-0 rounded">
+                
+                <div class="card-header text-dark text-center" style="background-color:lightseagreen;">
+                    <h5 class="card-title mb-0">Additional Info</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <span class="fw-bold">Description:</span>
+                            <span>@Model.Description</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer text-center bg-white">
+                    <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addFloorModal" onclick="setBuildingId('@Model.Id')">
+                        Add Floor
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <div class="accordion my-4" id="accordionExample">
+        @foreach (var floor in Model.Floors)
+        {
+            <div class="accordion-item shadow-sm border-0 mb-3 rounded">
+                <h2 class="accordion-header">
+                    <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded">
+                       
+                        <button class="accordion-button collapsed flex-grow-1 text-muted" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@floor.Id"
+                                aria-expanded="false" aria-controls="collapse-@floor.Id">
+                            <strong>@floor.Name</strong>
+                        </button>
+
+                        <div class="dropdown">
+                            <button class="btn btn-outline-success btn-sm ms-2 dropdown-toggle" type="button" id="floorActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                     stroke-linecap="round" stroke-linejoin="round"
+                                     class="feather feather-menu">
+                                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                                    <line x1="3"
+                                          y1="6" x2="21" y2="6"></line>
+                                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                                </svg>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="floorActionsDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#addRoomModal"
+                                       onclick="setFloorId('@floor.Id')">
+                                        <i class="fa-solid fa-plus"
+                                           style="font-size: 24px; font-weight: bold; color: green;"></i>
+                                    </a>
+                                    
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="openEditFloorModal('@floor.Id', '@floor.Name')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen-fill" viewBox="0 0 16 16">
+                                            <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001" />
+                                        </svg>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deletefloor" onclick="setDeleteFloorId('@floor.Id')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                             stroke-linecap="round" stroke-linejoin="round"
+                                             class="feather feather-trash-2">
+                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                                        </svg>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </h2>
+            </div>
+                <div id="collapse-@floor.Id" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                       
+                        <div class="row g-3">
+                            @foreach (var room in floor.Rooms)
+                        {
+                                <div class="col-md-4">
+                                    <div class="card shadow-sm border-0">
+                                        <div class="card-header bg-light text-dark text-center">
+                                            <strong>@room.Name</strong>
+                                        </div>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item"><strong>Width:</strong> @room.Width</li>
+                                            <li class="list-group-item"><strong>Length:</strong> @room.Length</li>
+                                            <li class="list-group-item"><strong>Description:</strong> @room.Description</li>
+                                        </ul>
+                                        <div class="card-footer text-center bg-white">
+                        <button type="button" class="btn btn-outline-warning btn-sm" onclick="openEditRoomModal('@room.Id', '@room.Name', '@room.FloorId', '@room.Width', '@room.Length', '@room.Description')">
+                                            Edit Room
+                         </button>
+                        <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteroom" onclick="setDeleteRoomId('@room.Id')">
+                                                Delete Room
+                        </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        @if (!floor.Rooms.Any())
+                        {
+                            <div class="text-center text-muted mt-3">No rooms available for this floor.</div>
+                        }
+                    </div>
+                </div>
+        }
+    </div>
+
+</div>
+<div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="addEmployeeModalLabel">Add Employee</h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="AddEmployee" asp-controller="Buildings" method="post">
+                <div class="modal-body bg-light">
+                   
+                    <input type="hidden" id="EmployeeBuildingId" name="BuildingId" />
+                    <div class="row g-3">
+
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="Name" class="form-label fw-semibold">Name</label>
+                                <input type="text" class="form-control shadow-sm" id="EName" name="Name" placeholder="Enter Employee name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="PhoneNumber" class="form-label fw-semibold">Phone Number</label>
+                                <input type="text" class="form-control shadow-sm" id="PhoneNumber" name="PhoneNumber" placeholder="09 -- -- -- --" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="EmployeeTypeId" class="form-label fw-semibold">Employee Role</label>
+                                <select name="EmployeeTypeId" 
+                                    class="form-control border-primary rounded-pill" 
+                                    asp-items="ViewBag.EmployeeTypeId" required></select>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary shadow-sm" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary shadow-sm">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addFloorModal" tabindex="-1" aria-labelledby="addFloorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="addFloorModalLabel">Add Floor</h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="AddFloor" asp-controller="Buildings" method="post">
+                <div class="modal-body bg-light">
+                    @Html.Hidden("BuildingId")
+
+                    <div class="row g-3">
+                       
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="Name" class="form-label fw-semibold">Floor Name</label>
+                                <input type="text" class="form-control shadow-sm" id="Name" name="Name" placeholder="Enter floor name" required>
+                            </div>
+                        </div>
+
+                      
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="NumberOfRoom" class="form-label fw-semibold">Number of Rooms</label>
+                                <input type="text" class="form-control shadow-sm" id="NumberOfRoom" name="NumberOfRoom" placeholder="Enter number of rooms" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary shadow-sm" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary shadow-sm">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addRoomModal" tabindex="-1" aria-labelledby="addRoomModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold" id="addRoomModalLabel">Add Room</h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="AddRoom" asp-controller="Buildings" method="post">
+                <div class="modal-body bg-light">
+                    @Html.Hidden("FloorId")
+
+                    <div class="row g-3">
+                       
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Name" class="form-label fw-semibold">Room Name</label>
+                                <input type="text" class="form-control shadow-sm" id="Name" 
+                                name="Name" placeholder="Enter room name" required>
+                            </div>
+                        </div>
+
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Width" class="form-label fw-semibold">Width (in meters)</label>
+                                <input type="text" class="form-control shadow-sm" id="Width" name="Width" placeholder="Enter width" required>
+                            </div>
+                        </div>
+
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Length" class="form-label fw-semibold">Length (in meters)</label>
+                                <input type="text" class="form-control shadow-sm" id="Length" name="Length" placeholder="Enter length" required>
+                            </div>
+                        </div>
+
+                       
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Description" class="form-label fw-semibold">Description</label>
+                                <textarea class="form-control shadow-sm" id="Description" name="Description" placeholder="Enter room description" rows="3" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary shadow-sm" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success shadow-sm">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deletefloor" tabindex="-1" aria-labelledby="deletefloorLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold" id="deletefloorLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-light">
+                <input type="hidden" id="FloorId" name="FloorId" />
+                <div class="alert alert-danger text-center">
+                    Are you sure you want to delete this floor? 
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary shadow-sm" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="DeleteFloor" asp-controller="Buildings" method="post">
+                    <input type="hidden" id="FloorIdFormInput" name="FloorId" />
+                    <button type="submit" class="btn btn-danger shadow-sm">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteroom" tabindex="-1" aria-labelledby="deleteroomLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold" id="deleteroomLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-light">
+                <input type="hidden" id="RoomId" name="RoomId" />
+                <div class="alert alert-danger text-center">
+                    Are you sure you want to delete this room? 
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary shadow-sm" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="DeleteRoom" asp-controller="Buildings" method="post">
+                    <input type="hidden" id="RoomIdFormInput" name="RoomId" />
+                    <button type="submit" class="btn btn-danger shadow-sm">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editRoomModal" tabindex="-1" aria-labelledby="editRoomModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered ">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="editRoomModalLabel">Edit Room</h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="EditRoom" method="post" asp-controller="Buildings">
+                <div class="modal-body bg-light">
+                    @Html.Hidden("RoomId")
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label for="Name" class="form-label fw-semibold">Room Name</label>
+                            <input type="text" id="Name" name="Name" placeholder="" class="form-control shadow-sm" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="Width" class="form-label fw-semibold">Width</label>
+                            <input type="text" id="Width" name="Width" placeholder="...m" class="form-control shadow-sm" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="Length" class="form-label fw-semibold">Length</label>
+                            <input type="text" id="Length" name="Length" placeholder=" ...m" class="form-control shadow-sm" required />
+                        </div>
+                        <div class="col-md-12">
+                            <label for="Description" class="form-label fw-semibold">Description</label>
+                            <textarea id="Description" name="Description" class="form-control shadow-sm" rows="3" required></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary shadow-sm" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary shadow-sm">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editFloorModal" tabindex="-1" aria-labelledby="editFloorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="editFloorModalLabel">Edit Floor</h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="EditFloor" method="post" asp-controller="Buildings">
+                <div class="modal-body bg-light">
+                    <input type="hidden" id="NewFloorId" name="FloorId" />
+                    <div class="form-group">
+                        <label for="NewName" class="form-label fw-semibold">Floor Name</label>
+                        <input type="text" id="NewName" name="Name" class="form-control shadow-sm" required />
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary shadow-sm" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary shadow-sm">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+
+        function setFloorId(id) {
+
+            $("#FloorId").val(id);
+        }
+        function setBuildingId(id) {
+
+            $("#BuildingId").val(id);
+        }
+        function setEmployeeId(id) {
+
+                $("#EmployeeBuildingId").val(id);
+                $('#addEmployeeModal').modal('show');
+        }
+        function setDeleteFloorId(id) {
+            
+            document.getElementById("FloorId").value = id;
+            document.getElementById("FloorIdFormInput").value = id;
+        }
+        function setDeleteRoomId(id) {
+
+            document.getElementById("RoomId").value = id;
+            document.getElementById("RoomIdFormInput").value = id;
+        }
+
+        function openEditFloorModal(floorId, floorName) {
+
+            $("#NewFloorId").val(floorId);
+            $("#NewName").val(floorName);
+            $('#editFloorModal').modal('show');
+        }
+           
+       function openEditRoomModal(roomId, roomName, width, length, description) 
+       {
+            $("#editRoomModal #RoomId").val(roomId);
+            $("#editRoomModal #Name").val(roomName);             
+            $("#editRoomModal #Width").val(width);
+            $("#editRoomModal #Length").val(length);
+            $("#editRoomModal #Description").val(description);
+
+            $('#editRoomModal').modal('show');
+        }
+  
+    </script>
+  
+}

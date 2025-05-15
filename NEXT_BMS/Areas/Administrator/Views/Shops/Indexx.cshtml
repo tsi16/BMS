@@ -1,0 +1,277 @@
+﻿@model IEnumerable<NEXT_BMS.Models.Shop>
+@using Insya.Localization
+@using Microsoft.Extensions.Options
+@using NEXT_BMS.ViewModels;
+@inject IOptions<AppConfig> AppConfig
+
+
+@if (TempData["Error"] != null)
+{
+    @TempData["Error"]
+    
+}
+
+<div class="card">
+    <div class="card-body">
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="createdShops-tab" data-toggle="tab" data-target="#createdShops" type="button" role="tab" aria-controls="createdShops" aria-selected="true">
+                    Shops
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="requestHistory-tab" data-toggle="tab" data-target="#requestHistory" type="button" role="tab" aria-controls="requestHistory" aria-selected="false">
+                    Requests
+                </button>
+            </li>
+        </ul>
+
+
+        <div class="tab-content flex-fill" id="myTabContent">
+
+            <div class="tab-pane fade show active" id="createdShops" role="tabpanel" aria-labelledby="createdShops-tab">
+                <h1 class="text-center mb-4">Shop Index</h1>
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal_createshop">
+                    <i class="icon-plus2 me-2"></i>Create Shop
+                </button>
+                <div class="row mb-5">
+
+                    @if (ViewBag.CanCreateShop != false)
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <div class="col-4 mb-4">
+                                <div class="card h-100 shadow-sm d-flex flex-column">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@Html.DisplayFor(modelItem => item.Name)</h5>
+                                        <p class="card-text">@Html.DisplayFor(modelItem => item.Description)</p>
+                                        <p class="card-text">
+                                            <strong>Business Area:</strong> @Html.DisplayFor(modelItem => item.BusinessArea.Name)
+                                        </p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="dropdown">
+                                            <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="actionsDropdown-@item.Id" data-toggle="dropdown" aria-expanded="false">
+                                                Actions
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="actionsDropdown-@item.Id">
+                                                <li><a class="dropdown-item" onclick="setEditShop('@item.Id', '@item.Name', '@item.BusinessAreaId', '@item.Description')" data-bs-toggle="modal" data-bs-target="#modal_editshop">Edit</a></li>
+                                                <li><a class="dropdown-item" asp-action="Details" asp-route-id="@item.Id">Details</a></li>
+                                                <li><a class="dropdown-item text-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <!-- Requests Tab Pane -->
+            <div class="tab-pane fade" id="requestHistory" role="tabpanel" aria-labelledby="requestHistory-tab">
+                <h1 class="text-center mb-4">Shop Request</h1>
+                <div class="row mb-5">
+                    <!-- Add margin-bottom to the row -->
+                    @if (ViewBag.ShopRequests != null)
+                    {
+                        var shopRequests = ViewBag.ShopRequests as List<NEXT_BMS.Models.ShopRequest>;
+                        if (shopRequests != null && shopRequests.Count > 0)
+
+                        {
+                            <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#modal_createshopRequest">
+                                <i class="fas fa-plus me-2"></i> Shop Request
+                            </button>
+                            foreach (var item in shopRequests)
+                            {
+                                var date = item.RequestDate.ToShortDateString();
+                                <div class="col-4 mb-4">
+                                    <div class="card shadow border-light d-flex flex-column">
+                                        <div class="header">
+                                           
+                                        </div>
+                                        <div class="card-body d-flex flex-column">
+                                            <h5 class="text-primary">History</h5>
+                                            <h5 class="card-title text-success"> Description : @Html.DisplayFor(modelItem => item.Description)</h5>
+                                            <p class="card-text"><strong>Shops:</strong>  @Html.DisplayFor(modelItem => item.NumberOfShops)</p>
+                                            <p class="card-text"><strong>Date:</strong> @Html.DisplayFor(modelItem => date)</p>
+                                            <div class="mt-auto">
+                                                <p class="card-text">
+                                                    <strong>Status:</strong>
+                                                    <span class="badge bg-info text-dark">  @Html.DisplayFor(modelItem => item.RequestStatus.Name)</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col">
+                                <div class="">
+                                    <div class="card-body">
+                                        <p class="card-text">No shop requests available.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modal_createshop" tabindex="-1" aria-labelledby="modal_createshop" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="card-title" id="createshopLabel">
+                    @Html.Raw(Localization.Get("Create Shop"))
+               </h5>
+                
+                <a href="#" class="pt-2" data-dismiss="modal">
+                    <i class="icon-cross text-white"></i>
+                </a>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Create" asp-area="Administrator" asp-controller="Shops" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="mb-3">
+                        <label for="Name" class="form-label">Name</label>
+                        <input id="Name" name="Name" class="form-control" required />
+                    </div>
+                   
+                    <div class="form-group">
+                        <label for="BusinessAreaId">@Html.Raw(Localization.Get("Business Area "))</label>
+                        <select name="BusinessAreaId" id="BusinessAreaId" class="form-control" asp-items="ViewBag.BusinessAreaId"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Description" class="form-label">Description</label>
+                        <input id="Description" name="Description" class="form-control" />
+                    </div>
+                   @*  <div class="mb-3">
+                        <label for="CreatedDate" class="form-label">Created Date</label>
+                        <input id="CreatedDate" name="CreatedDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required />
+                    </div> *@
+                    <div class="modal-footer">
+                        <div class="modal-footer">
+                            <button class="btn btn-link" data-dismiss="modal"><i class="icon-cross2 font-size-base mr-1"></i> Close</button>
+                            <button class="btn bg-primary"><i class="icon-checkmark3 font-size-base mr-1"></i> Save</button>
+                        </div>
+                        </div>
+                </form>
+            </div>
+           
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="modal fade" id="modal_editshop" tabindex="-1" aria-labelledby="modal_editshop" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editshopLabel">
+                    <i class="icon-plus2 me-2"></i>@Html.Raw(Localization.Get("edit Shop"))
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Edit" asp-area="Administrator" asp-controller="Shops">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" id="NewId" name="Id" />
+
+                    <div class="mb-3">
+                        <label for="Name" class="form-label">Name</label>
+                        <input id="NewName" name="Name" class="form-control" required />
+                    </div>
+
+
+
+                    <div class="mb-3">
+                        <label for="BusinessAreaId" class="form-label">BusinessAreaId</label>
+                        <select id="NewBusinessAreaId" name="BusinessAreaId" class="form-select" asp-items="ViewBag.BusinessAreaId" required></select>
+
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="Description" class="form-label">Description</label>
+                        <input id="NewDescription" name="Description" class="form-control" required />
+                    </div>
+
+
+                    <div class="form-group">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link" data-bs-dismiss="modal">
+                    <i class="icon-cross2 me-2"></i>Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_createshopRequest" tabindex="-1" aria-labelledby="modal_createshopRequest" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header mt-0 @AppConfig.Value.BrandColor">
+                <h5 class="modal-title" id="createshopRequestLabel">
+                    <i class="icon-plus2 me-2"></i>@Html.Raw(Localization.Get("Create Shop Request"))
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="CreateShopRequest" asp-area="Administrator" asp-controller="Shops" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <input type="hidden" id="Id" name="Id" />
+                    <input type="hidden" id="UserId" name="UserId" />
+                    <input type="hidden" id="RequestStatusId" name="RequestStatusId" />
+                    <div class="mb-3">
+                        <label for="Description" class="form-label">Description</label>
+                        <textarea id="Description" name="Description" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="NumberOfShop" class="form-label">NumberOfShop</label>
+                        <textarea id="NumberOfShop" name="NumberOfShop" class="form-control" rows="3" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-custom w-100">
+                        <i class="icon-checkmark3 me-2"></i>Save
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link" data-bs-dismiss="modal">
+                    <i class="icon-cross2 me-2"></i>Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    
+    
+    
+    <script>
+ function setEditShop( id, name ,businessAreaId, description ) {
+
+            $('#NewId').val(id); 
+            $('#NewName').val(name);
+             $('#NewBusinessAreaId').val(businessAreaId);
+            $('#NewDescription').val(description);
+
+        };
+        </script>
+}

@@ -1,0 +1,577 @@
+﻿@model NEXT_BMS.Models.Tenant
+@using Insya.Localization
+@using Microsoft.Extensions.Options
+<div class="row">
+        @foreach (var rental in Model.RoomRentals)
+        {
+          <div class="col-md-12">
+
+        <div class="card border-start border-start-width-2 border-start-secondary border-end border-end-width-1 border-end-secondary rounded-0">
+            <div class="card-header bg-light header-elements-inline ">
+                    <h5 class="card-title">
+                        @rental.Tenant?.Name
+                        <span class="ml-2 badge badge-pill bg-info-800">
+                            Room Number : @rental.Room.Name
+                        </span>
+                    </h5>
+                <div class="header-elements">
+                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal_addPayment" onclick="setRoomRentalId('@rental.Id')" style="position: absolute; top: 1rem; right: 1rem;">
+                            <i class="icon-plus2"></i> Add Payment
+                        </button>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-sm mb-4" style="background-color: #ffffff;">
+                            <tbody>
+                                <tr>
+                                    <th style="width: 30%; color: #555;">Business Area:</th>
+                                    <td style="width: 70%; color: #555;">@rental.BusinessArea?.Name</td>
+                                </tr>
+                                <tr>
+                                    <th style="width: 30%; color: #555;">Room:</th>
+                                    <td style="width: 70%; color: #555;">@rental.Room?.Name</td>
+                                </tr>
+                                <tr>
+                                    <th style="width: 30%; color: #555;">Total Price:</th>
+                                    <td style="width: 70%; color: #555;">@rental.TotalPrice</td>
+                                </tr>
+                               
+                            </tbody>
+                        </table>
+                    </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm mb-4" style="background-color: #ffffff;">
+                                <tbody>
+                                   
+                                    <tr>
+                                        <th style="width: 30%; color: #555;">Status:</th>
+                                        <td style="width: 70%; color: #555;">@(rental.IsActive ? "Active" : "Inactive")</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="width: 30%; color: #555;">Start Date:</th>
+                                        <td style="width: 70%; color: #555;">@rental.StartDate.ToString("yyyy-MM-dd")</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                </div>
+
+                    <h6 style="margin-left: 0.5rem; font-weight: bold; font-size: 1.25rem; color: #4b5563; padding-bottom: 4px; border-bottom: 2px solid #cbd5e1; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);">
+                        Payment Info
+                    </h6>
+
+
+
+                    @if (rental.RoomRentalPayments.Any())
+                    {
+                        <table class="table table-hover mb-4" style="background-color: #ffffff;">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th style="color: #007bff;">Payment Type</th>
+                                    <th style="color: #007bff;">Total Amount</th>
+                                    <th style="color: #007bff;">Invoice Number</th>
+                                    <th style="color: #007bff;">Paid Date</th>
+                                    <th style="color: #007bff;width:35px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var payment in rental.RoomRentalPayments)
+                                {
+                                    <tr class="font-weight-bold border-left-2 border-left-info-800">
+                                        <td style="color: #555;">@payment.PaymentType.Name</td>
+                                        <td style="color: #555;">@payment.TotalAmount.ToString("N0") </td>
+                                        <td style="color: #555;">@payment.InvoiceNumber</td>
+                                        <td style="color: #555;">@payment.PaidDate.ToString("yyyy-MM-dd")</td>
+                                        <td class="text-right">
+                                            <div class="dropdown">
+                                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                                    <i class="icon-menu9"></i>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton_@payment.Id">
+                                                    <a href="#" class="dropdown-item" data-toggle="modal" data-target="#modal_addRoomRentalPayment" onclick="setRoomRentalPaymentDetailId('@payment.Id')">
+                                                        <i class="fas fa-plus-circle"></i> Add Payment Detail
+                                                    </a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a href="#" class="dropdown-item" data-toggle="modal" data-target="#modal_editPayment" onclick="setEditpayment('@payment.Id','@payment.InvoiceNumber','@payment.TotalAmount','@payment.PaymentModeId','@payment.PaymentTypeId')">
+                                                        <i class="fas fa-edit"></i> Edit Payment
+                                                    </a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a href="javascript:void(0);" class="dropdown-item text-danger" onclick="removePayment('@payment.Id')">
+                                                        <i class="fas fa-trash"></i> Remove
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr >
+                                        <td colspan="5" class="p-0 pr-3">
+                                            <table class="table table-sm table-bordered mb-0 ml-3" style="background-color: #eef;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Month</th>
+                                                        <th>Year</th>
+                                                        <th>Total Amount</th>
+                                                        <th>Accepted By</th>
+                                                        <th>Date</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @if (payment.RoomRentalPaymentDetails != null && payment.RoomRentalPaymentDetails.Any())
+                                                    {
+                                                        foreach (var detailPay in payment.RoomRentalPaymentDetails.Where(x=>x.IsActive))
+                                                        {
+                                                            <tr>
+                                                                <td style="background-color: white; color: black;">@detailPay.Month.Name</td>
+                                                                <td style="background-color: white; color: black;">@detailPay.Year?.Name</td>
+                                                                <td style="background-color: white; color: black;">@detailPay.TotalAmount.ToString("N0")</td>
+                                                                <td style="background-color: white; color: black;">@detailPay.AccceptedBy</td>
+                                                                <td style="background-color: white; color: black;">@detailPay.Date.ToString("yyyy-MM-dd")</td>
+                                                                <td style="background-color: white;" class="text-right">
+                                                                    <div class="dropdown">
+                                                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                                                            <i class="icon-more"></i>
+                                                                        </a>
+                                                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton_@payment.Id">
+                                                                            <a href="#" class="dropdown-item" data-toggle="modal" data-target="#modal_editPaymentdetail" onclick="setEditpaymentdetail('@detailPay.Id','@detailPay.Year','@detailPay.TotalAmount','@detailPay.AccceptedBy','@detailPay.Date')">
+                                                                                <i class="icon-pencil"></i>Edit Payment detail  
+                                                                            </a>
+                                                                            <a href="javascript:void(0);" class="dropdown-item text-danger" onclick="removePaymentdetail('@detailPay.Id')">
+                                                                                <i class="fas fa-trash"></i> Remove
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td colspan="5" class="text-center" style="color: #888;">No payment details available.</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+            
+            </div>
+        </div>
+    </div>
+       
+        }
+    </div>
+
+<div class="modal fade" id="modal_addPayment" tabindex="-1" aria-labelledby="modal_addPayment" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="PaymentLabel">
+                    <i class="icon-plus2 mr-1"></i>
+                    @Html.Raw(Localization.Get("Add Payment"))
+                </h1>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+               
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="hidden" id="RoomRentalId" name="RoomRentalId" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="PaymentTypeId">@Html.Raw(Localization.Get("Payment Type"))</label>
+                        <select name="PaymentTypeId" id="PaymentTypeId" class="form-control" asp-items="ViewBag.PaymentTypeId"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="PaymentModeId">@Html.Raw(Localization.Get("Payment Mode"))</label>
+                        <select name="PaymentModeId" id="PaymentModeId" class="form-control" asp-items="ViewBag.PaymentModeId"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="TotalAmount">@Html.Raw(Localization.Get("Total Amount"))</label>
+                        <input type="text" id="TotalAmount" name="TotalAmount" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="InvoiceNumber">@Html.Raw(Localization.Get("Invoice Number"))</label>
+                        <input type="text" id="InvoiceNumber" name="InvoiceNumber" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-link" data-bs-dismiss="modal">
+                        <i class="icon-cross2 font-size-base mr-1"></i> Close
+                    </button>
+                    <button class="btn bg-primary" onclick="SavePayment()">
+                        <i class="icon-checkmark3 font-size-base mr-1"></i> Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_addRoomRentalPayment" tabindex="-1" aria-labelledby="modal_addRoomRentalPayment" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="RoomRentalPaymentLabel">
+                    <i class="icon-plus2 mr-1"></i>
+                    @Html.Raw(Localization.Get("Add Room Rental Payment"))
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="RoomRentalPaymentId" name="RoomRentalPaymentId" value="" />
+
+                <div class="form-group">
+                    <label for="MonthId">@Html.Raw(Localization.Get("Month"))</label>
+
+                    <select name="MonthId" id="MonthId" class="form-control" asp-items="ViewBag.MonthId"></select>
+
+
+                </div>
+                <div class="form-group">
+                    <label for="YearId">@Html.Raw(Localization.Get("Year"))</label>
+
+                    <select name="YearId" id="YearId" class="form-control" asp-items="ViewBag.YearId"></select>
+
+                </div>
+                <div class="form-group">
+                    <label for="TotalAmount">@Html.Raw(Localization.Get("Total Amount"))</label>
+                    <input type="text" id="PaymentTotalAmount" name="TotalAmount" class="form-control" />
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link" data-bs-dismiss="modal">
+                    <i class="icon-cross2 font-size-base mr-1"></i> Close
+                </button>
+                <button class="btn bg-primary" onclick="SaveRoomRentalPayment()">
+                    <i class="icon-checkmark3 font-size-base mr-1"></i> Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_editPayment" tabindex="-1" aria-labelledby="modal_editPayment" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="PaymentLabel">
+                    <i class="icon-plus2 mr-1"></i>
+                    @Html.Raw(Localization.Get("Edit Payment"))
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="hidden" id="EditRoomRentalId" name="RoomRentalId" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="PaymentTypeId">@Html.Raw(Localization.Get("Payment Type"))</label>
+                        <select name="PaymentTypeId" id="EditPaymentTypeId" class="form-control" asp-items="ViewBag.PaymentTypeId"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="PaymentModeId">@Html.Raw(Localization.Get("Payment Mode"))</label>
+                        <select name="PaymentModeId" id="EditPaymentModeId" class="form-control" asp-items="ViewBag.PaymentModeId"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="TotalAmount">@Html.Raw(Localization.Get("Total Amount"))</label>
+                        <input type="text" id="EditTotalAmount" name="TotalAmount" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="InvoiceNumber">@Html.Raw(Localization.Get("Invoice Number"))</label>
+                        <input type="text" id="EditInvoiceNumber" name="InvoiceNumber" class="form-control" />
+                    </div>
+                </div>
+               
+                <div class="modal-footer">
+                    <button class="btn btn-link" data-bs-dismiss="modal">
+                        <i class="icon-cross2 font-size-base mr-1"></i> Close
+                    </button>
+                    <button class="btn bg-primary" onclick="SaveEditedPayment()">
+                        <i class="icon-checkmark3 font-size-base mr-1"></i> Save
+                    </button>
+                  
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal_editPaymentdetail" tabindex="-1" aria-labelledby="modal_editPayment" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="PaymentLabel">
+                    <i class="icon-plus2 mr-1"></i>
+                    @Html.Raw(Localization.Get("Edit PaymentDetail"))
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="hidden" id="NewRoomRentalPaymentId" name="RoomRentalPaymentId"  />
+                    </div>
+                    <div class="form-group">
+                        <label for="MonthId">@Html.Raw(Localization.Get("Month"))</label>
+                        <select name="MonthId" id="NewMonthId" class="form-control" asp-items="ViewBag.MonthId"></select>
+                    </div>
+                   
+                    <div class="form-group">
+                        <label for="YearId">@Html.Raw(Localization.Get("year"))</label>
+                        <select name="YearId" id="NewYearId" class="form-control" asp-items="ViewBag.YearId"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="PaymentTotalAmount">@Html.Raw(Localization.Get("Total Amount"))</label>
+                        <input type="text" id="NewPaymentTotalAmount" name="PaymentTotalAmount" class="form-control" />
+                    </div>
+                   
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-link" data-bs-dismiss="modal">
+                        <i class="icon-cross2 font-size-base mr-1"></i> Close
+                    </button>
+                    <button class="btn bg-primary" onclick="SaveEditedPaymentdetail()">
+                        <i class="icon-checkmark3 font-size-base mr-1"></i> Save
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("js/_alertify");
+    }
+    <style>
+        .tbody-white td {
+            color: white; 
+        }
+
+    </style>
+    <script>
+      function setEditpayment(id,InvoiceNumber,TotalAmount,PaymentModeId,PaymentTypeId) {
+               $('#EditRoomRentalId').val(id);
+               $('#EditInvoiceNumber').val(InvoiceNumber);
+               $('#EditTotalAmount').val(TotalAmount);
+               $('#EditPaymentModeId').val(PaymentModeId);
+               $('#EditPaymentTypeId').val(PaymentTypeId);
+
+           };
+  
+           function SaveEditedPayment() {
+                let roomRentalId = $('#EditRoomRentalId').val();
+               let invoiceNumber = $('#EditInvoiceNumber').val();
+              
+               let TotalAmount = $('#EditTotalAmount').val();
+               let PaymentModeId = $('#EditPaymentModeId').val();
+               let PaymentTypeId = $('#EditPaymentTypeId').val();
+
+                
+
+               $.ajax({
+                   type: 'POST',
+                   url: '/Administrator/TenantPayments/EditPayment',
+                   data: {
+                       Id: roomRentalId,
+                       InvoiceNumber: invoiceNumber,
+                       TotalAmount: TotalAmount,
+                       PaymentModeId: PaymentModeId,
+                       PaymentTypeId: PaymentTypeId
+                   },
+                   success: function () {
+                       location.reload();
+                   },
+                   error: function () {
+                       alert('Error editing payment.');
+                   }
+               });
+           }
+
+                     function setEditpaymentdetail(RoomRentalPaymentId,MonthId,YearId,PaymentTotalAmount) {
+                     $('#NewRoomRentalPaymentId').val(RoomRentalPaymentId);
+                     $('#NewMonthId').val(MonthId);
+                     $('#NewYearId').val(YearId);
+                     $('#NewPaymentTotalAmount').val(PaymentTotalAmount);
+                 
+
+             };
+             function SaveEditedPaymentdetail() {
+                  let roomRentalPaymentId = $('#NewRoomRentalPaymentId').val();
+                let monthId = $('#NewMonthId').val();
+
+                let yearId = $('#NewYearId').val();
+                let paymentTotalAmount = $('#NewPaymentTotalAmount').val();
+                 alert("tsi");
+                 $.ajax({
+                     type: 'POST',
+                     url: '/Administrator/TenantPayments/EditPaymentdetail',
+                     data: {
+                             Id: roomRentalPaymentId,
+                             MonthId: monthId,
+                             YearId: yearId,
+                             PaymentTotalAmount: paymentTotalAmount
+                         
+                     },
+                     success: function () {
+                         location.reload();
+                     },
+                     error: function () {
+                         alert('Error editing payment detail.');
+                     }
+                 });
+             }
+
+
+               function removePayment(id) {
+               alertify.set({ labels: { ok: "Yes Continue", cancel: "No Cancel" } });
+               alertify.confirm("Are you sure you want to delete this payment?", function (e) {
+                   if (e) {
+                          $.ajax({
+                          type: 'POST',
+                          url: '/TenantPayments/DeletePayments',
+                          data: { Id: id },
+                          success: function () {
+                               alertify.success("success");
+                              location.reload();
+                          },
+                          error: function () {
+                              alert('Error removing payment.');
+                          }
+                      });
+                   }
+               });
+           }
+
+               function removePaymentdetail(id) {
+                 alertify.set({ labels: { ok: "Yes Continue", cancel: "No Cancel" } });
+                 alertify.confirm("Are you sure you want to delete payment detail information?", function (e) {
+                     if (e) {
+                            $.ajax({
+                            type: 'POST',
+                              url: '/Administrator/TenantPayments/DeletePaymentdetail',
+                            data: { Id: id },
+                            success: function () {
+                                 alertify.success("success");
+                                location.reload();
+                            },
+                            error: function () {
+                                alert('Error removing payment detail.');
+                            }
+                        });
+                     }
+                 });
+             }
+
+
+
+        function setRoomRentalPaymentDetailId(id) {
+            $('#RoomRentalPaymentId').val(id);
+        }
+
+        function SaveRoomRentalPayment() {
+            let roomRentalPaymentId = $('#RoomRentalPaymentId').val();
+            let monthId = $('#MonthId').val();
+            let yearId = $('#YearId').val();
+            let totalAmountInput = $('#PaymentTotalAmount').val();
+
+            let totalAmount = parseFloat(totalAmountInput);
+
+          
+            if (isNaN(totalAmount)) {
+                alert('Please enter a valid total amount.');
+                return;
+            }
+            alert(totalAmount);
+
+            $.ajax({
+                type: 'POST',
+                url: '/Administrator/TenantPayments/AddRoomRentalPayment',
+                data: {
+                    'RoomRentalPaymentId': roomRentalPaymentId,
+                    'MonthId': monthId,
+                    'YearId': yearId,
+                    'TotalAmount': totalAmount
+                },
+                success: function (response) {
+                    location.reload();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Error adding room rental payment: ' + errorThrown);
+                }
+            });
+        }
+        function SaveRoomRental() {
+            let tenantId = $('#TenantId').val();
+            let roomId = $('#RoomId').val();
+            let businessAreaId = $('#BusinessAreaId').val();
+            let totalPrice = $('#TotalPrice').val();
+            
+
+            $.ajax({
+                type: 'POST',
+                url: '/BuildingTenants/AddRoomRentals',
+                data: {
+                    'TenantId': tenantId,
+                    'RoomId': roomId,
+                    'BusinessAreaId': businessAreaId,
+                    'TotalPrice': totalPrice
+                    
+                },
+                success: function (response) {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error adding roomrental.');
+                }
+            });
+        }
+
+        function setRoomRentalId(id) {
+            $('#RoomRentalId').val(id);
+        }
+
+        function SavePayment() {
+            let roomRentalId = $('#RoomRentalId').val();
+            let paymentTypeId = $('#PaymentTypeId').val();
+            let paymentModeId = $('#PaymentModeId').val();
+            let totalAmount = $('#TotalAmount').val();
+            let invoiceNumber = $('#InvoiceNumber').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/Administrator/TenantPayments/AddPayment',
+                data: {
+                    'RoomRentalId': roomRentalId,
+                    'PaymentTypeId': paymentTypeId,
+                    'PaymentModeId': paymentModeId,
+                    'TotalAmount': totalAmount,
+                    'InvoiceNumber': invoiceNumber
+                },
+                success: function (response) {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error adding payment.');
+                }
+            });
+        }
+
+
+    </script>
+}

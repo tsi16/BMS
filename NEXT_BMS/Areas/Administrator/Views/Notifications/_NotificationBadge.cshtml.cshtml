@@ -1,0 +1,16 @@
+﻿@model IEnumerable<NEXT_BMS.Models.Notification>
+@inject NEXT_BMSContext _context
+
+@{
+    var userId = int.Parse(User.FindFirst("UserId").Value); 
+    var unreadCount = _context.Notifications
+                        .Where(n => n.UserId == userId && n.NotificationStatusId == 1)
+                        .Count();
+}
+
+@if (unreadCount > 0)
+{
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+        @unreadCount
+        </span>
+}

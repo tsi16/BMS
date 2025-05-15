@@ -1,0 +1,13 @@
+# Ignore Visual Studio temporary files
+.vs/
+*.user
+*.suo
+
+# Ignore build artifacts
+bin/
+obj/
+*.log
+
+# Ignore system files
+Thumbs.db
+ehthumbs.db

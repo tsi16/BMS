@@ -1,0 +1,196 @@
+﻿ @model IEnumerable<NEXT_BMS.Models.Tenant>
+@using Insya.Localization
+@using Microsoft.Extensions.Options
+
+@{
+    ViewData["Title"] = "Index";
+    var approvedRoomRentalRequests = ViewBag.ApprovedRoomRentalRequests as List<int>;
+    
+}
+
+@if (TempData["Error"] != null)
+{
+    @TempData["Error"]
+}
+
+<div class="card"> 
+<div class="card-header bg-light header-elements-inline">
+    <h5 class="card-title">
+        @Html.Raw(Localization.Get(ViewData["action"].ToString())) | @Html.Raw(Localization.Get(ViewData["pageName"].ToString()))
+    </h5>
+    <div class="header-elements">
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal_addTenante">
+            + Add Tenant
+        </button>
+        </div>
+        </div>
+</div>
+<div class="modal fade" id="modal_addTenante" tabindex="-1" aria-labelledby="modal_addTenante" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content shadow-lg">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="ShopTenanteLabel">
+                    <i class="icon-plus2 mr-1"></i>
+                    @Html.Raw(Localization.Get("Add Tenantes"))
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group mb-3">
+                    <label for="BuildingId" class="form-label">@Html.Raw(Localization.Get("buildings"))</label>
+                    <select name="BuildingId" id="BuildingId" class="form-select" asp-items="ViewBag.BuildingId" style="height: auto; width: 100%;">
+                    </select>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="TenantTypeId" class="form-label">@Html.Raw(Localization.Get("tenanteTypes"))</label>
+                    <select name="TenantTypeId" id="TenantTypeId" class="form-select" asp-items="ViewBag.TenantTypeId" style="height: auto; width: 100%;">
+                    </select>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="Name" class="form-label">@Html.Raw(Localization.Get("Name"))</label>
+                    <input type="text" id="Name" name="Name" class="form-control" />
+                </div>
+                <div class="form-group mb-3">
+                    <label for="Tin" class="form-label">@Html.Raw(Localization.Get("Tin"))</label>
+                    <input type="text" id="Tin" name="Tin" class="form-control" />
+                </div>
+                <div class="form-group mb-3">
+                    <label for="Description" class="form-label">@Html.Raw(Localization.Get("Description"))</label>
+                    <input type="text" id="Description" name="Description" class="form-control" />
+                </div>
+                <div class="form-group mb-3">
+                    <label for="Contact" class="form-label">@Html.Raw(Localization.Get("Contact"))</label>
+                    <input type="text" id="Contact" name="Contact" class="form-control" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-primary" onclick="SaveTenant()"><i class="icon-checkmark3 mr-1"></i> Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <div class="row">
+            @foreach (var te in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card inner-card shadow-sm hover-shadow">
+                        <div class="card-header bg-light text-dark">
+                            <h6 class="mb-0">@te.Name</h6>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Building:</strong> @te.Building?.Name</p>
+                            <p><strong>Type:</strong> @te.TenantType?.Name</p>
+                            <p><strong>Contact:</strong> @te.Contact</p>
+                            <p><strong>Description:</strong> @te.Description</p>
+                            <p><strong>TIN:</strong> @te.Tin</p>
+                        </div>
+                        <div class="card-footer">
+                            <a asp-action="Details" asp-controller="TenantPayments" asp-route-id="@te.Id" class="btn btn-info btn-sm" style="width: auto; border-radius: 3px;">
+                                Go To Payment
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+    
+
+
+
+@section Scripts {
+    <style>
+        .card-header {
+            border-bottom: 2px solid #007bff; 
+        }
+
+        .btn-primary {
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+            .btn-primary:hover {
+                background-color: #0056b3; 
+                transform: scale(1.02); 
+            }
+
+        .hover-shadow:hover {
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.2);
+        }
+
+        .custom-card {
+            background-color: #f5f5f5; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
+        }
+
+        .header {
+            background: linear-gradient(90deg, rgba(70,130,180,1) 0%, rgba(100,149,237,1) 100%); 
+            color: #fff;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px; 
+        }
+
+        .inner-card {
+            border: 1px solid #e1e1e1; 
+            border-radius: 5px;
+            transition: transform 0.2s; 
+        }
+
+            .inner-card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); 
+            }
+
+       
+        .btn-danger {
+            background-color: #dc3545; 
+            transition: background-color 0.3s ease;
+        }
+
+            .btn-danger:hover {
+                background-color: #c82333; 
+            }
+
+        .custom-title {
+            text-align: center; 
+            font-size: 1.75rem; 
+            color: #2c3e50; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            margin-bottom: 0; 
+        }
+    </style>
+    <script>
+
+        function SaveTenant() {        
+            let buildingId = $('#BuildingId').val();
+            let tenantTypeId = $('#TenantTypeId').val();
+            let name = $('#Name').val();
+            let tin = $('#Tin').val();
+            let description = $('#Description').val();
+            let contact = $('#Contact').val();
+
+            $.ajax({
+                type: 'POST',
+                 url: '/Administrator/BuildingTenants/AddTenant',
+                data: {
+                    'BuildingId': buildingId,
+                    'TenantTypeId': tenantTypeId,
+                    'Name': name,
+                    'Tin': tin,
+                    'Description': description,
+                    'Contact': contact
+        },
+        success: function (response) {
+            location.reload();
+        },
+        error: function () {
+            alert('Error adding tenant.');
+        }
+    });
+}
+</script>
+}

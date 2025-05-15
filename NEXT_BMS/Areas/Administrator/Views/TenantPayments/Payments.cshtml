@@ -1,0 +1,163 @@
+﻿ @model IEnumerable<NEXT_BMS.Models.Tenant>
+@* @model BM.Models.Building *@
+@using Insya.Localization
+@using Microsoft.Extensions.Options
+
+@{
+    ViewData["Title"] = "Index";
+    var approvedRoomRentalRequests = ViewBag.ApprovedRoomRentalRequests as List<int>;
+    // var tenant = Model.Tenants.FirstOrDefault(x => x.IsActive);
+    // var tenantId = 0;
+   
+    // @if (tenant != null)
+    // {
+    //     tenantId = tenant.Id;
+    //     var s = tenant.BuildingId;
+        // BuildingId = $"{s.Name}/{s.Floor.Name}/{s.Floor.Building.Name}/{s.Floor.Building.City.Name}";
+    }
+
+@if (TempData["Error"] != null)
+{
+    @TempData["Error"]
+}
+
+<div class="modal fade" id="modal_addTenante" tabindex="-1" aria-labelledby="modal_addTenante" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="ShopTenanteLabel">
+                    <i class="icon-plus2 mr-1"></i>
+                    @Html.Raw(Localization.Get("Add Tenantes"))
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @* <div class="form-group">
+                    <input type="hidden" id="ShopId" name="ShopId" value="@Model.Id" /> 
+                </div> *@
+                <div class="form-group">
+                    <label for="BuildingId">@Html.Raw(Localization.Get("buildings"))</label>
+                    <select name="BuildingId" id="BuildingId" class="form-control" asp-items="ViewBag.BuildingId"></select>
+                </div>
+                <div class="form-group">
+                    <label for="TenantTypeId">@Html.Raw(Localization.Get("tenanteTypes"))</label>
+                    <select name="TenantTypeId" id="TenantTypeId" class="form-control" asp-items="ViewBag.TenantTypeId"></select>
+                </div>
+                <div class="form-group">
+                    <label for="Name">@Html.Raw(Localization.Get("Name"))</label>
+                    <input type="text" id="Name" name="Name" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="Tin">@Html.Raw(Localization.Get("Tin"))</label>
+                    <input type="text" id="Tin" name="Tin" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="Description">@Html.Raw(Localization.Get("Description"))</label>
+                    <input type="text" id="Description" name="Description" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="Contact">@Html.Raw(Localization.Get("Contact"))</label>
+                    <input type="text" id="Contact" name="Contact" class="form-control" />
+                </div>
+            </div>
+           
+            <div class="modal-footer">
+                <button class="btn btn-link" data-bs-dismiss="modal">
+                    <i class="icon-cross2 font-size-base mr-1"></i> Close
+                </button>
+                <button class="btn bg-primary" onclick="SaveTenant()">
+                    <i class="icon-checkmark3 font-size-base mr-1"></i> Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+  
+@* @if (approvedRoomRentalRequests != null && approvedRoomRentalRequests.Any())
+{
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_addTenante">
+        + Add Tenant
+    </button> *@
+
+    <div class="card">
+        <div class="header">
+            <h5 class="card-title">Tenants</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        @*  @if (Model?.Tenants != null && Model.Tenants.Any())
+                    { *@
+                        @foreach (var te in Model)
+                        {
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <p>@te.Building?.Name</p>
+                                    <div class="card-body">
+                                        <p>@te.Name</p>
+                                        <p>@te.TenantType?.Name</p>
+                                        <p>@te.Contact</p>
+                                        <p>@te.Description</p>
+                                        <p>@te.Tin</p>
+                                    </div>
+                                    <div class="card-footer">
+                                    <a asp-action="Details" asp-controller="TenantPayments" asp-route-id="@te.Id">
+                                            Go To payment
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        @*  }
+                    else
+                    {
+                    <div class="col-md-12">
+                    <p>No tenants found.</p>
+                    </div>
+                    } *@
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+          
+        </div>
+    </div>
+
+
+
+
+
+@section Scripts {
+    <script>
+
+        function SaveTenant() {        
+            let buildingId = $('#BuildingId').val();
+            let tenantTypeId = $('#TenantTypeId').val();
+            let name = $('#Name').val();
+            let tin = $('#Tin').val();
+            let description = $('#Description').val();
+            let contact = $('#Contact').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/BuildingTenants/AddTenant',
+                data: {
+                    'BuildingId': buildingId,
+                    'TenantTypeId': tenantTypeId,
+                    'Name': name,
+                    'Tin': tin,
+                    'Description': description,
+                    'Contact': contact
+        },
+        success: function (response) {
+            location.reload();
+        },
+        error: function () {
+            alert('Error adding tenant.');
+        }
+    });
+}
+</script>
+}

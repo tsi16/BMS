@@ -1,0 +1,56 @@
+﻿@using Insya.Localization;
+
+
+<div class="mb-3">
+    <h6 class="mb-0 font-weight-semibold">
+        @*   @ViewBag.Title *@
+    </h6>
+    @* <span class="text-muted d-block">@Html.Raw(Localization.Get("general"))</span> *@
+</div>
+
+<link rel="stylesheet" href="~/assets/css/lilo.css" />
+     <partial name="components/_hero" />
+
+<div class="row">
+    <h1 class="home-heading">What Are You Looking For?</h1>
+
+    <a class="m-auto col-11 col-md-6 col-lg-3"
+       asp-action="Index" asp-controller="Shops">
+        <div class="home-link">
+            <img class="home-image" src="~/assets/img/1a2w863s.bmp" alt="Shops" />
+            <h1 class="home-card">Shops</h1>
+        </div>
+    </a>
+
+    <a class="m-auto col-11 col-md-6 col-lg-3">
+        <div class="home-link">
+            <img class="home-image" src="~/assets/img/iib7hmjj.bmp" alt="Rent" />
+            <h1 class="home-card">Rent Shop Or Office</h1>
+        </div>
+    </a>
+
+    <a class="m-auto col-11 col-md-6 col-lg-3"
+       asp-action="Index" asp-controller="BuildingRequests">
+        <div class="home-link">
+            <img class="home-image" src="~/assets/img/lrx9z5v2.bmp" />
+            <h1 class="home-card">To Use Our BMS System</h1>
+        </div>
+    </a>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include Bootstrap JavaScript (you can update the version as needed) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <!-- Include your slideshow script -->
+    <script src="~/content/js/_slidshow.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            const id = 1; // Use a valid administrative ID or fetch dynamically if required
+            const height = 500; // Specify the desired height of the carousel items
+            LoadSlidShow(id, height); // Load the slideshow images
+        });
+        </script>
+  }  
+    

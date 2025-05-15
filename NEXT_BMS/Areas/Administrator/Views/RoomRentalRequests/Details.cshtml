@@ -1,0 +1,81 @@
+﻿@model NEXT_BMS.Models.RoomRentalRequest
+@using Insya.Localization;
+@{
+    ViewData["id"] = Model.Id;
+}
+@await Html.PartialAsync("Controls/_Common")
+ <div class="card p-0">
+
+ <div class="card-header">
+        <h4>RoomRentalRequest</h4>
+ </div>
+ <div class="card-body">
+     <div class="row">
+         <div class=col-md-6>
+        <table class="table table-xs">
+            <tr>
+                <td>
+                  @Html.DisplayNameFor(model => model.Description)
+                </td>
+                <th>
+                   @Html.DisplayFor(model => model.Description)
+                </th>
+            </tr>
+            <tr>
+                <td>
+                            @Html.DisplayNameFor(model => model.RequestedDate)
+                </td>
+                <th>
+                            @Html.DisplayFor(model => model.RequestedDate)
+                </th>
+            </tr>
+            <tr>
+                <td>
+                            @Html.DisplayNameFor(model => model.IsActive)
+                </td>
+                <th>
+                            @Html.DisplayFor(model => model.IsActive)
+                </th>
+            </tr>
+            <tr>
+                <td>
+                     @Html.DisplayNameFor(model => model.IsDeleted)
+                </td>
+                <th>
+                  @*  @Html.DisplayName(model => model.IsDeleted) *@
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.RequestStatus)
+                </td>
+                <th>
+                            @Html.DisplayFor(model => model.RequestStatus.Name)
+                </th>
+            </tr>
+            <tr>
+                <td>
+                            @Html.DisplayNameFor(model => model.Room)
+                </td>
+                <th>
+                            @Html.DisplayFor(model => model.Room.Description)
+                </th>
+            </tr>
+            <tr>
+                <td>
+                            @Html.DisplayNameFor(model => model.User)
+                </td>
+                <th>
+                            @Html.DisplayFor(model => model.User.Email)
+                </th>
+            </tr>
+        </table>
+        </div>
+        </div>
+       
+ </div>
+ <div class="card-footer">
+        <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+        <a asp-action="Index">Back to List</a>
+ </div>
+ </div>

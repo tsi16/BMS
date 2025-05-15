@@ -1,0 +1,264 @@
+﻿@model NEXT_BMS.Models.Tenant
+@using Insya.Localization
+@using Microsoft.Extensions.Options
+
+<div class="container mt-8 py-0">
+    
+    <div class="row">
+        @foreach (var rental in Model.RoomRentals)
+        {
+            <div class="col-12 mb-5" style="background-color: #f9f9f9; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); position: relative;">
+
+                <div class="border-0 p-4" style="padding-top: 1rem;">
+                  
+                   
+
+                    <h5 class="text-secondary" style="font-size: 1.5rem;">@rental.Tenant?.Name</h5>
+                    <ul class="list-unstyled d-flex flex-wrap justify-content-between mb-0" style="line-height: 1.5;">
+                        <li style="color: #555; width: 30%;"><strong>Business Area:</strong> @rental.BusinessArea.Name</li>
+                        <li style="color: #555; width: 30%;"><strong>Room:</strong> @rental.Room?.Name</li>
+                        <li style="color: #555; width: 30%;"><strong>Total Price:</strong> @rental.TotalPrice</li>
+                        <li style="color: #555; width: 30%;"><strong>Status:</strong> @rental.IsActive</li>
+                        <li style="color: #555; width: 30%;"><strong>Start Date:</strong> @rental.StartDate</li>
+                    </ul>
+                </div>
+           
+        
+                <h6 class="text-muted mt-3">Payment Info</h6>
+
+                @if (rental.RoomRentalPayments.Any())
+                {
+                    <table class="table table-hover table-bordered mb-4 w-100" style="background-color: #ffffff;">
+                        <thead class="thead-light">
+                            <tr>
+                                <th style="color: #007bff;">Payment Type</th>
+                                <th style="color: #007bff;">Total Amount</th>
+                                <th style="color: #007bff;">Invoice Number</th>
+                                <th style="color: #007bff;">Paid Date</th>
+                                <th style="color: #007bff;">Payment Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var payment in rental.RoomRentalPayments)
+                            {
+                                <tr>
+                                    <td style="color: #555;">@payment.PaymentType.Name</td>
+                                    <td style="color: #555;">@payment.TotalAmount</td>
+                                    <td style="color: #555;">@payment.InvoiceNumber</td>
+                                    <td style="color: #555;">@payment.PaidDate.ToString("yyyy-MM-dd")</td>
+                                    <td>
+                                       
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+ 
+                                <tr>
+                                    <td colspan="5" class="p-0">
+                                        <h6 class="text-muted">Payment Details:</h6>
+                                        <table class="table table-sm table-bordered mb-0 w-100" style="background-color: #eef;">
+                                            <thead>
+                                                <tr>
+                                                    <th>Month</th>
+                                                    <th>Year</th>
+                                                    <th>Total Amount</th>
+                                                    <th>Accepted By</th>
+                                                    <th>Date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (payment.RoomRentalPaymentDetails != null && payment.RoomRentalPaymentDetails.Any())
+                                                {
+                                                    foreach (var detailPay in payment.RoomRentalPaymentDetails)
+                                                    {
+                                                        <tr>
+                                                            <td style="color: #555;">@detailPay.Month.Name</td>
+                                                            <td style="color: #555;">@detailPay.Year?.Name</td>
+                                                            <td style="color: #555;">@detailPay.TotalAmount</td>
+                                                            <td style="color: #555;">@detailPay.AccceptedBy</td>
+                                                            <td style="color: #555;">@detailPay.Date.ToString("yyyy-MM-dd")</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <tr>
+                                                        <td colspan="5" class="text-center" style="color: #888;">No payment details available.</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p style="color: #888;">No payments recorded for this rental.</p>
+                }
+            </div>
+        }
+    </div>
+</div>
+@section Scripts {
+    <script>
+
+        function setEditpayment(id,InvoiceNumber,TotalAmount,PaymentModeId,PaymentTypeId) {
+               $('#EditRoomRentalId').val(id);
+               $('#EditInvoiceNumber').val(InvoiceNumber);
+               $('#EditTotalAmount').val(TotalAmount);
+               $('#EditPaymentModeId').val(PaymentModeId);
+               $('#EditPaymentTypeId').val(PaymentTypeId);
+
+           };
+
+
+           function SaveEditedPayment() {
+                let roomRentalId = $('#EditRoomRentalId').val();
+               let invoiceNumber = $('#EditInvoiceNumber').val();
+              
+               let TotalAmount = $('#EditTotalAmount').val();
+               let PaymentModeId = $('#EditPaymentModeId').val();
+               let PaymentTypeId = $('#EditPaymentTypeId').val();
+ 
+
+
+               $.ajax({
+                   type: 'POST',
+                   url: '/TenantPayments/EditPayment',
+                   data: {
+                       Id: roomRentalId,
+                       InvoiceNumber: invoiceNumber,
+                       TotalAmount: TotalAmount,
+                       PaymentModeId: PaymentModeId,
+                       PaymentTypeId: PaymentTypeId
+                   },
+                   success: function () {
+                       location.reload();
+                   },
+                   error: function () {
+                       alert('Error editing payment.');
+                   }
+               });
+           }
+
+      
+                function removePayment(id) {
+               alertify.set({ labels: { ok: "Yes Continue", cancel: "No Cancel" } });
+               alertify.confirm("Are you sure you want to delete failure Grade Count?", function (e) {
+                   if (e) {
+                            $.ajax({
+                          type: 'POST',
+                          url: '/TenantPayments/DeletePayments',
+                          data: { Id: id },
+                          success: function () {
+                             alertify.success("success");
+                             location.reload();
+                          },
+                          error: function () {
+                              alert('Error removing payment.');
+                          }
+                      });
+                   }
+               });
+           }
+
+
+
+        function setRoomRentalPaymentDetailId(id) {
+            $('#RoomRentalPaymentId').val(id);
+        }
+
+        function SaveRoomRentalPayment() {
+            let roomRentalPaymentId = $('#RoomRentalPaymentId').val();
+            let monthId = $('#MonthId').val();
+            let yearId = $('#YearId').val();
+            let totalAmountInput = $('#PaymentTotalAmount').val();
+
+            let totalAmount = parseFloat(totalAmountInput);
+
+          
+            if (isNaN(totalAmount)) {
+                alert('Please enter a valid total amount.');
+                return;
+            }
+            alert(totalAmount);
+
+            $.ajax({
+                type: 'POST',
+                url: '/TenantPayments/AddRoomRentalPayment',
+                data: {
+                    'RoomRentalPaymentId': roomRentalPaymentId,
+                    'MonthId': monthId,
+                    'YearId': yearId,
+                    'TotalAmount': totalAmount
+                },
+                success: function (response) {
+                    location.reload();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Error adding room rental payment: ' + errorThrown);
+                }
+            });
+        }
+        function SaveRoomRental() {
+            let tenantId = $('#TenantId').val();
+            let roomId = $('#RoomId').val();
+            let businessAreaId = $('#BusinessAreaId').val();
+            let totalPrice = $('#TotalPrice').val();
+            
+
+            $.ajax({
+                type: 'POST',
+                url: '/BuildingTenants/AddRoomRentals',
+                data: {
+                    'TenantId': tenantId,
+                    'RoomId': roomId,
+                    'BusinessAreaId': businessAreaId,
+                    'TotalPrice': totalPrice
+                    
+                },
+                success: function (response) {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error adding roomrental.');
+                }
+            });
+        }
+
+        function setRoomRentalId(id) {
+            $('#RoomRentalId').val(id);
+        }
+
+        function SavePayment() {
+            let roomRentalId = $('#RoomRentalId').val();
+            let paymentTypeId = $('#PaymentTypeId').val();
+            let paymentModeId = $('#PaymentModeId').val();
+            let totalAmount = $('#TotalAmount').val();
+            let invoiceNumber = $('#InvoiceNumber').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/TenantPayments/AddPayment',
+                data: {
+                    'RoomRentalId': roomRentalId,
+                    'PaymentTypeId': paymentTypeId,
+                    'PaymentModeId': paymentModeId,
+                    'TotalAmount': totalAmount,
+                    'InvoiceNumber': invoiceNumber
+                },
+                success: function (response) {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error adding payment.');
+                }
+            });
+        }
+
+
+    </script>
+}

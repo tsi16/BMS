@@ -1,0 +1,137 @@
+﻿@model NEXT_BMS.Models.Building
+@using Insya.Localization
+
+@{
+    ViewData["Title"] = $"{Model.Name} - Available Rooms";
+}
+
+<div class="container py-5" style="background-color: #f9fafe; border-radius: 1rem;">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-primary">@Model.Name</h1>
+        <p class="text-secondary fs-5">Browse and request beautifully designed rooms</p>
+    </div>
+
+    @foreach (var floor in Model.Floors)
+    {
+        <div class="mb-4">
+            <h3 class="text-dark mb-3">@floor.Name</h3>
+
+            @if (floor.Rooms != null && floor.Rooms.Any())
+            {
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    @foreach (var room in floor.Rooms)
+                    {
+                        <div class="col">
+                            <div class="card room-card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="fw-semibold text-dark">@room.Name</h5>
+                                        <span class="badge bg-success text-white">
+                                            @(room.RoomStatus?.Name ?? "Unknown")
+                                        </span>
+                                    </div>
+                                    <p class="text-muted mb-1"><strong>Size:</strong> @room.Width x @room.Length m</p>
+                                    <p class="text-muted mb-1"><strong>Area:</strong> @(room.Width * room.Length) m²</p>
+
+                                    @if (!string.IsNullOrWhiteSpace(room.Description))
+                                    {
+                                        <p class="mt-2 text-body">@room.Description</p>
+                                    }
+
+                                    @if (room.RoomStatus?.Id == 1)
+                                    {
+                                        <a class="btn btn-primary" asp-action="LogIn" asp-controller="Account">Request to Rent</a>
+                                    
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning">There are no rooms on this floor.</div>
+            }
+        </div>
+    }
+</div>
+
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .building-title {
+        background: linear-gradient(90deg, #6c63ff, #a084dc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .floor-card {
+        border-radius: 1rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .floor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+    .card-body {
+        padding: 1.75rem;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        border-radius: 0.5rem;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+    .list-group-item {
+        border: none;
+        font-size: 0.95rem;
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .modal-content {
+        border-radius: 1rem;
+        background-color: #ffffff;
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #e1e1e1;
+    }
+
+    #room-list .card {
+        border-radius: 1rem;
+        background-color: #fff;
+    }
+
+    /* Green Badge for Available Rooms */
+    .badge.bg-success {
+        background-color: #28a745; /* Green */
+    }
+
+    /* Green Button for Requesting Available Room */
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+        border-radius: 0.5rem;
+    }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+</style>

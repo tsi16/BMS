@@ -1,0 +1,104 @@
+﻿@model IEnumerable<NEXT_BMS.Models.RoomRentalRequest>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="card">
+
+    <div class="card-header bg-light header-elements-inline py-2">
+        <h4 class="card-title">
+            List Of RoomRentalRequestss
+        </h4>
+
+        <div class="header-elements">
+            <a asp-action="Create" class="btn btn-success btn-sm">
+                <i class="icon-plus22"> </i> Create New
+            </a>
+        </div>
+    </div>
+    <div class="card-body p-0">
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Room)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.RequestedDate)
+                    </th>
+                   
+                   
+                    <th>
+                        @Html.DisplayNameFor(model => model.RequestStatus)
+                    </th>
+                   
+                    <th>
+                        @Html.DisplayNameFor(model => model.User)
+                    </th>
+                   
+                    <th>
+                        @Html.DisplayNameFor(model => model.IsActive)
+                    </th>
+                    <th class="p-0 nosort text-center" style="width: 30px;"><i class="icon-menu-open2"></i></th>
+
+                    
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <a href="RoomRentalRequests/Details/@item.Id" class="text-info-800"> @Html.DisplayFor(modelItem => item.Room.Name) </a>
+                           </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RequestedDate)
+                        </td>
+                       
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RequestStatus.Name)
+                        </td>
+                       
+                        <td>
+                            @Html.DisplayFor(modelItem => item.User.FirstName)
+                        </td>
+                       
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IsActive)
+                        </td>
+                            <td>
+                                    <div class="list-icons">
+                                     <div class="list-icons-item dropdown">
+                                         <a href="#" class="list-icons-item dropdown-toggle caret-0" data-toggle="dropdown"><i class="icon-menu9"></i></a>
+                                         <div class="dropdown-menu dropdown-menu-right">
+                                        <a href="RoomRentalRequests/Details/@item.Id" class="dropdown-item"><i class="icon-list3"></i>view </a>
+                                  
+                                        <div class="dropdown-divider"></div>
+                                        <a href="RoomRentalRequests/Edit/@item.Id" class="dropdown-item"><i class="icon-pencil7"></i> edit </a>
+                                        <a href="RoomRentalRequests/Delete/@item.Id" class="dropdown-item"><i class="icon-cross2"></i> delete </a>
+                                         </div>
+                                     </div>
+                                 </div>
+
+                            </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+       </div>
+    <div class="card-footer">
+    </div>
+</div>
+
+
+
+
+
+
+@* <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/css/bootstrap.min.css" rel="stylesheet">
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
+ *@

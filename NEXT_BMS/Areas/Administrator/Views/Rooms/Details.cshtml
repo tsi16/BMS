@@ -1,0 +1,347 @@
+﻿@model NEXT_BMS.Models.Room
+@using Insya.Localization  
+@using Microsoft.Extensions.Options
+@await Html.PartialAsync("Controls/_Common")
+@{
+    ViewData["Title"] = "Details";
+}
+@{
+    int propertyCount = 1;
+}
+ <div class="card">
+        <div class="card-header bg-light header-elements-inline py-2">
+            <h4 class="card-title">
+                Room Details
+            </h4>
+
+            <div class="header-elements">
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal_addRoomProperty">
+                Add room Property
+            </button>
+           @*  <button type="button" class="btn btn-primary position-relative">
+                Tot
+                @if (Model.RoomProperties.Where(x => !x.IsDeleted).Any())
+                {
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">@Model.RoomProperties.Count(x => !x.IsDeleted)</span>
+                }
+            </button> *@
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+                <a class="list-icons-item" data-action="reload"></a>
+                <a class="list-icons-item" data-action="remove"></a>
+            </div>
+
+        </div>
+        </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table table-xs">
+                    <tr>
+                        <td>
+                            @Html.DisplayNameFor(model => model.Name)
+                        </td>
+                        <th>
+                            @Html.DisplayFor(model => model.Name)
+                        </th>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            @Html.DisplayNameFor(model => model.SizeInm2)
+                        </td>
+                        <th>
+                            @Html.DisplayFor(model => model.SizeInm2)
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DisplayNameFor(model => model.Width)
+                        </td>
+                        <th>
+                            @Html.DisplayFor(model => model.Width)
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DisplayNameFor(model => model.Length)
+                        </td>
+                        <th>
+                            @Html.DisplayFor(model => model.Length)
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DisplayNameFor(model => model.Description)
+                        </td>
+                        <th>
+                            @Html.DisplayFor(model => model.Description)
+                        </th>
+                    </tr>
+             
+                </table>
+            </div>
+           
+
+            <div class="col-md-6">
+                <table class="table table-xs">
+                  
+                    <tr>
+                        <td>
+                            @Html.DisplayNameFor(model => model.IsActive)
+                        </td>
+                        <th>
+                            @Html.DisplayFor(model => model.IsActive)
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DisplayNameFor(model => model.IsDeleted)
+                        </td>
+                        <th>
+                            @Html.DisplayFor(model => model.IsDeleted)
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DisplayNameFor(model => model.Floor)
+                        </td>
+                        <th>
+                            @Html.DisplayFor(model => model.Floor.Name)
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DisplayNameFor(model => model.RoomStatus)
+                        </td>
+                        <th>
+                            @Html.DisplayFor(model => model.RoomStatus.Name)
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DisplayNameFor(model => model.User)
+                        </td>
+                        <th>
+                            @Html.DisplayFor(model => model.User.Email)
+                        </th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        </div>
+    
+        <div class="card-body">
+            <table class="table table-hover table-sm">
+                <thead>
+                    <tr>
+                        <th style="width: 35px">No</th>
+                        <th>Property Type</th>
+                        <th>Property Value</th>
+                        <th class="p-0 nosort text-center" style="width: 30px;">
+                            <i class="icon-menu-open2"></i>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var property in Model.RoomProperties.Where(x => !x.IsDeleted))
+                    {
+                        <tr>
+                            <td>@propertyCount</td>
+                            <td>@property.RoomPropertyType.Name</td>
+                            <td>@property.Value</td>
+
+                           @*  <td class="text-center">
+
+                                <div class="dropdown">
+                                    <a href="#" class=" dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                        Actions
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-dark">
+                                        <li><a data-toggle="modal" data-target="#modal_editRoomProperty" onclick="SetRoomProperty('@property.Id' ,'@property.Value')" class="dropdown-item ">Edit</a></li>
+                                        <li><a onclick="removeRoomProperty('@property.Id')" class="dropdown-item">remove</a></li>
+
+                                    </ul>
+                                </div> *@
+
+                                @*  <a href="#" class="text-info" onclick="removeRoomProperty('@property.Id')">
+                            remove
+                        </a> *@
+                               @*  <div class="list-icons">
+                                </div>
+                            </td> *@
+
+                        <td class="text-right">
+                            <div class="list-icons">
+                                <div class="list-icons-item dropdown">
+                                    <a href="#" class="list-icons-item dropdown-toggle caret-0" data-toggle="dropdown"><i class="icon-menu9"></i></a>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a data-toggle="modal" data-target="#modal_editRoomProperty" onclick="SetRoomProperty('@property.Id' ,'@property.Value')" class="dropdown-item ">Edit</a>
+                                        <a onclick="removeRoomProperty('@property.Id')" class="dropdown-item">remove</a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        </tr>
+                        propertyCount++;
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    <div class="card-footer">
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+            <a asp-action="Index">Back to List</a>
+        </div>
+    </div>
+</div>
+
+   
+
+
+
+
+
+<div class="modal fade" id="modal_addRoomProperty" tabindex="-1" aria-labelledby="modal_addRoomProperty" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="RoomPropertyLable">
+                    <i class="icon-plus2 mr-1"></i>
+                    @Html.Raw(Localization.Get("Add Room Property"))
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="RoomPropertyTypeId">@Html.Raw(Localization.Get("Property Type"))</label>
+                    <select class="form-control" name="PropertyTypeId" id="RoomPropertyTypeId">
+                        @foreach (var type in (SelectList)ViewBag.RoomPropertyTypeId)
+                        {
+                            <option value="@type.Value">@type.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="PropertyValue">@Html.Raw(Localization.Get("Property Value"))</label>
+                    <input type="text" class="form-control" name="value" id="PropertyValue" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link" data-dismiss="modal">
+                    <i class="icon-cross2 font-size-base mr-1"></i> Close
+                </button>
+                <button class="btn bg-primary" onclick="SaveRoomProperty()">
+                    <i class="icon-checkmark3 font-size-base mr-1"></i> Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modal_editRoomProperty" tabindex="-1" aria-labelledby="modal_editRoomProperty" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="RoomPropertyLabel">
+                    <i class="icon-pencil mr-1"></i>
+                    @Html.Raw(Localization.Get("Edit Room Property"))
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <input type="hidden" id="EditRoomPropertyId" />
+                <div class="form-group">
+                    <label for="EditPropertyValue">@Html.Raw(Localization.Get("Property Value"))</label>
+                    <input type="text" class="form-control" name="value" id="EditPropertyValue" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link" data-dismiss="modal">
+                    <i class="icon-cross2 font-size-base mr-1"></i> Close
+                </button>
+                <button class="btn bg-primary" onclick="SaveEditedRoomProperty()">
+                    <i class="icon-checkmark3 font-size-base mr-1"></i> Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    @section Scripts {
+        <script>
+
+            function SaveRoomProperty() {
+                let propertyTypeId = $('#RoomPropertyTypeId').val();
+                let propertyValue = $('#PropertyValue').val();
+
+                $.ajax({
+                    type: 'POST',
+                url: '/Administrator/Rooms/Add',
+                    data: {
+                          'PropertyTypeId' : propertyTypeId,
+                           'Value': propertyValue,
+                                   'roomId': @Model.Id
+                    },
+                    success: function (response) {
+
+                        location.reload();
+                    },
+                    error: function () {
+                        alert('Error adding property.');
+                    }
+                });
+            }
+
+            function SetRoomProperty(id, value) {
+                $('#EditRoomPropertyId').val(id);
+                $('#EditPropertyValue').val(value);
+            }
+
+            function SaveEditedRoomProperty() {
+                let id = $('#EditRoomPropertyId').val();
+                let value = $('#EditPropertyValue').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/Administrator/Rooms/EditRoomProperty',
+                    data: {
+                        Id: id,
+                        Value: value
+                    },
+                    success: function () {
+                        location.reload();
+                    },
+                    error: function () {
+                        alert('Error editing property.');
+                    }
+                });
+            }
+
+            function removeRoomProperty(id) {
+                if (confirm('Are you sure you want to remove this property?')) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Administrator/Rooms/DeleteRoomProperty',
+                        data: { Id: id },
+                        success: function () {
+                            location.reload();
+                        },
+                        error: function () {
+                            alert('Error removing property.');
+                        }
+                    });
+                }
+            }
+        </script>
+
+    }
+
+ 
