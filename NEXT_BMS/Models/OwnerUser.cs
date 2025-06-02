@@ -19,6 +19,9 @@ public partial class OwnerUser
 
     public bool IsDeleted { get; set; }
 
+    [InverseProperty("OwnerUser")]
+    public virtual ICollection<BuildingRequest> BuildingRequests { get; set; } = new List<BuildingRequest>();
+
     [ForeignKey("OwnerId")]
     [InverseProperty("OwnerUsers")]
     public virtual Owner Owner { get; set; }

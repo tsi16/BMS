@@ -13,6 +13,8 @@ public partial class BuildingRequest
 
     public int UserId { get; set; }
 
+    public int? OwnerUserId { get; set; }
+
     [Required]
     [StringLength(200)]
     public string Description { get; set; }
@@ -41,6 +43,10 @@ public partial class BuildingRequest
     [ForeignKey("LocationId")]
     [InverseProperty("BuildingRequests")]
     public virtual Location Location { get; set; }
+
+    [ForeignKey("OwnerUserId")]
+    [InverseProperty("BuildingRequests")]
+    public virtual OwnerUser OwnerUser { get; set; }
 
     [ForeignKey("RequestStatusId")]
     [InverseProperty("BuildingRequests")]

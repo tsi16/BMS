@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ClosedXML.Excel;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 using System.Data;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NEXT_BMS.Models;
 
 namespace NEXT_BMS.Areas.Administrator.Controllers

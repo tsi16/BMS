@@ -1,6 +1,6 @@
 ﻿@using Insya.Localization;
 @model NEXT_BMS.Models.BuildingEmployee
-<form asp-action="Create">
+<form asp-action="Create" method="post">
     @await Html.PartialAsync("Controls/_Common")
     <div class="card">
         <div class="card-header bg-light header-elements-inline py-2">
@@ -16,47 +16,91 @@
             </div>
         </div>
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <div class="mb-3">
-                        <label asp-for="FullName" class="form-label"></label>
-                        <input asp-for="FullName" class="form-control" autocomplete="off" />
-                        <span asp-validation-for="FullName" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="PhoneNumber" class="form-label"></label>
-                        <input asp-for="PhoneNumber" class="form-control" autocomplete="off" />
-                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="BuildingId" class="form-label"></label>
-                        <select asp-for="BuildingId" class="form-control select-search" asp-items="ViewBag.BuildingId"><option value="">---Select---</option></select>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="UserId" class="form-label"></label>
-                        <select asp-for="UserId" class="form-control select-search" asp-items="ViewBag.UserId"><option value="">---Select---</option></select>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="EmployeeTypeId" class="form-label"></label>
-                        <select asp-for="EmployeeTypeId" class="form-control select-search" asp-items="ViewBag.EmployeeTypeId"><option value="">---Select---</option></select>
-                    </div>
-                    <div class="mb-3 form-check">
-                        <label class="form-check-label">
-                            <input class="form-check-input" asp-for="IsDeleted" /> @Html.DisplayNameFor(model => model.IsDeleted)
-                        </label>
-                    </div>
-                    <input type="hidden" asp-for="IsActive" value="True" />
-                </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="PhoneNumber" class="form-label"></label>
+                <input asp-for="PhoneNumber" id="PhoneNumber" class="form-control" autocomplete="off" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label"></label>
+                <input asp-for="FullName" id="FullName" class="form-control" autocomplete="off" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+            <input type="hidden" asp-for="UserId" id="UserId" />
+
+            <div class="mb-3">
+                <label asp-for="BuildingId" class="form-label"></label>
+                <select asp-for="BuildingId" class="form-control select-search" asp-items="ViewBag.BuildingId">
+                    <option value="">---Select---</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label asp-for="EmployeeTypeId" class="form-label"></label>
+                <select asp-for="EmployeeTypeId" class="form-control select-search" asp-items="ViewBag.EmployeeTypeId">
+                    <option value="">---Select---</option>
+                </select>
+            </div>
+            <div class="mb-3 form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsDeleted" /> @Html.DisplayNameFor(model => model.IsDeleted)
+                </label>
+            </div>
+            <input type="hidden" asp-for="IsActive" value="True" />
         </div>
-        <div class="card-footer"></div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary">Create</button>
+        </div>
     </div>
 </form>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("js/_select2");}
-    @{await Html.RenderPartialAsync("js/_ValidationScriptsPartial");}
-    <script type="text/javascript">
+    @{
+        await Html.RenderPartialAsync("js/_select2");
+    }
+    @{
+        await Html.RenderPartialAsync("js/_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $("#PhoneNumber").on("blur", function () {
+                var phone = $(this).val();
+                if (phone.length > 0) {
+                    $.ajax({
+                        url: '@Url.Action("GetUserByPhone", "BuildingEmployees")',
+                        type: 'GET',
+                        data: { phoneNumber: phone },
+                               success: function (data) {
+            if (data.exists) {
+                if (data.alreadyEmployee) {
+                    alert("This user is already registered as a building employee.");
+                    $("#PhoneNumber").val('');
+                    $("#FullName").val('');
+                    $("#UserId").val('');
+                    $("#FullName").prop("readonly", false);
+                } else {
+                    $("#FullName").val(data.fullName);
+                    $("#UserId").val(data.userId);
+                    $("#FullName").prop("readonly", true);
+                }
+            } else {
+                $("#FullName").val('');
+                $("#UserId").val('');
+                $("#FullName").prop("readonly", false);
+            }
+        },
+                        error: function () {
+                            $("#FullName").val('');
+                            $("#UserId").val('');
+                            $("#FullName").prop("readonly", false);
+                        }
+                    });
+                } else {
+                    $("#FullName").val('');
+                    $("#UserId").val('');
+                    $("#FullName").prop("readonly", false);
+                }
+            });
+        });
     </script>
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NEXT_BMS.Models;
@@ -18,8 +14,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
         {
             _context = context;
         }
-
-       
         public async Task<IActionResult> Index()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
@@ -61,7 +55,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View(buildingRequest);
         }
 
-      
         public IActionResult Create()
         {
             ViewData["BuildingTypeId"] = new SelectList(_context.BuildingTypes, "Id", "Name");
@@ -70,7 +63,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View();
         }
 
-      
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UserId,Description,Amount,LocationId,BuildingTypeId,RequestStatusId,RequestedDate,IsActive,IsDeleted")] BuildingRequest buildingRequest)
@@ -209,96 +201,7 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
         {
             return _context.BuildingRequests.Any(e => e.Id == id);
         }
-        public async Task<IActionResult> AdminReq()
-        {
-
-            int? userId = HttpContext.Session.GetInt32("UserId");
-
-
-            if (userId == null)
-            {
-                TempData["ErrorMessage"] = "You must be logged in to access this page.";
-                return RedirectToAction("Login", "Account");
-            }
-
-
-            var user = await _context.Users
-                 .Include(x => x.BuildingRequests).ThenInclude(x => x.RequestStatus)
-                   .Include(x => x.BuildingRequests).ThenInclude(x => x.BuildingType)
-                   
-                   .Include(x => x.UserRoles)
-                .Include(x => x.UserRoles)
-                .FirstOrDefaultAsync(x => x.Id == userId);
-
-            if (user != null && user.UserRoles.Any(x => x.RoleId == 1))
-            {
-                var buildingRequests = await _context.BuildingRequests
-                                               
-                                                .Include(b => b.BuildingType)
-                                                .Include(b => b.Location)
-                                                .Include(b => b.RequestStatus)
-                                                .Include(b => b.User)
-                                                .ToListAsync();
-
-                return View(buildingRequests);
-            }
-
-            else
-            {
-                TempData["ErrorMessage"] = "You don't have sufficient privileges to access this page.";
-                return RedirectToAction("Login", "Account");
-            }
-
-
-
-
-
-
-        }
-       
-
-
-        public IActionResult AdminReqD( int? id)
-        {
-
-            int? userId = HttpContext.Session.GetInt32("UserId");
-
-
-            if (userId == null)
-            {
-                TempData["ErrorMessage"] = "You must be logged in to access this page.";
-                return RedirectToAction("Login", "Account");
-            }
-
-
-            var user = _context.Users
-                .Include(x => x.UserRoles)
-                .FirstOrDefault(x => x.Id == userId);
-
-            if (user != null && user.UserRoles.Any(x => x.RoleId == 1))
-            {
-                var buildingRequest = _context.BuildingRequests
-               .Include(b => b.BuildingType)
-               .Include(b => b.Location)
-               .Include(b => b.RequestStatus)
-               .Include(b => b.User)
-               .FirstOrDefault(m => m.Id == id);
-                if (buildingRequest == null)
-                {
-                    return NotFound();
-                }
-
-                return View(buildingRequest);
-            }
-
-            else
-            {
-                TempData["ErrorMessage"] = "You don't have sufficient privileges to access this page.";
-                return RedirectToAction("Login", "Account");
-            }
-
-        }
-        
+      
         [HttpPost]
         public async Task<IActionResult> UpdateRequestStatus(int id, int status)
         {

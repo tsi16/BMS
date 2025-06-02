@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DocumentFormat.OpenXml.Wordprocessing;
 
-namespace NEXT_BMS/*.Areas.Administrator*/.Controllers
+namespace NEXT_BMS.Controllers
 {
    public class BuildingListController : Controller
     {
@@ -118,14 +118,6 @@ namespace NEXT_BMS/*.Areas.Administrator*/.Controllers
             return Json(locations);
         }
 
-
-
-        //var cityIds = await _context.Buildings
-        //    .Where(b => b.LocationId == locationId)
-        //    .Select(b => b.CityId)
-        //    .Distinct()
-        //    .ToListAsync();
-
   public async Task<IActionResult> Details(
      int? id,
      int? floorId,
@@ -149,7 +141,6 @@ namespace NEXT_BMS/*.Areas.Administrator*/.Controllers
                 return NotFound();
             }
 
-            // Filter floors if a specific one is selected
             if (floorId.HasValue)
             {
                 var selectedFloor = building.Floors.FirstOrDefault(f => f.Id == floorId.Value);
@@ -159,7 +150,6 @@ namespace NEXT_BMS/*.Areas.Administrator*/.Controllers
                 }
             }
 
-            // Preserve filter state for return link
             ViewBag.CityId = cityId;
             ViewBag.LocationId = locationId;
             ViewBag.UseTypeId = useTypeId;
@@ -167,7 +157,6 @@ namespace NEXT_BMS/*.Areas.Administrator*/.Controllers
 
             return View(building);
         }
-
 
         [HttpGet]
         public async Task<IActionResult> GetRooms(int floorId)
@@ -198,7 +187,7 @@ namespace NEXT_BMS/*.Areas.Administrator*/.Controllers
 
             return Json(rooms);
         }
-        public IActionResult RoomList(int id) // floorId
+        public IActionResult RoomList(int id) 
         {
             var building = _context.Buildings
                 .Include(b => b.Floors)
@@ -211,12 +200,11 @@ namespace NEXT_BMS/*.Areas.Administrator*/.Controllers
                 return NotFound();
             }
 
-            // Filter to just the selected floor
             building.Floors = building.Floors
                 .Where(f => f.Id == id)
                 .ToList();
 
-            return View(building); // This works with your existing view
+            return View(building);
         }
 
 

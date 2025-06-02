@@ -1,46 +1,102 @@
-﻿@model IEnumerable<NEXT_BMS.Models.MaintenanceRequest>
+﻿@model IEnumerable<NEXT_BMS.Models.MaintenanceRequestAllocation>
 @using Insya.Localization
-@using Microsoft.Extensions.Options
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
 <div class="card">
     <div class="card-header bg-light header-elements-inline py-2">
-        <h4 class="card-title">
-            My Allocations
-        </h4>
-
-        <div class="header-elements">
-         
-        </div>
+        <h4 class="card-title">My Allocations</h4>
     </div>
-     <div class="table-responsive">
+    <div class="table-responsive">
         <table class="table table-sm table-hover">
-                <thead>
+            <thead>
+                <tr>
+                    <th>Request ID</th>
+                    <th>Status</th>
+                    <th>Type</th>
+                    <th>Room</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var allocation in Model)
+                {
+                    var request = allocation.MaintenanceRequest;
                     <tr>
-                        <th>Request ID</th>
-                        <th>Status</th>
-                        <th>Type</th>
-                        <th>Room</th>
-                        <th>User</th>
-                        <th>Action</th>
+                        <td>@request.Id</td>
+                        <td>@allocation.AllocationStatus?.Name</td>
+                        <td>@request.MaintenanceType?.Name</td>
+                        <td>@request.Room?.Name</td>
+                        <td>@request.User?.FirstName</td>
+                        <td>
+                            <a asp-action="Details" asp-controller="MaintenanceRequests" asp-route-id="@request.Id"
+                               class="btn btn-outline-info btn-sm">View Details</a>
+                        </td>
+                        <td>
+                            <button type="button"
+                                    class="btn btn-success btn-sm"
+                                    data-toggle="modal"
+                                    data-target="#remarkModal"
+                                    data-id="@allocation.Id"
+                                    data-request-id="@request.Id"
+                                    onclick="setMaintenanceRequestAllocationId('@allocation.Id')">
+                                + Confirm & Remark
+                            </button>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                @foreach (var request in Model)
-                    {
-                        <tr>
-                            <td>@request.Id</td>
-                            <td>@request.MaintenanceStatus.Name</td>
-                            <td>@request.MaintenanceType.Name</td>
-                            <td>@request.Room.Name</td>
-                            <td>@request.User.FirstName</td>
-                            <td>
-                                <a asp-action="Details" asp-route-id="@request.Id" class="btn btn-outline-info btn-sm">View Details</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
-@section Scripts{
- 
+
+
+<div class="modal fade" id="remarkModal" tabindex="-1" aria-labelledby="remarkModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" asp-action="SubmitRemark" asp-controller="MaintenanceRequests">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="icon-pencil me-2"></i>@Html.Raw(Localization.Get("Submit Remark"))
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="maintenanceRequestAllocationId" name="MaintenanceRequestAllocationId" />
+                 
+                    <div class="form-group">
+                        <label for="remark">@Html.Raw(Localization.Get("Remark"))</label>
+                        <textarea class="form-control" id="remark" name="Remark" rows="3" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-custom w-100 mt-3">
+                        <i class="icon-checkmark3 me-2"></i>@Html.Raw(Localization.Get("Submit"))
+                    </button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-bs-dismiss="modal">
+                        <i class="icon-cross2 me-2"></i>@Html.Raw(Localization.Get("Cancel"))
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function setMaintenanceRequestAllocationId(allocationId) {
+            document.getElementById('maintenanceRequestAllocationId').value = allocationId;
+          
+        }
+    </script>
 }

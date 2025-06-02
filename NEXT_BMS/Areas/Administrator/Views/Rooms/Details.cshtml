@@ -1,7 +1,7 @@
 ﻿@model NEXT_BMS.Models.Room
 @using Insya.Localization  
 @using Microsoft.Extensions.Options
-@await Html.PartialAsync("Controls/_Common")
+
 @{
     ViewData["Title"] = "Details";
 }
@@ -15,9 +15,7 @@
             </h4>
 
             <div class="header-elements">
-            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal_addRoomProperty">
-                Add room Property
-            </button>
+            
            @*  <button type="button" class="btn btn-primary position-relative">
                 Tot
                 @if (Model.RoomProperties.Where(x => !x.IsDeleted).Any())
@@ -25,12 +23,6 @@
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">@Model.RoomProperties.Count(x => !x.IsDeleted)</span>
                 }
             </button> *@
-            <div class="list-icons">
-                <a class="list-icons-item" data-action="collapse"></a>
-                <a class="list-icons-item" data-action="reload"></a>
-                <a class="list-icons-item" data-action="remove"></a>
-            </div>
-
         </div>
         </div>
 
@@ -39,100 +31,66 @@
             <div class="col-md-6">
                 <table class="table table-xs">
                     <tr>
-                        <td>
-                            @Html.DisplayNameFor(model => model.Name)
-                        </td>
-                        <th>
-                            @Html.DisplayFor(model => model.Name)
-                        </th>
-                    </tr>
-
-                    <tr>
-                        <td>
-                            @Html.DisplayNameFor(model => model.SizeInm2)
-                        </td>
-                        <th>
-                            @Html.DisplayFor(model => model.SizeInm2)
-                        </th>
+                        <td>@Html.DisplayNameFor(model => model.Name)</td>
+                        <th>@Html.DisplayFor(model => model.Name)</th>
                     </tr>
                     <tr>
-                        <td>
-                            @Html.DisplayNameFor(model => model.Width)
-                        </td>
-                        <th>
-                            @Html.DisplayFor(model => model.Width)
-                        </th>
+                        <td>@Html.DisplayNameFor(model => model.SizeInm2)</td>
+                        <th>@Html.DisplayFor(model => model.SizeInm2)</th>
                     </tr>
                     <tr>
-                        <td>
-                            @Html.DisplayNameFor(model => model.Length)
-                        </td>
-                        <th>
-                            @Html.DisplayFor(model => model.Length)
-                        </th>
+                        <td>@Html.DisplayNameFor(model => model.Width)</td>
+                        <th>@Html.DisplayFor(model => model.Width)</th>
                     </tr>
                     <tr>
-                        <td>
-                            @Html.DisplayNameFor(model => model.Description)
-                        </td>
-                        <th>
-                            @Html.DisplayFor(model => model.Description)
-                        </th>
+                        <td>@Html.DisplayNameFor(model => model.Length)</td>
+                        <th>@Html.DisplayFor(model => model.Length)</th>
                     </tr>
-             
+                    <tr>
+                        <td>@Html.DisplayNameFor(model => model.Description)</td>
+                        <th>@Html.DisplayFor(model => model.Description)</th>
+                    </tr>
                 </table>
             </div>
-           
 
             <div class="col-md-6">
                 <table class="table table-xs">
-                  
                     <tr>
-                        <td>
-                            @Html.DisplayNameFor(model => model.IsActive)
-                        </td>
-                        <th>
-                            @Html.DisplayFor(model => model.IsActive)
-                        </th>
+                        <td>@Html.DisplayNameFor(model => model.IsActive)</td>
+                        <th>@Html.DisplayFor(model => model.IsActive)</th>
                     </tr>
                     <tr>
-                        <td>
-                            @Html.DisplayNameFor(model => model.IsDeleted)
-                        </td>
-                        <th>
-                            @Html.DisplayFor(model => model.IsDeleted)
-                        </th>
+                        <td>@Html.DisplayNameFor(model => model.IsDeleted)</td>
+                        <th>@Html.DisplayFor(model => model.IsDeleted)</th>
                     </tr>
                     <tr>
-                        <td>
-                            @Html.DisplayNameFor(model => model.Floor)
-                        </td>
-                        <th>
-                            @Html.DisplayFor(model => model.Floor.Name)
-                        </th>
+                        <td>@Html.DisplayNameFor(model => model.Floor)</td>
+                        <th>@Html.DisplayFor(model => model.Floor.Name)</th>
                     </tr>
                     <tr>
-                        <td>
-                            @Html.DisplayNameFor(model => model.RoomStatus)
-                        </td>
-                        <th>
-                            @Html.DisplayFor(model => model.RoomStatus.Name)
-                        </th>
+                        <td>@Html.DisplayNameFor(model => model.RoomStatus)</td>
+                        <th>@Html.DisplayFor(model => model.RoomStatus.Name)</th>
                     </tr>
                     <tr>
-                        <td>
-                            @Html.DisplayNameFor(model => model.User)
+                        <td>@Html.DisplayNameFor(model => model.User)</td>
+                        <th>@Html.DisplayFor(model => model.User.Email)</th>
+                    </tr>
+                    <!-- Button Row -->
+                    <tr>
+                        <td colspan="2" class="text-right pb-2">
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal_addRoomProperty">
+                                Add Room Property
+                            </button>
+                            
                         </td>
-                        <th>
-                            @Html.DisplayFor(model => model.User.Email)
-                        </th>
                     </tr>
                 </table>
             </div>
         </div>
-        </div>
-    
-        <div class="card-body">
+    </div>
+
+
+     <div class="card-body">
             <table class="table table-hover table-sm">
                 <thead>
                     <tr>
@@ -142,6 +100,7 @@
                         <th class="p-0 nosort text-center" style="width: 30px;">
                             <i class="icon-menu-open2"></i>
                         </th>
+                        
                     </tr>
                 </thead>
                 <tbody>
@@ -151,26 +110,7 @@
                             <td>@propertyCount</td>
                             <td>@property.RoomPropertyType.Name</td>
                             <td>@property.Value</td>
-
-                           @*  <td class="text-center">
-
-                                <div class="dropdown">
-                                    <a href="#" class=" dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                        Actions
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-dark">
-                                        <li><a data-toggle="modal" data-target="#modal_editRoomProperty" onclick="SetRoomProperty('@property.Id' ,'@property.Value')" class="dropdown-item ">Edit</a></li>
-                                        <li><a onclick="removeRoomProperty('@property.Id')" class="dropdown-item">remove</a></li>
-
-                                    </ul>
-                                </div> *@
-
-                                @*  <a href="#" class="text-info" onclick="removeRoomProperty('@property.Id')">
-                            remove
-                        </a> *@
-                               @*  <div class="list-icons">
-                                </div>
-                            </td> *@
+                           
 
                         <td class="text-right">
                             <div class="list-icons">
@@ -199,11 +139,6 @@
         </div>
     </div>
 </div>
-
-   
-
-
-
 
 
 <div class="modal fade" id="modal_addRoomProperty" tabindex="-1" aria-labelledby="modal_addRoomProperty" aria-hidden="true">

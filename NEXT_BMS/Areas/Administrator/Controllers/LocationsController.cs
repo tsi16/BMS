@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ClosedXML.Excel;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 using System.Data;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NEXT_BMS.Models;
 
 namespace NEXT_BMS.Areas.Administrator.Controllers
@@ -37,10 +30,7 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int recordsTotal = 0;
                 var returnData = (from manudata in _context.Locations.Where(x=>x.IsDeleted==false) select manudata);
-                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
-                {
-                    returnData = returnData.OrderBy(sortColumn + " " + sortColumnDirection);
-                }
+               
                 if (!string.IsNullOrEmpty(searchValue))
                 {
                     returnData = returnData.Where(m => m.Name.Contains(searchValue));
@@ -63,12 +53,7 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
         {
             return View();
         }
-        //public async Task<IActionResult> Index()
-        //{
-            //var nEXT_BMSContext = _context.Locations.Include(l => l.City);
-            //return View(await nEXT_BMSContext.ToListAsync());
-        //}
-
+       
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Locations == null)

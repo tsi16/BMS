@@ -17,12 +17,19 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
         }
 
         public async Task<IActionResult> Index()
+
         {
-            var NEXT_BMSContext = _context.RoomRentalRequests.Include(r => r.RequestStatus).Include(r => r.Room).Include(r => r.User);
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            var NEXT_BMSContext = _context.RoomRentalRequests.Include(r => r.RequestStatus).Include(r => r.Room).Include(r => r.User)
+                .Where(x=>x.UserId==userId);
             return View(await NEXT_BMSContext.ToListAsync());
         }
 
-       
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -43,7 +50,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View(roomRentalRequest);
         }
 
-        
         public IActionResult Create()
         {
             ViewData["RequestStatusId"] = new SelectList(_context.RoomRequestStatuses, "Id", "Name");
@@ -52,7 +58,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View();
         }
 
-       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UserId,Description,RoomId,RequestStatusId,RequestedDate,IsActive,IsDeleted")] RoomRentalRequest roomRentalRequest)
@@ -69,7 +74,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View(roomRentalRequest);
         }
 
-       
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -88,7 +92,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View(roomRentalRequest);
         }
 
-       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,Description,RoomId,RequestStatusId,RequestedDate,IsActive,IsDeleted")] RoomRentalRequest roomRentalRequest)
@@ -124,7 +127,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View(roomRentalRequest);
         }
 
-       
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -253,5 +255,7 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             TempData["SuccessMessage"] = "Request status updated successfully.";
             return Redirect(Request.GetTypedHeaders().Referer.ToString());
         }
+   
+    
     }
 }

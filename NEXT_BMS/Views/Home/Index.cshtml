@@ -3,9 +3,9 @@
 
 <div class="mb-3">
     <h6 class="mb-0 font-weight-semibold">
-        @*   @ViewBag.Title *@
+       
     </h6>
-    @* <span class="text-muted d-block">@Html.Raw(Localization.Get("general"))</span> *@
+   
 </div>
 
 <link rel="stylesheet" href="~/assets/css/lilo.css" />
@@ -40,16 +40,16 @@
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Include Bootstrap JavaScript (you can update the version as needed) -->
+   
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <!-- Include your slideshow script -->
+   
     <script src="~/content/js/_slidshow.js"></script>
 
     <script>
         $(document).ready(function () {
-            const id = 1; // Use a valid administrative ID or fetch dynamically if required
-            const height = 500; // Specify the desired height of the carousel items
-            LoadSlidShow(id, height); // Load the slideshow images
+            const id = 1; 
+            const height = 500;
+            LoadSlidShow(id, height); 
         });
         </script>
   }  

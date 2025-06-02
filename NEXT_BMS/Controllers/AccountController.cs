@@ -178,7 +178,7 @@ namespace NEXT_BMS.Controllers
                 encryptPassword(newUser.Id, newUser.Password);
 
                 TempData["Success"] = " you have successfully registered!!";
-                //TempData["FirstName"] = firstName;
+                
                 return RedirectToAction("Login");
 
             }
@@ -207,7 +207,7 @@ namespace NEXT_BMS.Controllers
 
             if (userPasswordReset != null)
             {
-                //BackgroundJob.Enqueue(() => Mailer.ConfirmUser(userPasswordReset.Id));
+               
             }
             else
             {
@@ -221,46 +221,13 @@ namespace NEXT_BMS.Controllers
                 };
                 _context.UserPasswordResets.Add(userPasswordReset);
                 _context.SaveChanges();
-                // BackgroundJob.Enqueue(() => Mailer.ConfirmUser(userPasswordReset.Id));
+               
             }
             TempData["Success"] = "Reset code has been sent to the user email. " + userPasswordReset.User.ToString();
             return RedirectToAction("Details", new { id = id });
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult ResetPassword(PasswordResetViewModel prvm)
-        //{
-        //    if (!string.IsNullOrEmpty(prvm.VerificationCode))
-        //    {
-        //        var USrPR = _context.UserPasswordResets.Find(prvm.uprId);
-        //        if (USrPR.Validated == false)
-        //        {
-        //            if (USrPR.VerificationCode == prvm.VerificationCode)
-        //            {
-        //                USrPR.Validated = true;
-        //                _context.Entry(USrPR).State = EntityState.Modified;
-        //                var user = USrPR.User;
-        //                ChangePasswordViewModel cpvm = new ChangePasswordViewModel
-        //                {
-        //                    OldPassword = user.Password,
-        //                    Password = prvm.Password,
-        //                    ConfirmPassword = prvm.ConfirmPassword
-        //                };
-        //                savechangedPassword(cpvm, user);
-        //                _context.SaveChanges();
-        //            }
-        //            else
-        //            {
-        //                TempData["Error"] = "Invalid reset code. Please check your email and try again.";
-        //                return RedirectToAction("ResetPassword", "Home", new { id = prvm.Token });
-        //            }
-        //        }
-        //    }
-        //    TempData["Success"] = "Successfully changed your password. You can login now with your new password.";
-        //    return RedirectToAction("Login", "Home");
-        //}
-
+       
         public ActionResult ForgotPassword()
         {
             return RedirectToAction("ForgotPassword", "Home");
@@ -316,7 +283,7 @@ namespace NEXT_BMS.Controllers
             _context.Entry(user).State = EntityState.Modified;
             _context.SaveChanges();
             TempData["Success"] = "You have changed your password successfully.";
-            //BackgroundJob.Enqueue(() => Mailer.PasswordChanged(user.Id));
+           
         }
 
         public ActionResult Block(int Id)
@@ -329,7 +296,7 @@ namespace NEXT_BMS.Controllers
 
             var user = _context.Users.Find(Id);
             user.IsActive = false;
-            //user.ActionBy = userId;
+            
             _context.Entry(user).State = EntityState.Modified;
             _context.SaveChanges();
             TempData["Success"] = "Operation successfully completed.";
@@ -351,10 +318,10 @@ namespace NEXT_BMS.Controllers
 
             var user = _context.Users.Find(Id);
             user.IsActive = true;
-            //user.ActionBy = userId;
+            
             _context.Entry(user).State = EntityState.Modified;
             _context.SaveChanges();
-            // BackgroundJob.Enqueue(() => Models.Mailer.ConfirmUser(user.Id));
+           
             TempData["Success"] = "Operation successfully completed.";
             var referer = Request.Headers["Referer"].ToString();
             if (!string.IsNullOrEmpty(referer))
@@ -423,47 +390,7 @@ namespace NEXT_BMS.Controllers
             return RedirectToAction("Index", "Home", new { area = "" });
         }
 
-        //public ActionResult ResetPassword(string id, string verification_code)
-        //{
-            //if (!string.IsNullOrEmpty(id))
-            //{
-            //    if (_context.UserPasswordResets.Any(x => x.Token == id && x.ExpiryDate > DateTime.Now && x.Validated != true))
-            //    {
-            //        var USrPR = _context.UserPasswordResets.FirstOrDefault(x => x.Token == id);
-
-            //        var prvm =new PasswordResetViewModel
-            //        {
-            //            FullName = USrPR.User.Employee.FullName,
-            //            Token = USrPR.Token,
-            //            ExpiryDate = USrPR.ExpiryDate,
-            //            Photo = USrPR.User.Employee.PhotoUrl,
-            //            uprId = USrPR.Id,
-            //            VerificationCode = verification_code
-            //        };
-
-            //        return View(prvm);
-            //    }
-            //    else
-            //    {
-            //        TempData["Error"] = "The link you are trying to access is already verified or expired.";
-            //    }
-
-            //}
-        //    return RedirectToAction("Login");
-        //}
-
-        //public ActionResult ChangePassword()
-        //{
-            //if (string.IsNullOrEmpty(_session.GetString("UserId")))
-            //{
-            //    return RedirectToAction("Index", "Home");
-            //}
-            //int userId = int.Parse(_session.GetString("UserId"));
-            //ViewBag.pwdChanges = _context.UserPasswords.Where(x => x.UserId == userId);
-        //    return View();
-        //}
-
-
+       
         public IActionResult VerifyEmail()
         {
             return View();
@@ -555,9 +482,9 @@ namespace NEXT_BMS.Controllers
 
             if (passwordResetCode != null)
             {
-                return passwordResetCode.UserId; // UserId is returned if verification code is valid
+                return passwordResetCode.UserId; 
             }
-            return 0; // Return 0 if not valid
+            return 0; 
         }
 
         private void ChangePassword(int userId, string newPassword)
@@ -575,12 +502,7 @@ namespace NEXT_BMS.Controllers
         public async Task SendPasswordResetEmail(string email, string verificationCode)
         {
             var resetPasswordLink = "http://localhost:5151/Profile/ResetPassword";
-            //Url.Action("ResetPassword", "Profile", null, Request.Scheme);
-
-            // Create the email body with a clickable link and verification code
-            //var message = $"Your verification code is: <strong>{verificationCode}</strong>.<br />" +
-            //              $"Click <a href='http://localhost:5151/Profile/ResetPassword'>here</a> to reset your password.";
-
+           
             var message = $"<p>Your verification code is: <strong>{verificationCode}</strong>.</p>" +
                  $"<p>Click <a href='{resetPasswordLink}'>here</a> to reset your password.</p>";
 

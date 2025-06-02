@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
-using DocumentFormat.OpenXml.Bibliography;
 
 
 namespace NEXT_BMS.Areas.Administrator.Controllers
@@ -100,7 +98,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             ViewBag.YearId = new SelectList(_context.Years, "Id", "Name");
             return View(tenant);
         }
-
         public IActionResult Payments()
         {
             return View();

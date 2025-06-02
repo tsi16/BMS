@@ -3,8 +3,6 @@ using NEXT_BMS.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.AspNetCore.Identity;
 
 namespace NEXT_BMS.Areas.Administrator.Controllers
 {
@@ -18,23 +16,17 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             _context = context;
         }
 
-       
         public IActionResult Index(int? buildingId)
         {
 
             int? userId = HttpContext.Session.GetInt32("UserId");
-
-
 
             if (!userId.HasValue)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-
             List<Tenant> tenants = _context.Tenants.Where(x => x.BuildingId == buildingId && x.IsDeleted == false).ToList();
-
-
 
             var buildings = _context.Buildings
                 .Include(x => x.Owner).ThenInclude(x => x.OwnerUsers)
@@ -46,7 +38,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
 
             return View(tenants);
         }
-
 
         private bool UserIsBuildingOwner(int userId)
         {
@@ -60,18 +51,14 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
 
         }
 
-
         public IActionResult Details(int? id)
         {
-
             int? userId = HttpContext.Session.GetInt32("UserId");
-
 
             if (!userId.HasValue)
             {
                 return RedirectToAction("Login", "Account");
             }
-
 
             var tenant = _context.Tenants
                 .Include(x => x.TenantUsers)
@@ -163,8 +150,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return Ok();
         }
 
-
-
         private void CreateTenantUser(int tenantId, int userId)
         {
 
@@ -183,12 +168,7 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
 
         }
 
-
-
-
-
         [HttpPost]
-
         public async Task<IActionResult> AddRoomRentals(int TenantId, int RoomId, float TotalPrice, int BusinessAreaId)
         {
             if (TenantId <= 0)
@@ -211,8 +191,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
 
             return Ok();
         }
-
-      
         [HttpGet]
         public IActionResult PaymentList(int roomRentalId)
         {
@@ -257,7 +235,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
                 return Json(new { success = false, message = "Error approving request", error = ex.Message });
             }
         }
-
 
         [HttpPost]
         public IActionResult RejectRequest(int RentalTerminationId, string Remark)

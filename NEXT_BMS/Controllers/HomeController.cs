@@ -14,8 +14,7 @@ namespace NEXT_BMS.Controllers
             _context = context;
           
         }
-
-        public ActionResult Index()
+      public ActionResult Index()
         {
             return View();
         }
@@ -25,7 +24,6 @@ namespace NEXT_BMS.Controllers
             ViewBag.Message = "Your application description page.";
             return View();
         }
-
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";

@@ -1,12 +1,5 @@
 ﻿@model IEnumerable<NEXT_BMS.Models.Notification>
 
-@* <li class="nav-item dropdown">
-    <a class="nav-link position-relative" href="/Administrator/Notifications/MyNotifications">
-        <i class="icon-bell2"></i>
-        @await Html.PartialAsync("~/Areas/Administrator/Views/Notifications/_NotificationBadge.cshtml")
-
-    </a>
-</li> *@
 @{
     var newCount = Model.Count(n => n.NotificationStatus?.Id == 1);
 }

@@ -74,7 +74,7 @@
             { "data": "id", "name": "Id", "autoWidth": true },
             {
                 "render": function (data, type, row, meta) {
-                    return `<a href="/MenuCategories/Details/${row.id}" class="text-info-800">${row.name}</a>`;
+                    return `<a href="/Administrator/MenuCategories/Details/${row.id}" class="text-info-800">${row.name}</a>`;
                 }
             },
             { "data": "application", "name": "Application", "autoWidth": true },
@@ -92,10 +92,10 @@
                             <div class="list-icons-item dropdown">
                                 <a href="#" class="list-icons-item dropdown-toggle caret-0" data-toggle="dropdown"><i class="icon-menu9"></i></a>
                                 <div class="dropdown-menu dropdown-menu-right">
-                                    <a href="/MenuCategories/Details/${row.id}" class="dropdown-item"><i class="icon-list3"></i>@Html.Raw(Localization.Get("viewdetails"))</a>
+                                    <a href="/Administrator/MenuCategories/Details/${row.id}" class="dropdown-item"><i class="icon-list3"></i>@Html.Raw(Localization.Get("viewdetails"))</a>
                                     <div class="dropdown-divider"></div>
-                                    <a href="/MenuCategories/Edit/${row.id}" class="dropdown-item"><i class="icon-pencil7"></i> @Html.Raw(Localization.Get("edit"))</a>
-                                    <a href="/MenuCategories/Delete/${row.id}" class="dropdown-item"><i class="icon-cross2"></i> @Html.Raw(Localization.Get("remove"))</a>
+                                    <a href="/Administrator/MenuCategories/Edit/${row.id}" class="dropdown-item"><i class="icon-pencil7"></i> @Html.Raw(Localization.Get("edit"))</a>
+                                    <a href="/Administrator/MenuCategories/Delete/${row.id}" class="dropdown-item"><i class="icon-cross2"></i> @Html.Raw(Localization.Get("remove"))</a>
                                 </div>
                             </div>
                         </div>`;

@@ -8,7 +8,6 @@
     var approvedRoomRentalRequests = ViewBag.ApprovedRoomRentalRequests as List<int>;
 }
 
-
 <div class="card py-0">
         <div class="card-header bg-light header-elements-inline py-2">
             <h5 class="card-title">
@@ -27,7 +26,6 @@
                 </form>
                 </div>
            
-               
                     <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal_addTenante">
                         <i class="icon-plus"></i> @Html.Raw(Localization.Get("Add Tenants"))
                     </button>
@@ -64,8 +62,6 @@
             </div>
         }
     </div>
-
-
 
 <div class="modal fade" id="modal_addTenante" tabindex="-1" aria-labelledby="modal_addTenanteLabel" aria-hidden="true">
     <div class="modal-dialog">

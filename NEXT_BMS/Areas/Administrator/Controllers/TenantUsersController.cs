@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ClosedXML.Excel;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 using System.Data;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NEXT_BMS.Models;
 
 namespace NEXT_BMS.Areas.Administrator.Controllers
@@ -79,19 +72,11 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             }
         }
 
-        // GET: Administrator/TenantUsers
-
-
         public IActionResult Index()
         {
             return View();
         }
-        //public async Task<IActionResult> Index()
-        //{
-            //var nEXT_BMSContext = _context.TenantUsers.Include(t => t.CreatedByNavigation).Include(t => t.Tenant).Include(t => t.User);
-            //return View(await nEXT_BMSContext.ToListAsync());
-        //}
-
+       
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.TenantUsers == null)
@@ -112,8 +97,7 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
 
             return View(tenantUser);
         }
-
-        public IActionResult Create()
+          public IActionResult Create()
         {
             ViewData["CreatedBy"] = new SelectList(_context.Users  .Where(x=>x.IsDeleted==false), "Id", "FirstName");
             ViewData["TenantId"] = new SelectList(_context.Tenants  .Where(x=>x.IsDeleted==false), "Id", "Contact");
@@ -138,7 +122,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             ViewData["UserId"] = new SelectList(_context.Users .Where(x=>x.IsDeleted==false), "Id", "FirstName", tenantUser.UserId);
             return View(tenantUser);
         }
-
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.TenantUsers == null)

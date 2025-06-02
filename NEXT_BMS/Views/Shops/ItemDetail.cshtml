@@ -7,7 +7,7 @@
 
     var itemImage = Model.Item.ItemImages.FirstOrDefault(x => x.IsActive);
     var url = itemImage != null ? itemImage.Url : "";
-    // var item = Model.Item;
+   
 }
 
 @if (TempData["Success"] != null)
@@ -410,40 +410,38 @@ else
         }
 
         .card {
-            background-color: #ffffff; /* White background for cards */
-            border: none; /* No borders for a cleaner look */
+            background-color: #ffffff; 
+            border: none; 
             transition: transform 0.3s, box-shadow 0.3s;
-            border-radius: 15px; /* Rounded corners */
+            border-radius: 15px; 
         }
 
             .card:hover {
-                transform: scale(1.05); /* Slightly enlarge on hover */
-                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Shadow for elevation effect */
+                transform: scale(1.05); 
             }
 
         h2 {
-            color: #343a40; /* Darker color for titles */
+            color: #343a40; 
         }
 
         .list-group-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: none; /* Remove borders */
+            border: none; 
         }
 
         .badge {
             margin-left: 10px;
         }
 
-        /* Button styling */
         .btn {
             transition: background-color 0.3s, color 0.3s;
         }
 
             .btn:hover {
-                background-color: #0d6efd; /* Change background on hover for visibility */
-                color: white; /* Change text color to white on hover */
+                background-color: #0d6efd; 
+                color: white; 
             }
     </style>
    

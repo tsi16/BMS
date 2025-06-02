@@ -79,6 +79,8 @@ public partial class NEXT_BMSContext : DbContext
 
     public virtual DbSet<MaintenanceStatus> MaintenanceStatuses { get; set; }
 
+    public virtual DbSet<MaintenanceStatusReport> MaintenanceStatusReports { get; set; }
+
     public virtual DbSet<MaintenanceType> MaintenanceTypes { get; set; }
 
     public virtual DbSet<Menu> Menus { get; set; }
@@ -263,6 +265,8 @@ public partial class NEXT_BMSContext : DbContext
             entity.HasOne(d => d.Location).WithMany(p => p.BuildingRequests)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_BuildingRequests_Locations");
+
+            entity.HasOne(d => d.OwnerUser).WithMany(p => p.BuildingRequests).HasConstraintName("FK_BuildingRequests_OwnerUsers");
 
             entity.HasOne(d => d.RequestStatus).WithMany(p => p.BuildingRequests)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -509,6 +513,17 @@ public partial class NEXT_BMSContext : DbContext
         modelBuilder.Entity<MaintenanceStatus>(entity =>
         {
             entity.Property(e => e.IsActive).HasDefaultValue(true);
+        });
+
+        modelBuilder.Entity<MaintenanceStatusReport>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_MaintenanceStatusReport");
+
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+
+            entity.HasOne(d => d.MaintenanceRequestAllocation).WithMany(p => p.MaintenanceStatusReports)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_MaintenanceStatusReport_MaintenanceRequestAllocations");
         });
 
         modelBuilder.Entity<MaintenanceType>(entity =>

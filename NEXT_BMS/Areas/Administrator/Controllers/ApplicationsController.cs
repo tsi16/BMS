@@ -92,6 +92,11 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Acronym,Icon,Code,Color,Version,Description,Url,SortOrder,IsActive,IsDeleted")] Application application)
         {
+            if (string.IsNullOrEmpty(application.Description) || string.IsNullOrEmpty(application.Icon))
+            {
+                ModelState.AddModelError("", "All required fields must be filled.");
+                return View(application);
+            }
             if (ModelState.IsValid)
             {
                 _context.Add(application);

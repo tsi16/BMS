@@ -1,20 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ClosedXML.Excel;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 using System.Data;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NEXT_BMS.Models;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Drawing.Spreadsheet;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using System.Runtime.Intrinsics.Arm;
 
 namespace NEXT_BMS.Areas.Administrator.Controllers
 {
@@ -26,175 +15,78 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
         public MaintenanceRequestsController(NEXT_BMSContext context)
         {
             _context = context;
+
         }
+
         [HttpPost]
-        //var maintenanceRequests = _context.MaintenanceRequests
-        //.Where(x => x.IsDeleted == false && x.UserId == userId)
-        //.Where(x => _context.TenantUsers.Any(tu => tu.UserId == userId && x.IsActive==true))
-        //               .Include(s => s.MaintenanceStatus)
-        //               .Include(s => s.MaintenanceType)
-        //               .Include(s => s.Room)
+        public IActionResult GetMaintenanceRequests()
+        {
+            try
+            {
+                var draw = Request.Form["draw"].FirstOrDefault();
+                var start = Request.Form["start"].FirstOrDefault();
+                var length = Request.Form["length"].FirstOrDefault();
+                var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
+                var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
+                var searchValue = Request.Form["search[value]"].FirstOrDefault();
 
-        //          .Include(s => s.User).Select(s => new
-        //          {
-        //              s.Id,
-        //              Room = s.Room.Name,
-        //              MaintenanceStatus = s.MaintenanceStatus.Name,
-        //              MaintenanceType = s.MaintenanceType.Name,
-        //              Name = $"{s.User.FirstName} {s.User.MiddleName}",
-        //              s.DateSubmitted,
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int recordsTotal = 0;
 
-        //              s.IsActive
-
-        //          });
-        //public IActionResult GetMaintenanceRequests(int id)
-        //{
-        //    try
-        //    {
-        //        var draw = Request.Form["draw"].FirstOrDefault();
-        //        var start = Request.Form["start"].FirstOrDefault();
-        //        var length = Request.Form["length"].FirstOrDefault();
-        //        var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
-        //        var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
-        //        var searchValue = Request.Form["search[value]"].FirstOrDefault();
-        //        int pageSize = length != null ? Convert.ToInt32(length) : 0;
-        //        int skip = start != null ? Convert.ToInt32(start) : 0;
-        //        int recordsTotal = 0;
-        //        var userId = HttpContext.Session.GetInt32("UserId");
-
-        //                var tenantUserId = _context.TenantUsers
-        //                .Where(tu => tu.UserId == userId)
-        //                .Select(tu => tu.Id) 
-        //                .FirstOrDefault();
-
-        //        var maintenanceRequests = _context.MaintenanceRequests
-        //            .Where(x => x.IsDeleted == false && x.UserId == tenantUserId && x.IsActive == true)
-        //            .Include(s => s.MaintenanceStatus)
-        //            .Include(s => s.MaintenanceType)
-        //            .Include(s => s.Room)
-        //            .Include(s => s.User)
-        //            .Select(s => new
-        //            {
-        //                s.Id,
-        //                Room = s.Room.Name,
-        //                MaintenanceStatus = s.MaintenanceStatus.Name,
-        //                MaintenanceType = s.MaintenanceType.Name,
-        //                Name = $"{s.User.FirstName} {s.User.MiddleName}",
-        //                s.DateSubmitted,
-        //                s.IsActive
-        //            });
-
-        //        var returnData = (from manudata in maintenanceRequests
-        //                          select manudata);
-        //        if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
-        //        {
-        //            returnData = returnData.OrderBy(sortColumn + " " + sortColumnDirection);
-        //        }
-        //        if (!string.IsNullOrEmpty(searchValue))
-        //        {
-        //            returnData = returnData.Where(m => m.Id.ToString().Contains(searchValue));
-        //        }
-        //        recordsTotal = returnData.Count();
-        //        var data = returnData.Skip(skip).Take(pageSize).ToList();
-        //        var jsonData = new { draw, recordsFiltered = recordsTotal, recordsTotal, data };
-        //        return Ok(jsonData);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        throw;
-        //    }
-        //}
-
-        //public IActionResult GetMaintenanceRequests(int id) 
-        //{
-        //    try
-        //    {
-        //        var draw = Request.Form["draw"].FirstOrDefault();
-        //        var start = Request.Form["start"].FirstOrDefault();
-        //        var length = Request.Form["length"].FirstOrDefault();
-        //        var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
-        //        var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
-        //        var searchValue = Request.Form["search[value]"].FirstOrDefault();
-        //        int pageSize = length != null ? Convert.ToInt32(length) : 0;
-        //        int skip = start != null ? Convert.ToInt32(start) : 0;
-        //        int recordsTotal = 0;
-
-        //        var tenantUserIds = _context.TenantUsers
-        //            .Where(tu => tu.TenantId == id)
-        //            .Select(tu => tu.UserId);
-                  
-        //        var maintenanceRequests = _context.MaintenanceRequests
-        //            .Where(x => !x.IsDeleted && x.IsActive && tenantUserIds.Contains(x.UserId))
-        //            .Include(s => s.MaintenanceStatus)
-        //            .Include(s => s.MaintenanceType)
-        //            .Include(s => s.Room)
-        //            .Include(s => s.User)
-        //            .Select(s => new
-        //            {
-        //                s.Id,
-        //                Room = s.Room.Name,
-        //                MaintenanceStatus = s.MaintenanceStatus.Name,
-        //                MaintenanceType = s.MaintenanceType.Name,
-        //                Name = $"{s.User.FirstName} {s.User.MiddleName}",
-        //                s.DateSubmitted,
-        //                s.IsActive
-        //            });
+                var query = _context.MaintenanceRequests
+                    .Include(m => m.User)
+                    .Include(m => m.Room)
+                    .Include(m => m.MaintenanceStatus)
+                    .Include(m => m.MaintenanceType)
+                    .Where(m => !m.IsDeleted)
+                    .Select(m => new
+                    {
+                        m.Id,
+                        Name = m.User.FirstName + " " + m.User.LastName,
+                        Room = m.Room.Name,
+                        MaintenanceStatus = m.MaintenanceStatus.Name,
+                        MaintenanceType = m.MaintenanceType.Name,
+                        DateSubmitted = m.DateSubmitted.ToString("yyyy-MM-dd"),
+                        m.IsActive
+                    });
 
                
-        //        var returnData = maintenanceRequests.AsQueryable();
-        //        if (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortColumnDirection))
-        //        {
-        //            returnData = returnData.OrderBy(sortColumn + " " + sortColumnDirection);
-        //        }
+                if (!string.IsNullOrEmpty(searchValue))
+                {
+                    query = query.Where(m =>
+                        m.Name.Contains(searchValue) ||
+                        m.Room.Contains(searchValue) ||
+                        m.MaintenanceStatus.Contains(searchValue) ||
+                        m.MaintenanceType.Contains(searchValue));
+                }
 
-        //        if (!string.IsNullOrEmpty(searchValue))
-        //        {
-        //            returnData = returnData.Where(m => m.Id.ToString().Contains(searchValue));
-        //        }
+                
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
+                {
+                    query = query.OrderBy(sortColumn + " " + sortColumnDirection);
+                }
 
-        //        recordsTotal = returnData.Count();
-        //        var data = returnData.Skip(skip).Take(pageSize).ToList();
+                recordsTotal = query.Count();
 
-        //        var jsonData = new { draw, recordsFiltered = recordsTotal, recordsTotal, data };
-        //        return Ok(jsonData);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        throw;
-        //    }
-        //}
+                var data = query.Skip(skip).Take(pageSize).ToList();
 
+                var jsonData = new { draw, recordsFiltered = recordsTotal, recordsTotal, data };
+                return Ok(jsonData);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "Something went wrong.", detail = ex.Message });
+            }
+        }
+
+        [HttpPost]
         public IActionResult Index()
         {
 
             return View();
         }
-        //public IActionResult IndexAllocation(int tenantId)
-        //{
-        //    try
-        //    {
-        //        //var tenantUserIds = _context.TenantUsers
-        //        //    .Where(tu => tu.TenantId == tenantId)
-        //        //    .Select(tu => tu.UserId)
-        //        //    .ToList();
-        //        var userId = HttpContext.Session.GetInt32("UserId");
-        //        var maintenanceRequests = _context.MaintenanceRequests
-        //            .Include(s => s.User).ThenInclude(x=>x.TenantUserUsers)
-        //             .Include(s => s.MaintenanceStatus)
-        //            .Include(s => s.MaintenanceType)
-        //            .Include(s => s.Room)
-        //            .Where(x =>x.User.TenantUserUsers.Any(u=>u.TenantId==tenantId&&u.UserId==userId) && x.IsActive  && !x.IsDeleted /*&& tenantUserIds.Contains(x.UserId)*/)
-
-
-        //            .ToList();
-
-        //        return View(maintenanceRequests);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return View(new List<MaintenanceRequest>());
-        //    }
-        //}
+       
 
         public IActionResult IndexAllocation(int id)
         {
@@ -227,28 +119,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             }
         }
 
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.MaintenanceRequests == null)
-            {
-                TempData["Error"] = "The information you're looking for was not found!";
-                return RedirectToAction("Index");
-            }
-
-            var maintenanceRequest = await _context.MaintenanceRequests
-                .Include(m => m.MaintenanceStatus)
-                .Include(m => m.MaintenanceType)
-                .Include(m => m.Room)
-                .Include(m => m.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (maintenanceRequest == null)
-            {
-                TempData["Error"] = "The information you're looking for was not found!"; return RedirectToAction("Index");
-            }
-
-            return View(maintenanceRequest);
-        }
-
         public async Task<IActionResult> DetailsAllocation(int? id)
         {
             if (id == null || _context.MaintenanceRequests == null)
@@ -278,35 +148,27 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View(maintenanceRequest);
         }
 
-        //public async Task<IActionResult> MyAllocation()
-        //{
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null || _context.MaintenanceRequests == null)
+            {
+                TempData["Error"] = "The information you're looking for was not found!";
+                return RedirectToAction("Index");
+            }
 
-        //    if (HttpContext.Session.GetInt32("UserId") == null)
-        //    {
-        //        return RedirectToAction("Login", "Account");
-        //    }
-        //    var userId = HttpContext.Session.GetInt32("UserId");
-        //    var buildingemployeeId = _context.BuildingEmployees.FirstOrDefault(x => x.UserId == userId).Id;
-        //    var myAllocation = await _context.MaintenanceRequests
-        //        .Include(m => m.MaintenanceStatus)
-        //        .Include(m => m.MaintenanceRequestAllocations).ThenInclude(m => m.AllocationStatus)
-        //        .Include(m => m.MaintenanceRequestAllocations).ThenInclude(m => m.BuildingEmployee)
+            var maintenanceRequest = await _context.MaintenanceRequests
+                .Include(m => m.MaintenanceStatus)
+                .Include(m => m.MaintenanceType)
+                .Include(m => m.Room)
+                .Include(m => m.User)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (maintenanceRequest == null)
+            {
+                TempData["Error"] = "The information you're looking for was not found!"; return RedirectToAction("Index");
+            }
 
-        //        .Include(m => m.MaintenanceType)
-        //        .Include(m => m.Room)
-        //        .Include(m => m.User)
-        //        .Where(r => r.MaintenanceRequestAllocations
-        //                     .Any(a => a.BuildingEmployeeId == buildingemployeeId))
-        //        .ToListAsync();
-
-        //    if (!myAllocation.Any() || !myAllocation.Any(r => r.MaintenanceRequestAllocations
-        //    .Any(a => a.BuildingEmployeeId == buildingemployeeId))) { 
-        //        TempData["Error"] = "No maintenance requests found for this employee!";
-        //        return Redirect(Request.GetTypedHeaders().Referer.ToString());
-        //    }
-
-        //    return View(myAllocation);
-        //}
+            return View(maintenanceRequest);
+        }
 
         public async Task<IActionResult> MyAllocation()
         {
@@ -322,31 +184,31 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             if (buildingEmployee == null)
             {
                 TempData["Error"] = "You are not a building employee.";
-                return Redirect(Request.GetTypedHeaders().Referer.ToString());
-            }
-
-            var buildingemployeeId = buildingEmployee.Id;
-
-            var myAllocation = await _context.MaintenanceRequests
-                .Include(m => m.MaintenanceStatus)
-                .Include(m => m.MaintenanceRequestAllocations).ThenInclude(m => m.AllocationStatus)
-                .Include(m => m.MaintenanceRequestAllocations).ThenInclude(m => m.BuildingEmployee)
-                .Include(m => m.MaintenanceType)
-                .Include(m => m.Room)
-                .Include(m => m.User)
-                .Where(r => r.MaintenanceRequestAllocations
-                             .Any(a => a.BuildingEmployeeId == buildingemployeeId))
-                .ToListAsync();
-
-            if (!myAllocation.Any())
-            {
-                TempData["Error"] = "No maintenance requests found for this employee!";
                 return Redirect(Request.GetTypedHeaders().Referer?.ToString() ?? "/");
             }
 
-            return View(myAllocation);
-        }
+            var buildingEmployeeId = buildingEmployee.Id;
 
+            var allocations = await _context.MaintenanceRequestAllocations
+                .Include(a => a.AllocationStatus)
+                .Include(a => a.BuildingEmployee)
+                .Include(a => a.MaintenanceRequest)
+                    .ThenInclude(m => m.MaintenanceType)
+                .Include(a => a.MaintenanceRequest)
+                    .ThenInclude(m => m.Room)
+                .Include(a => a.MaintenanceRequest)
+                    .ThenInclude(m => m.User)
+                .Where(a => a.BuildingEmployeeId == buildingEmployeeId)
+                .ToListAsync();
+
+            if (!allocations.Any())
+            {
+                TempData["Error"] = "No maintenance request allocations found for you!";
+                return Redirect(Request.GetTypedHeaders().Referer?.ToString() ?? "/");
+            }
+
+            return View(allocations); 
+        }
 
         public IActionResult Create()
         {
@@ -533,32 +395,41 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return _context.MaintenanceRequests.Any(e => e.Id == id);
         }
         [HttpPost]
-        public IActionResult CreateMaintenanceRequest(int MaintenanceRequestId, int AllocationStatusId, int BuildingEmployeeId)
+        public IActionResult SubmitRemark(int MaintenanceRequestAllocationId, string Remark)
         {
-
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            var maintenanceRequestAllocation = new MaintenanceRequestAllocation()
+            if (MaintenanceRequestAllocationId == 0 || string.IsNullOrWhiteSpace(Remark))
             {
+                TempData["Error"] = "Invalid input.";
+                return Redirect(Request.Headers["Referer"].ToString());
+            }
 
-                MaintenanceRequestId = MaintenanceRequestId,
-                AllocationStatusId = 1,
-                BuildingEmployeeId = BuildingEmployeeId,
-                AllocatedDate = DateTime.Now,
-                IsActive = true
-            };
+            try
+            {
+                var report = new MaintenanceStatusReport
+                {
+                    MaintenanceRequestAllocationId = MaintenanceRequestAllocationId,
+                    Remark = Remark,
+                    ReportDate = DateTime.Now,
+                    IsActive = true
+                };
+                _context.MaintenanceStatusReports.Add(report);
+                _context.SaveChanges();
+                TempData["Success"] = "Remark submitted successfully.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error: " + ex.InnerException?.Message ?? ex.Message;
+            }
 
-            _context.MaintenanceRequestAllocations.Add(maintenanceRequestAllocation);
-            _context.SaveChanges();
-
-            return RedirectToAction(nameof(Index));
-
-
+            return Redirect(Request.Headers["Referer"].ToString());
         }
+
         [HttpPost]
         public async Task<IActionResult> removerequests(int Id)
         {
@@ -572,5 +443,7 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
 
             return Ok();
         }
+
+
     }
 }

@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NEXT_BMS.Models;
-using NuGet.Protocol;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace NEXT_BMS.Areas.Administrator.Controllers
 {
@@ -101,7 +94,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View();
         }
 
-       
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -158,7 +150,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name");
             return View();
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -227,7 +218,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", shop.UserId);
             return RedirectToAction(nameof(Index));
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -314,8 +304,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
         }
 
 
-
-
         [HttpPost]
         public async Task<IActionResult> AddItem(int ShopId, int ItemId, string Balance)
         {
@@ -355,7 +343,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return Ok();
         }
 
-
         [HttpPost]
         public async Task<IActionResult> AddShopLocation(int ShopId, int RoomId)
         {
@@ -383,13 +370,9 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return Ok();
         }
 
-
-
-
         [HttpPost]
         public async Task<IActionResult> AddEntry(int ShopItemId, DateTime EntryDate, int Quantity, int? WithdrawQuantity, float Price)
         {
-
 
             if (EntryDate == default)
             {
@@ -457,7 +440,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return Ok();
         }
 
-
         [HttpPost]
         public async Task<IActionResult> EditItemEntry(int Id, int Quantity, float Price)
         {
@@ -471,7 +453,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
 
             return Ok();
         }
-
 
         public IActionResult ItemDetail(int id)
         {
@@ -498,8 +479,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
 
             return Ok();
         }
-
-
         public async Task<IActionResult> DeleteItemEntryVaration(int Id)
         {
             var itementryvaration = await _context.ItemEntryVarations.FindAsync(Id);
@@ -601,7 +580,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return Redirect(Request.GetTypedHeaders().Referer.ToString());
         }
 
-
         [HttpPost]
         public async Task<IActionResult> UploadItemImage(IFormFile image, int itemId, int? itemImageId = null)
         {
@@ -676,7 +654,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return url;
         }
 
-
         [HttpPost]
         public async Task<IActionResult> DeleteBuildingImage(int id, int buildingId)
         {
@@ -703,7 +680,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
 
             return Redirect(Request.GetTypedHeaders().Referer.ToString());
         }
-
 
         [HttpPost]
         public async Task<IActionResult> Edititemimage(IFormFile image, int itemImageId)
@@ -845,7 +821,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
 
             return Json(result);
      
-        
         }
 
         [HttpGet]
@@ -863,7 +838,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
 
             return Json(locations);
         }
-
 
     }
 

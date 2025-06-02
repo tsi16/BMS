@@ -1,0 +1,97 @@
+﻿@model IEnumerable<NEXT_BMS.Models.ShopRequest>
+@using Insya.Localization;
+
+<div class="card p-0">
+    <div class="card-header bg-light header-elements-inline">
+        <h5 class="card-title">
+            @Html.Raw(Localization.Get(ViewData["action"].ToString())) | @Html.Raw(Localization.Get(ViewData["pageName"].ToString()))
+        </h5>
+
+        <div class="header-elements">
+            <div class="list-icons">
+                <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Search items..." id="searchBar" onkeyup="filterItems()" />
+                </div>
+                <a class="list-icons-item" data-action="collapse"></a>
+                <a class="list-icons-item" data-action="reload"></a>
+                <a class="list-icons-item" data-action="remove"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.User)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Description)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.NumberOfShops)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.RequestDate)
+                    </th>
+                   
+                  
+                    <th>
+                        @Html.DisplayNameFor(model => model.RequestStatus)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.IsActive)
+                    </th>
+                   
+                    <th class="p-0 nosort text-center" style="width: 30px;"><i class="icon-menu-open2"></i></th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.User.FirstName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NumberOfShops)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RequestDate)
+                        </td>
+                       
+                       
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RequestStatus.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IsActive)
+                        </td>
+                       
+                        <td class="text-right">
+                            <div class="list-icons">
+                                <div class="list-icons-item dropdown">
+                                    <a href="#" class="list-icons-item dropdown-toggle caret-0" data-toggle="dropdown"><i class="icon-menu9"></i></a>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a asp-action="ShopRequest" asp-controller="Services" asp-route-id="@item.Id" class="dropdown-item"><i class="icon-list3"></i>view </a>
+
+                                        <div class="dropdown-divider"></div>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="dropdown-item"><i class="icon-pencil7"></i> edit </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="dropdown-item"><i class="icon-cross2"></i> delete </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+    <div class="card-footer">
+    </div>
+</div>

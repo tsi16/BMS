@@ -33,7 +33,7 @@ public enum ShopRequestStatuses
 public enum MaintenanceAllocationStatuses
 {
     New = 1,
-    Approved = 2,
+    Done = 2,
     Rejected = 3
 }
 public enum terminationRequestStatuses
@@ -42,6 +42,7 @@ public enum terminationRequestStatuses
     Approved = 2,
     Rejected = 3
 }
+
 
 
 

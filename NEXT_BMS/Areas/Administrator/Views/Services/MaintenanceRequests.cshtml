@@ -1,0 +1,99 @@
+﻿@model IEnumerable<NEXT_BMS.Models.MaintenanceRequest>
+@using Insya.Localization;
+@{
+
+    string searchValue = ViewData["SearchValue"] != null ? ViewData["pageName"].ToString() : "";
+
+    string action = ViewData["Action"] != null ? ViewData["Action"].ToString() : "Index";
+
+    string size_Of_Page = Context.Session.GetString("Size_Of_Page") != null ? Context.Session.GetString("Size_Of_Page") : "10";
+
+    List<string> pa = new List<string>() { "10", "20", "50", "100", "1000" };
+}
+
+<div class="card">
+    <div class="card-header bg-light header-elements-inline">
+        <h5 class="card-title">
+            @Html.Raw(Localization.Get(ViewData["action"].ToString())) | @Html.Raw(Localization.Get(ViewData["pageName"].ToString()))
+        </h5>
+        <div class="header-elements">
+         
+        </div>
+    </div>
+    <div class="card-body p-1">
+         <table class="table datatable-init no-footer table-xs table-hover">
+            <thead>
+                <tr>
+                   
+                    <th>
+                        @Html.DisplayNameFor(model => model.User.FirstName)
+
+                    </th>
+                     <th>
+                        @Html.DisplayNameFor(model => model.Room)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.MaintenanceStatus)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.MaintenanceType)
+                    </th>
+                   
+                   
+                    <th>
+                        @Html.DisplayNameFor(model => model.DateSubmitted)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.IsActive)
+                    </th>
+                    <th class="p-0 nosort text-center" style="width: 30px;"><i class="icon-menu-open2"></i></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <a asp-action="MaintenanceRequest" asp-controller="Services" asp-route-id="@item.Id"> @Html.DisplayFor(modelItem => item.User.FirstName)</a>
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Room.Name)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MaintenanceStatus.Name)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MaintenanceType.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DateSubmitted)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IsActive)
+                        </td>
+                        <td>
+                            <div class="list-icons">
+                                <div class="list-icons-item dropdown">
+                                    <a href="#" class="list-icons-item dropdown-toggle caret-0" data-toggle="dropdown">
+                                        <i class="icon-menu9"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a asp-action="MaintenanceRequest" asp-controller="Services" asp-route-id="@item.Id" class="dropdown-item">
+                                            <i class="icon-list3"></i> @Html.Raw(Localization.Get("viewdetails"))
+                                        </a>
+                                       
+                                </div>
+                            </div>
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+

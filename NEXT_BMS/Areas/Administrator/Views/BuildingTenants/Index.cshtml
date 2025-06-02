@@ -2,13 +2,11 @@
 
 @using Insya.Localization
 @using Microsoft.Extensions.Options
-
 @{
     ViewData["Title"] = "Index";
     var approvedRoomRentalRequests = ViewBag.ApprovedRoomRentalRequests as List<int>;
     
     }
-
 <div class="container mt-4">
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-light text-center py-3">
@@ -21,8 +19,6 @@
                     <select name="tenantId" id="tenantId" class="form-control" asp-items="@(ViewData["TenantId"] as SelectList)">
                         <option value="">-- Select a Tenant Organization --</option>
                     </select>
-
-                   
 
                 </div>
             </form>

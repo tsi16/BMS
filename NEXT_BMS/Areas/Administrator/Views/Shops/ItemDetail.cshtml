@@ -1,7 +1,9 @@
 ﻿@model NEXT_BMS.Models.ShopItem
-
 @using Insya.Localization
 @using Microsoft.Extensions.Options
+@using NEXT_BMS.ViewModels;
+@inject IOptions<AppConfig> AppConfig
+
 @{
     int ItemEntryCount = 1;
 
@@ -25,10 +27,7 @@ else
         <div class="row">
             <div class="col-md-3">
        <img src="@url" width="200" height="200" style="border-radius :25px" />
-       
-     
-
-            </div>
+       </div>
             <div class="col-md-8">
                 <h5 style="font-family: 'Roboto', sans-serif; font-size: 3rem; color: #2196f3; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); margin-right:60px;">
                     Item Entries
@@ -183,18 +182,20 @@ else
 <div class="modal fade" id="modal_addItemEntry" tabindex="-1" aria-labelledby="modal_addItemEntry" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="ItemEntryLabel">
-                    <i class="icon-plus2 mr-1"></i>
-                    @Html.Raw(Localization.Get("Add Item Entry"))
-                </h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          
+            <div class="modal-header mt-0 @AppConfig.Value.BrandColor py-2">
+                <h4 class="modal-title">
+                    <i class="icon-plus22 mr-1"></i>
+                    Add Item Entry
+                </h4>
+                <a href="#" class="pt-2" data-dismiss="modal">
+                    <i class="icon-cross text-white"></i>
+                </a>
             </div>
             <div class="modal-body">
                 <div class="form-group">
                     <input type="hidden" id="ShopItemId" name="ShopItemId" value="@Model.Id">
                     
-                    <!-- ShopItemId value here -->
                 </div>
                 <div class="form-group mb-3">
                     <label for="EntryDate">@Html.Raw(Localization.Get("Entry Date"))</label>
@@ -214,12 +215,13 @@ else
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-link" data-bs-dismiss="modal">
+                <button class="btn bg-success" onclick="SaveItemEntry()">
+                    <i class="icon-floppy-disk font-size-base mr-1"></i> Save
+                </button>
+                <button class="btn btn-link" data-dismiss="modal">
                     <i class="icon-cross2 font-size-base mr-1"></i> Close
                 </button>
-                <button class="btn bg-primary" onclick="SaveItemEntry()">
-                    <i class="icon-checkmark3 font-size-base mr-1"></i> Save
-                </button>
+                
             </div>
         </div>
     </div>
@@ -273,7 +275,7 @@ else
             <div class="modal-body">
                 <div class="form-group">
                     <input type="hidden" id="ShopItemId" name="ShopItemId" value="@Model.Id">
-                    <!-- ShopItemId value here -->
+                   
                 </div>
                 <div class="form-group mb-3">
                     <input type="hidden" id="NItemEntryId" name="ItemEntryId" />
@@ -321,7 +323,7 @@ else
             <div class="modal-body">
                 <div class="form-group">
                     <input type="hidden" id="EditShopItemId" name="ShopItemId" value="@Model.Id">
-                    <!-- ShopItemId value here -->
+                   
                 </div>
                 <div class="form-group mb-3">
                     <input type="hidden" id="MEditItemEntryId" name="ItemEntryId" />
@@ -396,10 +398,7 @@ else
                         <label for="editImageUpload">Upload New Item Image</label>
                         <input type="file" id="editImageUpload" name="image" class="form-control" accept="image/*" />
                     </div>
-                    @* <div class="form-group mt-3">
-                        <label for="imageDescription">Image Description</label>
-                        <input type="text" id="imageDescription" name="imagedescription" class="form-control" placeholder="Enter a brief description" />
-                    </div> *@
+                   
                     <div class="form-group">
                         <input type="hidden" id="ItemImageId" name="itemImageId" />
                     </div>
@@ -602,7 +601,7 @@ function SaveItemEntry() {
                 },
                 success: function (response) {
                      location.reload();
-                    // alert("new");
+                   
                 },
                 error: function (xhr) {
                     alert('Error adding item entry variation: ' + xhr.responseText);

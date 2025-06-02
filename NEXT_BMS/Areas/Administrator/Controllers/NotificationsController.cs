@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NEXT_BMS.Models;
 using NEXT_BMS.Utilities;
-using Microsoft.AspNetCore.SignalR;
 
 namespace NEXT_BMS.Areas.Administrator.Controllers
 {
@@ -86,7 +85,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View();
         }
 
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult SendToUser([Bind("Message,NotificationTypeId,UserId")] Notification notification)
@@ -102,8 +100,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             ViewData["NotificationTypeId"] = new SelectList(_context.NotificationTypes, "Id", "Name", notification.NotificationTypeId);
             return View(notification);
         }
-
-
 
         public async Task<IActionResult> MyNotifications() 
         {
@@ -121,8 +117,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
 
             return View(notifications);
         }
-
-
 
         public async Task<IActionResult> Index()
         {
@@ -249,7 +243,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View(notification);
         }
 
-       
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

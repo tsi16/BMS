@@ -1,24 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NEXT_BMS.Models;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
-using NuGet.Protocol.Plugins;
 using Microsoft.AspNetCore.SignalR;
-using Azure.Core;
-using Humanizer;
-using Microsoft.DotNet.Scaffolding.Shared.Messaging;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Logging;
-using System.Reflection.Metadata;
-using System.Runtime.Intrinsics.X86;
-using System.Security.Claims;
-
-
 
 namespace NEXT_BMS.Areas.Administrator.Controllers
 {
@@ -33,9 +16,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             _context = context;
             _hubContext = hubContext;
         }
-
-
-
         public JsonResult GetAllUsersWithChatSummary()
         {
             try
@@ -128,8 +108,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             }
         }
 
-
-
         [HttpPost]
         public async Task<JsonResult> UpdateMessage(int messageId, string message)
         {
@@ -160,7 +138,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
                 return Json(new { success = false, error = "An error occurred while updating the message." });
             }
         }
-
         private void saveOldChat(int chatId, string message)
         {
             var chatVersion = new ChatVersion
@@ -173,7 +150,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
                
             };
 
-           
             _context.ChatVersions.Add(chatVersion);
             _context.SaveChanges();
         }
@@ -269,7 +245,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             }
         }
     
-
         public ActionResult Index(int receiverId, int? parentId)
         {
             var senderId = 1;  
@@ -286,9 +261,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             ViewBag.ParentId = parentId;
             return View(chats);
         }
-
-        
-       
 
         private bool ChatExists(int id)
         {

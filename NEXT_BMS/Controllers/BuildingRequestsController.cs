@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using NEXT_BMS.Models;
 
 
-namespace NEXT_BMS/*.Areas.Administrator*/.Controllers
+namespace NEXT_BMS.Controllers
 {
 
     public class BuildingRequestsController : Controller
@@ -20,7 +20,6 @@ namespace NEXT_BMS/*.Areas.Administrator*/.Controllers
             _context = context;
         }
 
-        // GET: BuildingRequests
         public async Task<IActionResult> Index()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
@@ -31,19 +30,8 @@ namespace NEXT_BMS/*.Areas.Administrator*/.Controllers
             }
 
             return RedirectToAction("Index", "BuildingRequests", new { area = "Administrator" });
-            
-            //var buildingRequests = await _context.BuildingRequests
-            //    .Include(b => b.BuildingType)
-            //    .Include(b => b.Location)
-            //    .Include(b => b.RequestStatus)
-            //    .Include(b => b.User)
-            //    .Where(br => br.UserId == userId)
-            //    .ToListAsync();
-
-            //return View(buildingRequests);
            
         }
-        
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -65,19 +53,14 @@ namespace NEXT_BMS/*.Areas.Administrator*/.Controllers
             return View(buildingRequest);
         }
 
-        // GET: BuildingRequests/Create
         public IActionResult Create()
         {
             ViewData["BuildingTypeId"] = new SelectList(_context.BuildingTypes, "Id", "Name");
             ViewData["LocationId"] = new SelectList(_context.Locations, "Id", "Name");
-            //ViewData["RequestStatusId"] = new SelectList(_context.BuildingRequestStatuses, "Id", "Name");
-            //ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email");
+            
             return View();
         }
 
-        // POST: BuildingRequests/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UserId,Description,Amount,LocationId,BuildingTypeId,RequestStatusId,RequestedDate,IsActive,IsDeleted")] BuildingRequest buildingRequest)
@@ -90,18 +73,6 @@ namespace NEXT_BMS/*.Areas.Administrator*/.Controllers
             }
 
             buildingRequest.UserId = userId.Value;
-
-
-            //if (buildingRequest.RequestedDate == default(DateTime))
-            //{
-            //    buildingRequest.RequestedDate = DateTime.Now;
-            //}
-
-
-            //if (buildingRequest.RequestedDate < new DateTime(1753, 1, 1) || buildingRequest.RequestedDate > new DateTime(9999, 12, 31))
-            //{
-            //    ModelState.AddModelError(nameof(buildingRequest.RequestedDate), "Requested date must be between 1/1/1753 and 12/31/9999.");
-            //}
 
             if (ModelState.IsValid)
             {
@@ -126,12 +97,11 @@ namespace NEXT_BMS/*.Areas.Administrator*/.Controllers
 
             ViewData["BuildingTypeId"] = new SelectList(_context.BuildingTypes, "Id", "Name", buildingRequest.BuildingTypeId);
             ViewData["LocationId"] = new SelectList(_context.Locations, "Id", "Name", buildingRequest.LocationId);
-            //ViewData["RequestStatusId"] = new SelectList(_context.BuildingRequestStatuses, "Id", "Name", buildingRequest.RequestStatusId);
-            //ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", buildingRequest.UserId);
+           
             return View(buildingRequest);
         }
 
-        // GET: BuildingRequests/Edit/5
+       
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -151,9 +121,6 @@ namespace NEXT_BMS/*.Areas.Administrator*/.Controllers
             return View(buildingRequest);
         }
 
-        // POST: BuildingRequests/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,Description,Amount,LocationId,BuildingTypeId,RequestStatusId,RequestedDate,IsActive,IsDeleted")] BuildingRequest buildingRequest)
@@ -189,8 +156,6 @@ namespace NEXT_BMS/*.Areas.Administrator*/.Controllers
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", buildingRequest.UserId);
             return View(buildingRequest);
         }
-
-        // GET: BuildingRequests/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -212,7 +177,6 @@ namespace NEXT_BMS/*.Areas.Administrator*/.Controllers
             return View(buildingRequest);
         }
 
-        // POST: BuildingRequests/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -255,7 +219,6 @@ namespace NEXT_BMS/*.Areas.Administrator*/.Controllers
             if (user != null && user.UserRoles.Any(x => x.RoleId == 1))
             {
                 var buildingRequests = await _context.BuildingRequests
-                                                //.Where(br => br.IsActive == true)
                                                 .Include(b => b.BuildingType)
                                                 .Include(b => b.Location)
                                                 .Include(b => b.RequestStatus)
@@ -271,16 +234,9 @@ namespace NEXT_BMS/*.Areas.Administrator*/.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-
-
-
-
-
         }
        
-
-
-        public IActionResult AdminReqD( int? id)
+     public IActionResult AdminReqD( int? id)
         {
 
             int? userId = HttpContext.Session.GetInt32("UserId");

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NEXT_BMS.Models;
@@ -199,11 +195,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
                 TempData["ErrorMessage"] = "You don't have sufficient privileges to access this page.";
                 return RedirectToAction("Login", "Account");
             }
-
-
-
-
-
 
         }
 

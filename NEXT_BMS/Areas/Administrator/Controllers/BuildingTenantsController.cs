@@ -14,7 +14,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
         {
             _context = context;
         }
-
         public IActionResult Index(int? tenantId)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
@@ -40,8 +39,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
 
             return View(filteredTenants);
         }
-
-
 
         public IActionResult Details(int? id)
         {
@@ -122,8 +119,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return Ok();
         }
 
-
-
         private void CreateTenantUser(int tenantId , int userId)
         {
             var tenantUser = new TenantUser
@@ -167,8 +162,7 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
         [HttpPost]
         public IActionResult AddRequest(int RoomRentalId, string Reason)
         {
-
-            var rentalAgreementTermination = new RentalAgreementTermination
+           var rentalAgreementTermination = new RentalAgreementTermination
             {
                 RoomRentalId = RoomRentalId,
                 Reason = Reason,

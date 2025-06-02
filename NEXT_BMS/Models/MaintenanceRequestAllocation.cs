@@ -44,4 +44,7 @@ public partial class MaintenanceRequestAllocation
     [ForeignKey("MaintenanceRequestId")]
     [InverseProperty("MaintenanceRequestAllocations")]
     public virtual MaintenanceRequest MaintenanceRequest { get; set; }
+
+    [InverseProperty("MaintenanceRequestAllocation")]
+    public virtual ICollection<MaintenanceStatusReport> MaintenanceStatusReports { get; set; } = new List<MaintenanceStatusReport>();
 }

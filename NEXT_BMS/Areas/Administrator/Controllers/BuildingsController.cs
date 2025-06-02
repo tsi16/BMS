@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NEXT_BMS.Models;
@@ -106,36 +102,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View(building);
         }
 
-        //public async Task<IActionResult> EmployeesDetails(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var maintenanceRequest = await _context.MaintenanceRequests
-        //        .Include(m => m.MaintenanceStatus)
-        //        .Include(m => m.MaintenanceType)
-        //        .Include(m => m.Room)
-        //        .Include(m => m.User)
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-
-        //    if (maintenanceRequest == null)
-        //    {
-        //        TempData["Error"] = "The information you're looking for was not found!"; return RedirectToAction("Index");
-        //    }
-        //    var buildingEmployees = _context.BuildingEmployees.Select(s => new
-        //    {
-        //        s.Id,
-        //        Name = s.FullName
-        //    });
-        //    ViewBag.BuildingEmployees = new SelectList(buildingEmployees, "Id", "Name");
-
-        //    return View(maintenanceRequest);
-        //}
-
-      
-        // GET: Buildings/Create
         public IActionResult Create()
         {
             ViewData["BuildingTypeId"] = new SelectList(_context.BuildingTypes, "Id", "Id");
@@ -148,9 +114,7 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View();
         }
 
-        // POST: Buildings/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UseTypeId,UserId,CityId,LocationId,Name,Description,ConstractionYear,NumberOfFloor,BuildingTypeId,OwnershipTypeId,OwnerId,IsActive,IsDeleted")] Building building)
@@ -357,70 +321,7 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View(tenant);
         }
 
-        
-        //[HttpPost]
-
-        //public IActionResult AddTenant(int BuildingId, int TenantTypeId, string Name, int Tin, string Description, string Contact)
-        //{
-        //    if (BuildingId <= 0)
-        //    {
-        //        return BadRequest("Invalid building ID.");
-        //    }
-        //    int? userId = HttpContext.Session.GetInt32("UserId");
-
-        //    var existingtenant = _context.TenantUsers.Where(x => x.UserId == userId);
-        //    if (existingtenant == null)
-        //    {
-        //        var tenant = new Tenant
-        //        {
-        //            BuildingId = BuildingId,
-        //            TenantTypeId = TenantTypeId,
-        //            Name = Name,
-        //            Tin = Tin,
-        //            Description = Description,
-        //            Contact = Contact,
-        //            IsActive = true
-        //        };
-
-        //        _context.Tenants.Add(tenant);
-        //        _context.SaveChanges();
-
-
-        //        CreateTenantUser(tenant.Id, userId.Value);
-
-        //    }
-        //    else
-        //    {
-        //        TempData["Error"] = "you already exists";
-        //    }
-        //    return Ok();
-        //}
-        //private void CreateTenantUser(int tenantId, int userId)
-        //{
-        //    //int? userId = HttpContext.Session.GetInt32("UserId");
-
-        //    //if (!userId.HasValue)
-        //    //{
-        //    //    return RedirectToAction("Login", "Account");
-        //    //}
-
-        //    var tenantUser = new TenantUser
-        //    {
-        //        TenantId = tenantId,
-        //        UserId = userId,
-        //        CreatedDate = DateTime.Now,
-        //        CreatedBy = userId,
-        //        IsActive = true
-        //    };
-
-        //    _context.TenantUsers.Add(tenantUser);
-        //    _context.SaveChanges();
-
-
-        //}
-
         [HttpPost]
-           
         public async Task<IActionResult> AddRoomRentals(int TenantId, int RoomId, float TotalPrice, int BusinessAreaId)
         {
             if (TenantId <= 0)

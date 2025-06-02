@@ -24,11 +24,9 @@
         <table class="table table-hover table-sm" style="color: black">
             <thead>
                 <tr>
-                    @* <th style="width: 35px">Message</th> *@
                     <th>NotificationStatus</th>
                     <th>NotificationType</th>
                     <th>NotificationDate</th>
-
 
                     <th class="p-0 nosort text-center" style="width: 30px;">
                         <i class="icon-menu-open2"></i>
@@ -75,18 +73,12 @@
 
                 }
 
-
-
             </tbody>
         </table>
 
     </div>
 </div>
  
-
-
-
-
 <div class="modal fade" id="editmodal_read" tabindex="-1" aria-labelledby="modal_readLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -112,10 +104,6 @@
         </div>
     </div>
 </div>
-
-
-
-
 
 @section Scripts {
     <link href="~/css/pro.css" rel="stylesheet" />
@@ -189,7 +177,7 @@
                 $('#modal_read').find('.modal-body').prepend(`<img src="${imagePath}" alt="Profile Image" style="max-width:200px; max-height:200px;" />`);
             }
 
-            // Show the modal
+           
             $('#modal_read').modal('show');
         }
 

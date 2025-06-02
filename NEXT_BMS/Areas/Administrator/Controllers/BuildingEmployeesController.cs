@@ -78,31 +78,94 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View(buildingEmployee);
         }
 
+
+        [HttpGet]
+        public JsonResult GetUserByPhone(string phoneNumber)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.PhoneNumber == phoneNumber && !u.IsDeleted);
+
+            if (user != null)
+            {
+                bool alreadyAssigned = _context.BuildingEmployees.Any(e => e.UserId == user.Id && !e.IsDeleted);
+
+                if (alreadyAssigned)
+                {
+                    return Json(new
+                    {
+                        exists = true,
+                        fullName = user.FirstName,
+                        userId = user.Id,
+                        alreadyEmployee = true
+                    });
+                }
+
+                return Json(new
+                {
+                    exists = true,
+                    fullName = user.FirstName,
+                    userId = user.Id,
+                    alreadyEmployee = false
+                });
+            }
+
+            return Json(new { exists = false });
+        }
+
+
         public IActionResult Create()
         {
-            ViewData["BuildingId"] = new SelectList(_context.Buildings  .Where(x=>x.IsDeleted==false), "Id", "ConstractionYear");
-            ViewData["EmployeeTypeId"] = new SelectList(_context.EmployeeTypes  .Where(x=>x.IsDeleted==false), "Id", "Name");
-            ViewData["UserId"] = new SelectList(_context.Users  .Where(x=>x.IsDeleted==false), "Id", "FirstName");
+            ViewData["BuildingId"] = new SelectList(_context.Buildings.Where(b => !b.IsDeleted), "Id", "Name");
+            ViewData["UserId"] = new SelectList(_context.Users.Where(u => !u.IsDeleted), "Id", "FirstName");
+            ViewData["EmployeeTypeId"] = new SelectList(_context.EmployeeTypes.Where(e => !e.IsDeleted), "Id", "Name");
             return View();
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FullName,PhoneNumber,BuildingId,UserId,EmployeeTypeId,IsActive,IsDeleted")] BuildingEmployee buildingEmployee)
+        public async Task<IActionResult> Create([Bind("FullName,PhoneNumber,BuildingId,EmployeeTypeId,UserId,IsDeleted,IsActive")] BuildingEmployee model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(buildingEmployee);
+                // Prevent duplicate building employee for same user
+                if (model.UserId > 0)
+                {
+                    var exists = _context.BuildingEmployees.Any(e => e.UserId == model.UserId && !e.IsDeleted);
+                    if (exists)
+                    {
+                        ModelState.AddModelError("", "This user is already registered as a building employee.");
+                        // Reload dropdowns
+                        ViewData["BuildingId"] = new SelectList(_context.Buildings.Where(b => !b.IsDeleted), "Id", "Name", model.BuildingId);
+                        ViewData["EmployeeTypeId"] = new SelectList(_context.EmployeeTypes.Where(e => !e.IsDeleted), "Id", "Name", model.EmployeeTypeId);
+                        return View(model);
+                    }
+                }
+
+                // If new user, create
+                if (model.UserId == 0)
+                {
+                    var newUser = new User
+                    {
+                        FirstName = model.FullName,
+                        PhoneNumber = model.PhoneNumber,
+                        IsActive = true,
+                        IsDeleted = false
+                    };
+                    _context.Users.Add(newUser);
+                    await _context.SaveChangesAsync();
+                    model.UserId = newUser.Id;
+                }
+
+                _context.BuildingEmployees.Add(model);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "buildingEmployee saved successfully.";
                 return RedirectToAction(nameof(Index));
             }
-            TempData["Error"] = "An error occured while saving buildingEmployee. Please review your input.";
-            ViewData["BuildingId"] = new SelectList(_context.Buildings .Where(x=>x.IsDeleted==false), "Id", "ConstractionYear", buildingEmployee.BuildingId);
-            ViewData["EmployeeTypeId"] = new SelectList(_context.EmployeeTypes .Where(x=>x.IsDeleted==false), "Id", "Name", buildingEmployee.EmployeeTypeId);
-            ViewData["UserId"] = new SelectList(_context.Users .Where(x=>x.IsDeleted==false), "Id", "FirstName", buildingEmployee.UserId);
-            return View(buildingEmployee);
+
+            ViewData["BuildingId"] = new SelectList(_context.Buildings.Where(b => !b.IsDeleted), "Id", "Name", model.BuildingId);
+            ViewData["EmployeeTypeId"] = new SelectList(_context.EmployeeTypes.Where(e => !e.IsDeleted), "Id", "Name", model.EmployeeTypeId);
+            return View(model);
         }
+
 
         public async Task<IActionResult> Edit(int? id)
         {
@@ -318,5 +381,51 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
 
             return Json(new { success = true });
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddEmployee(string Name, int BuildingId, string PhoneNumber, int EmployeeTypeId)
+        {
+
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (!userId.HasValue)
+            {
+                TempData["error"] = "User is not authenticated.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var existingEmployee = _context.BuildingEmployees
+                                            .Any(b => b.FullName.ToLower() == Name.ToLower() && b.BuildingId == BuildingId);
+
+            if (existingEmployee)
+            {
+                TempData["info"] = "An Employee with this name already exists on this building.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var buildingEmployee = new BuildingEmployee
+            {
+                FullName = Name,
+                PhoneNumber = PhoneNumber,
+                BuildingId = BuildingId,
+                EmployeeTypeId = EmployeeTypeId,
+                IsActive = true,
+                IsDeleted = false
+            };
+
+            _context.BuildingEmployees.Add(buildingEmployee);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Employees", new { id = BuildingId });
+        }
+        public IActionResult Employees(int? id)
+        {
+            ViewData["EmployeeTypeId"] = new SelectList(_context.EmployeeTypes, "Id", "Name");
+            var buildings = _context.Buildings
+                .Include(b => b.BuildingEmployees).ThenInclude(b => b.EmployeeType)
+                .FirstOrDefault(x => x.Id == id);
+            return View(buildings);
+        }
+
     }
 }

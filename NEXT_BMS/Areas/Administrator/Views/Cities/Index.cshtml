@@ -71,19 +71,22 @@
             "orderable": false,
             "searchable": false
         }],
-        "columns": [
-            // { "data": "id", "name": "Id", "autoWidth": true },
-            {
-                "render": function (data, type, row, meta) {
-                    return `<a href="/Administrator/Cities/Details/${row.id}" class="text-info-800">${row.name}</a>`;
-                }
-            },
-            { "data": "name", "name": "Name", "autoWidth": true },
-            { "data": "isActive", "name": "IsActive", "autoWidth": true },
-            { "data": "isDeleted", "name": "IsDeleted", "autoWidth": true },
-            {
-                "render": function (data, type, row, meta) {
-                return`<div class="list-icons">
+           "columns": [
+        { "data": "id", "visible": false },
+        {
+            "data": "name",
+            "render": function (data, type, row, meta) {
+                return `<a href="/Administrator/Cities/Details/${row.id}" class="text-info-800">${data}</a>`;
+            }
+        },
+        { "data": "isActive", "name": "IsActive", "autoWidth": true },
+        { "data": "isDeleted", "name": "IsDeleted", "autoWidth": true },
+        {
+            "data": null,
+            "orderable": false,
+            "searchable": false,
+            "render": function (data, type, row, meta) {
+                return `<div class="list-icons">
                             <div class="list-icons-item dropdown">
                                 <a href="#" class="list-icons-item dropdown-toggle caret-0" data-toggle="dropdown"><i class="icon-menu9"></i></a>
                                 <div class="dropdown-menu dropdown-menu-right">
@@ -94,7 +97,7 @@
                                 </div>
                             </div>
                         </div>`;
-                    }
+            }
                 }
             ]
         });
