@@ -80,7 +80,7 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             }
         }
 
-        [HttpPost]
+       
         public IActionResult Index()
         {
 
