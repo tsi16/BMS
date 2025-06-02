@@ -33,13 +33,18 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
                 int pageSize = length != null ? Convert.ToInt32(length) : 0;
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int recordsTotal = 0;
+                var userId = HttpContext.Session.GetInt32("UserId");
 
+                if (userId == null)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
                 var query = _context.MaintenanceRequests
                     .Include(m => m.User)
                     .Include(m => m.Room)
                     .Include(m => m.MaintenanceStatus)
                     .Include(m => m.MaintenanceType)
-                    .Where(m => !m.IsDeleted)
+                    .Where(m => !m.IsDeleted&& m.UserId==userId)
                     .Select(m => new
                     {
                         m.Id,
@@ -87,7 +92,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View();
         }
        
-
         public IActionResult IndexAllocation(int id)
         {
             try
