@@ -1,0 +1,84 @@
+﻿@model NEXT_BMS.Models.RoomRentalRequest
+@using Insya.Localization;
+@await Html.PartialAsync("Controls/_Common")
+@* @{
+    ViewData["Title"] = "Edit";
+} *@
+<div class="card p-0">
+ <div class="card-header bg-light header-elements-inline">
+        <h5 class="card-title">
+            @Html.Raw(Localization.Get(ViewData["action"].ToString())) | @Html.Raw(Localization.Get(ViewData["pageName"].ToString()))
+
+        </h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+                <a class="list-icons-item" data-action="reload"></a>
+                <a class="list-icons-item" data-action="remove"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+         <div class="row">
+            <div class="col-md-4">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <div class="form-group">
+                        <label asp-for="UserId" class="control-label"></label>
+                        <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
+                        <span asp-validation-for="UserId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Description" class="control-label"></label>
+                        <input asp-for="Description" class="form-control" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="RoomId" class="control-label"></label>
+                        <select asp-for="RoomId" class="form-control" asp-items="ViewBag.RoomId"></select>
+                        <span asp-validation-for="RoomId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="RequestStatusId" class="control-label"></label>
+                        <select asp-for="RequestStatusId" class="form-control" asp-items="ViewBag.RequestStatusId"></select>
+                        <span asp-validation-for="RequestStatusId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="RequestedDate" class="control-label"></label>
+                        <input asp-for="RequestedDate" class="form-control" />
+                        <span asp-validation-for="RequestedDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group form-check">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
+                        </label>
+                    </div>
+                    <div class="form-group form-check">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="IsDeleted" /> @Html.DisplayNameFor(model => model.IsDeleted)
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+
+    </div>
+    <div class="card-footer">
+        <a asp-action="Index">Back to List</a>
+    </div>
+</div>
+
+
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

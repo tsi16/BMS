@@ -1,0 +1,41 @@
+﻿@model NEXT_BMS.Models.User
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+@ViewBag.Message
+
+<div class="container form-container">
+    <h2 class="text-center mb-4">Verify Your Email</h2>
+    <form asp-action="VerifyEmail" asp-controller="Profile" method="post">
+        <div class="mb-3">
+            <label for="email" class="form-label">Email:</label>
+            <input type="email" name="email" id="email" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Verify Email</button>
+    </form>
+
+  
+</div>
+
+<style>
+    .form-container {
+        max-width: 400px; 
+        margin: 50px auto; 
+        padding: 30px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .error-message {
+        color: #dc3545; 
+        margin-top: 15px;
+    }
+
+    .success-message {
+        color: #198754; 
+        margin-top: 15px;
+    }
+</style>

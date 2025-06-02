@@ -1,0 +1,481 @@
+﻿@model NEXT_BMS.Models.Shop
+@using Insya.Localization
+@using Microsoft.Extensions.Options
+@{
+
+    var shopLocation = Model.ShopLocations.FirstOrDefault(x => x.IsActive);
+    var shopLocationId = 0;
+    var location = "";
+    @if (shopLocation != null)
+    {
+        shopLocationId = shopLocation.Id;
+        var s = shopLocation.Room;
+        location = $"{s.Name}/{s.Floor.Name}/{s.Floor.Building.Name}/{s.Floor.Building.City.Name}";
+    }
+}
+
+<div class="container mt-5 mb-3">
+    <div class="card shadow-lg" style="border-radius: 35px; overflow: hidden;">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <img src="~/images/pexels-introspectivedsgn-11389795.jpg" width="200" height="200" style="border-radius: 25px;" alt="@Model.Name" />
+                </div>
+                <div class="col-md-9">
+                    <h3 style="font-family: 'Roboto', sans-serif; font-size: 3rem; color: #6a5acd; text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(106, 90, 205, 0.7);">
+                        Shop D
+                    </h3>
+                    <div class="float-end">
+                      
+                      @*   <button type="button" class="btn btn-success" style="width: 150px; height: 50px; margin-left: 920px; margin-top: -110px; border-radius: 25px;" data-bs-toggle="modal" data-bs-target="#modal_addShopItem">
+                            + Add ShopItem
+                        </button> *@
+                        <div class="dropdown" style="margin-left: 1000px; margin-top: -70px">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="fa fa-bars"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                 <li><a onclick="removeShopLocation('@shopLocationId')" class="dropdown-item">Remove Location</a></li>
+                                <li>
+                                    <a class="dropdown-item" asp-action="Index">Back to List</a>
+                                </li>
+                                <li>
+                                    <button type="button" class="dropdown-item position-relative">
+                                        Tot
+                                        @if (Model.ShopItems.Where(x => !x.IsDeleted).Any())
+                                        {
+                                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">@Model.ShopItems.Count(x => !x.IsDeleted)</span>
+                                        }
+                                       
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    
+                    </div>
+                    <p class="card-text">Shop Name: @Html.DisplayFor(modelItem => @Model.Name)</p>
+                    <p class="card-text">Shop Description: @Html.DisplayFor(modelItem => @Model.Description)</p>
+                    <p class="card-text"><strong>Business Area:</strong> @Html.DisplayFor(modelItem => @Model.BusinessArea.Name)</p>
+
+                    @if (!string.IsNullOrWhiteSpace(location))
+                    {
+                        <p class="card-text">Location: @Html.DisplayFor(modelItem => location)</p>
+                    }
+                    else
+                    {
+                       
+                        <button type="button" class="btn btn-danger d-flex align-items-center" style="border-radius: 20px; padding: 5px 15px;" data-bs-toggle="modal" data-bs-target="#modal_addShopLocation">
+                            + <span class="fas fa-map-marker-alt" style="margin-right: 6px;"></span>
+                            
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="mb-3">
+    <input type="text" id="searchInput" class="form-control"
+           style="width: 500px; margin: 0 auto; border-radius: 20px;"
+           placeholder="Search for items..." />
+</div>
+
+<div id="itemlistn" style="display: flex; justify-content: center;">
+    <div class="row" id="cardRow"
+         style="max-width: 1200px; width: 100%; padding: 0 30px;">
+        
+    </div>
+</div>
+
+<nav aria-label="Page navigation example " class="mt-3 float-end">
+    <ul class="pagination" id="pagination">
+        <li class="page-item">
+            <a class="page-link" href="#" aria-label="Previous">
+                <span aria-hidden="true">«</span>
+            </a>
+        </li>
+       
+        <li class="page-item">
+            <a class="page-link" href="#" aria-label="Next">
+                <span aria-hidden="true">»</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<div class="modal fade" id="modal_addShopItem" tabindex="-1" aria-labelledby="modal_addShopItem" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="ShopItemLabel">
+                    <i class="icon-plus2 mr-1"></i>
+                    @Html.Raw(Localization.Get("Add Shop Item"))
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="hidden" id="ShopId" name="ShopId" value="@Model.Id" />
+                </div>
+                <div class="form-group">
+                    <label for="ItemId">@Html.Raw(Localization.Get("Select Item"))</label>
+                    <select name="ItemId" id="ItemId" class="form-control" asp-items="ViewBag.ItemId"></select>
+                </div>
+                <div class="form-group">
+                    <label for="Balance">@Html.Raw(Localization.Get("Balance"))</label>
+                    <input type="text" id="Balance" name="Balance" class="form-control" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link" data-bs-dismiss="modal">
+                    <i class="icon-cross2 font-size-base mr-1"></i> Close
+                </button>
+                <button class="btn bg-primary" onclick="SaveShopItem()">
+                    <i class="icon-checkmark3 font-size-base mr-1"></i> Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_addShopLocation" tabindex="-1" aria-labelledby="modal_addShopLocation" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="ShopLocationLabel">
+                    <i class="icon-plus2 mr-1"></i>
+                    @Html.Raw(Localization.Get("Add Shop Location"))
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="hidden" id="ShopId" name="ShopId" value="@Model.Id" />
+                   
+                </div>
+                <div class="form-group">
+                    <label for="RoomId">@Html.Raw(Localization.Get("Select Location"))</label>
+                    <select name="RoomId" id="RoomId" class="form-control" asp-items="ViewBag.RoomId"></select>
+                </div>
+              
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link" data-bs-dismiss="modal">
+                    <i class="icon-cross2 font-size-base mr-1"></i> Close
+                </button>
+                <button class="btn bg-primary" onclick="SaveShopLocation()">
+                    <i class="icon-checkmark3 font-size-base mr-1"></i> Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @await Html.PartialAsync("~/Areas/Administrator/Views/Shared/js/_alertify.cshtml")
+    @await Html.PartialAsync("~/Areas/Administrator/Views/Shared/js/_select2.cshtml")
+
+    <style>
+        body {
+            background-color: #f5f7fa;
+        }
+    </style>
+        <style >
+        body {
+            background: linear-gradient(to right, #f7f8f9, #e9ecef);
+            font-family: 'Arial', sans-serif;
+        }
+
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none; 
+        }
+
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+            }
+
+        .card-header {
+            background-color: transparent; 
+            position: relative;
+            z-index: 1; 
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif; 
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: #007bff; 
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); 
+        }
+
+        .card-text {
+            color: #555; 
+        }
+
+        .bg-primary-custom {
+            background: linear-gradient(to right, #007bff, #00BFFF);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #333; 
+            padding: 10px 0; 
+        }
+
+        .card-body {
+            position: relative;
+        }
+    </style>
+   
+     <script>
+
+     
+        function load(itemName) {
+           
+            $("#itemlist").empty();
+            let shopId = @Model.Id;
+            $.ajax({
+                type: 'POST',
+                url: '/Shops/lodnse',
+                data: {
+                    'ShopId': shopId,
+
+                    'itemname': itemName
+                   
+                },
+                success: function (response)
+                {
+                    $(response).each(function (index,item) {
+                        let shopItemId = item.id; 
+                        let itemName = item.itemName;
+                        let url = item.url;
+                        draw(url, shopItemId, itemName);
+                    })
+                  
+                },
+                error: function () {
+                    alert('Error .');
+                }
+            });
+        }
+            function draw(url, shopItemId, itemName) {
+            var data = `
+                <div class="col-md-3 mb-4 shop-item">
+                    <div class="card shadow-sm border-0"
+                         style="border-radius: 8px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; background-color: white;">
+                        <img src="${url}" class="card-img-top" alt="Shop Image"
+                             style="height: 180px; object-fit: cover; border-bottom: 1px solid #f1f1f1;" />
+                        <div class="card-body">
+                            <h5 class="card-title text-primary"
+                                style="font-size: 1.1rem; font-weight: bold; color: #007bff;">
+                                        <a class="dropdown-item p-0" href="/ShopItems/Details/${shopItemId}" style="color: #007bff; text-decoration: none;">
+                                    ${itemName}
+                                </a>
+                            </h5>
+                            <div class="dropdown float-end" style="margin-top: -40px;">
+                                <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="fa fa-bars"></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="/ShopItems/Details/${shopItemId}">View Item</a></li>
+                                    <li><a class="dropdown-item text-danger" onclick="removeShopItem('${shopItemId}')">Remove Item</a></li>
+                                </ul>
+                            </div>
+                            <ul class="list-inline mb-0 mt-3">
+                                <li class="list-inline-item me-1"><i class="fas fa-star text-warning fa-xs"></i></li>
+                                <li class="list-inline-item me-1"><i class="fas fa-star text-warning fa-xs"></i></li>
+                                <li class="list-inline-item me-1"><i class="fas fa-star text-warning fa-xs"></i></li>
+                                <li class="list-inline-item me-1"><i class="fas fa-star text-warning fa-xs"></i></li>
+                                <li class="list-inline-item me-1"><i class="fas fa-star-half-alt text-warning fa-xs"></i></li>
+                                <li class="list-inline-item text-muted small">4.5 (413)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+            $("#cardRow").append(data);
+        }
+
+
+        let currentPage = 1;
+        const pageSize = 6;
+
+        function loadItems(page, itemName) {
+            $("#itemlistn .row").empty(); 
+            let shopId = @Model.Id; 
+
+           
+            $.ajax({
+                type: 'POST',
+                url: '/Shops/LoadItems', 
+                data: {
+                    'shopId': shopId,
+                    'page': page,
+                    'pageSize': pageSize,
+                    'itemname': itemName
+                },
+                success: function (response) {
+                    console.log('AJAX Success:', response); 
+                    if (response && response.items && response.items.length > 0) {
+                        $(response.items).each(function (index, item) {
+                            let shopItemId = item.id;
+                            let itemName = item.itemName;
+                            let url = item.url;
+                           
+                            draw(url, shopItemId, itemName);
+                        });
+                        setupPagination(response.totalItems);
+                    } else {
+                        console.error('No items returned:', response);
+                        alert('No items available.');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('AJAX Error:', error);
+                    alert('Error loading items.');
+                }
+            });
+        }
+
+        function setupPagination(totalItems) {
+            const totalPages = Math.ceil(totalItems / pageSize);
+            let paginationHtml = '';
+
+            if (totalPages > 0) {
+                if (currentPage > 1) {
+                    paginationHtml += `<li class="page-item"><a class="page-link" href="#" aria-label="Previous" onclick="changePage(${currentPage - 1})"><span aria-hidden="true">«</span></a></li>`;
+                } else {
+                    paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">«</span></a></li>';
+                }
+
+                for (let i = 1; i <= totalPages; i++) {
+                    paginationHtml += `<li class="page-item ${i === currentPage ? 'active' : ''}"><a class="page-link" href="#" onclick="changePage(${i})">${i}</a></li>`;
+                }
+
+                if (currentPage < totalPages) {
+                    paginationHtml += `<li class="page-item"><a class="page-link" href="#" aria-label="Next" onclick="changePage(${currentPage + 1})"><span aria-hidden="true">»</span></a></li>`;
+                } else {
+                    paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>';
+                }
+
+                $('#pagination').html(paginationHtml);
+            } else {
+                $('#pagination').html(''); 
+            }
+        }
+
+        function changePage(page) {
+            currentPage = page; 
+            loadItems(currentPage,""); 
+        }
+
+        $("#searchInput").on("change", function () {
+            
+            let itemname = $(this).val();
+
+            loadItems(currentPage, itemname);
+          
+        });
+        $(document).ready(function () {
+            loadItems(currentPage,"");
+        });
+
+function SaveShopItem() {
+    let shopId = $('#ShopId').val();
+    let itemId = $('#ItemId').val();
+    let balance = $('#Balance').val();
+
+    $.ajax({
+        type: 'POST',
+        url: '/Shops/AddItem', 
+        data: {
+            'ShopId': shopId,
+            'ItemId': itemId,
+            'Balance': balance
+        },
+        success: function (response) {
+            location.reload(); 
+        },
+        error: function () {
+            alert('Error adding item.');
+        }
+    });
+}
+        function SaveShopLocation() {
+            let shopId = $('#ShopId').val();
+            let roomId = $('#RoomId').val();
+           
+
+            $.ajax({
+                type: 'POST',
+                url: '/Shops/AddShopLocation',
+                data: {
+                    'ShopId': shopId,
+                    'RoomId': roomId
+                   
+                },
+                success: function (response) {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error adding location.');
+                }
+            });
+        }
+
+        function removeShopItem(id) {
+            if (confirm('Are you sure you want to remove this Item?')) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/Shops/DeleteShopItems',
+                    data: { Id: id },
+                    success: function () {
+                        location.reload();
+                    },
+                    error: function () {
+                        alert('Error removing item.');
+                    }
+                });
+            }
+        }
+       
+      
+        function removeShopLocation(id) {
+                    alertify.set({ labels: { ok: "Yes Continue", cancel: "No Cancel" } });
+                    alertify.confirm("Are you sure you want to delete ailure Grade Count?", function (e) {
+                        if (e) {
+                                    $.ajax({
+                        type: 'POST',
+                        url: '/Shops/DeleteShopLocation',
+                        data: { Id: id },
+                        success: function () {
+                            alertify.success("success");
+                            location.reload();
+                        },
+                        error: function () {
+                            alert('Error removing location.');
+                        }
+                    });
+                        }
+                    });
+                }
+
+</script>
+<style>
+.container {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+</style>
+}
+

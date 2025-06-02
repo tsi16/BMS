@@ -1,0 +1,563 @@
+﻿@model NEXT_BMS.Models.User
+@* @{
+    var newNotificationCount = Model.Count(n => n.NotificationStatus?.Id == 1);
+} *@
+
+<div class="container mt-8">
+    <div class="card shadow rounded-4 border-0 py-0">
+        <div class="card-header bg-light border-bottom d-flex justify-content-between align-items-center" style="background-color: #e3f2fd;">
+            <h5 class="mb-0 text-primary">👤 User Profile</h5>
+
+            <div class="d-flex align-items-center gap-2">
+                <a asp-controller="Notifications" asp-action="MyNotifications" class="btn btn-sm btn-outline-primary position-relative">
+                    <i class="icon-bell3"></i>
+
+                  @*   @if (newNotificationCount > 0)
+                    {
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm">
+                            @newNotificationCount
+                            <span class="visually-hidden">unread messages</span>
+                        </span>
+                    } *@
+                </a>
+
+                <div class="dropdown">
+                    <a href="#" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-toggle="dropdown">
+                        <i class="icon-menu9"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a href="#" class="dropdown-item" data-toggle="modal" data-target="#umodal_read">Upload</a>
+                        <div class="dropdown-divider"></div>
+                        <a asp-controller="Notifications" asp-action="MyNotifications" class="dropdown-item">My Notifications</a>
+                        <a href="#" class="dropdown-item" data-toggle="modal" data-target="#editmodal_read"
+                           onclick="openEditModal('@Url', '@Model.UserImages.FirstOrDefault(x => x.IsActive)?.ImageDescription')">Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <form method="post">
+                <div class="row align-items-start">
+                   
+                    <div class="col-md-4 text-left">
+                        <div class="mb-3">
+                            @if (Model.UserImages.Any())
+                            {
+                                var url = Model.UserImages.FirstOrDefault(x => x.IsActive).Url;
+                                <img src="@url" alt="Profile Image" class="rounded-circle border" style="width: 140px; height: 140px;" />
+                            }
+                            else
+                            {
+                                <p>No image</p>
+                            }
+                        </div>
+                        <h4 class="mt-2">@Model.FirstName @Model.MiddleName</h4>
+                        <p class="text-muted">Hello, I am @Model.FirstName 👋</p>
+                    </div>
+
+                  
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item"><strong>First Name:</strong> @Model.FirstName</li>
+                                    <li class="list-group-item"><strong>Middle Name:</strong> @Model.MiddleName</li>
+                                    <li class="list-group-item"><strong>Last Name:</strong> @Model.LastName</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item"><strong>Phone:</strong> @Model.PhoneNumber</li>
+                                    <li class="list-group-item"><strong>Joined:</strong> @Model.CreatedDate.ToShortDateString()</li>
+                                    <li class="list-group-item"><strong>Status:</strong> @(Model.IsActive ? "Active" : "Inactive")</li>
+                                    <li class="list-group-item"><strong>Gender:</strong> @Model.Gender?.Name</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-footer text-end bg-white">
+            <a asp-action="Index" asp-controller="Home" class="btn btn-outline-secondary">Back to Home</a>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="text-primary">Ownerships</h5>
+        <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#addOwnerModal">
+            + Get Ownership
+        </button>
+    </div>
+    <table class="table table-hover shadow-sm rounded bg-white">
+        <thead class="table-primary text-center">
+            <tr>
+                <th>Full Name</th>
+                <th>TIN Number</th>
+                <th>Ownership Type</th>
+                <th colspan="2">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ownerUser in Model.OwnerUsers)
+            {
+                <tr>
+                    <td>@ownerUser.Owner.FullName</td>
+                    <td>@ownerUser.Owner.Tin</td>
+                    <td>@ownerUser.Owner.OwnershipType.Name</td>
+                    <td class="text-center">
+                        <a href="\Profiles\Details\@ownerUser.Owner.Id" class="btn btn-sm btn-outline-primary rounded-pill">
+                            <i class="bi bi-info-circle-fill"></i> Details
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" data-toggle="modal" data-target="#createBuildingModal">
+                            Create Building
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+
+<div class="modal fade" id="createBuildingModal" tabindex="-1" aria-labelledby="createBuildingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered ">
+        <div class="modal-content shadow-lg border-0 rounded-3">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="createBuildingModalLabel">Create Building</h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-light px-4 py-3">
+                <form asp-action="AddBuilding" asp-controller="Buildings">
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="UseTypeId" class="form-label fw-semibold">Use Type</label>
+                                <select name="UseTypeId" id="UseTypeId" class="form-control form-select shadow-sm" required="" asp-items="ViewBag.UseTypeId"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="Name" class="form-label fw-semibold">Building Name</label>
+                                <input name="Name" id="Name" placeholder="Enter building name" class="form-control shadow-sm" required="" />
+                            </div>
+                            <div class="form-group">
+                                <label for="CityId" class="form-label fw-semibold">City</label>
+                                <select name="CityId" id="CityId" class="form-control form-select shadow-sm" required="" asp-items="ViewBag.CityId"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="LocationId" class="form-label fw-semibold">Location</label>
+                                <select name="LocationId" id="LocationId" class="form-control form-select shadow-sm" required="" asp-items="ViewBag.LocationId"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="BuildingTypeId" class="form-label fw-semibold">Building Type</label>
+                                <select name="BuildingTypeId" id="BuildingTypeId" class="form-control form-select shadow-sm" required="" asp-items="ViewBag.BuildingTypeId"></select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="OwnerShipTypeId" class="form-label fw-semibold">Ownership Type</label>
+                                <select name="OwnerShipTypeId" id="OwnerShipTypeId" class="form-control form-select shadow-sm" required="" asp-items="ViewBag.OwnerShipTypeId"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="OwnerId" class="form-label fw-semibold">Owner</label>
+                                <select name="OwnerId" id="OwnerId" class="form-control form-select shadow-sm" required="" asp-items="ViewBag.OwnerId"></select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="NumberOfFloor" class="form-label fw-semibold">Number of Floors</label>
+                                <input name="NumberOfFloor" id="NumberOfFloor" type="number" class="form-control shadow-sm" placeholder="Enter number of floors" required="" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ConstractionYear" class="form-label fw-semibold">Construction Year</label>
+                                <input name="ConstractionYear" id="ConstractionYear" type="date" class="form-control shadow-sm" required="" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Description" class="form-label fw-semibold">Description</label>
+                                <textarea name="Description" id="Description" class="form-control shadow-sm" placeholder="Enter description" required=""></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group text-end mt-4">
+                        <button type="submit" class="btn btn-primary shadow-sm px-4">Create</button>
+                        <button type="button" class="btn btn-secondary shadow-sm px-4" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addOwnerModal" tabindex="-1" aria-labelledby="addOwnerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content shadow-lg border-0 rounded-3">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="addOwnerModalLabel">Create Ownership</h5>
+                <button type="button" class="btn-close text-white" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="CreateOwner" asp-controller="Profile">
+                <div class="modal-body bg-light">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="FullName" class="form-label fw-semibold">Full Name</label>
+                                <input type="text" class="form-control shadow-sm" id="FullName" name="fullName" placeholder="Enter employee name" required>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label for="OwnershipTypeId" class="form-label fw-semibold">Ownership Type</label>
+                                <select name="OwnershipTypeId" class="form-control shadow-sm rounded-pill" asp-items="ViewBag.OwnershipTypeId" required></select>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label for="Tin" class="form-label fw-semibold">TIN Number</label>
+                                <input type="text" class="form-control shadow-sm" id="Tin" name="Tin" placeholder="Enter TIN number" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary shadow-sm" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary shadow-sm">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="editBuildingModal" tabindex="-1" aria-labelledby="editBuildingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0 rounded-3">
+
+            <div class="modal-header bg-primary text-white rounded-top">
+                <h5 class="modal-title fw-bold" id="editBuildingModalLabel">Edit Building</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form asp-action="EditBuilding" method="post" asp-controller="Buildings">
+
+                <div class="modal-body bg-light px-4 py-3">
+                    <input type="hidden" id="NewBuildingId" name="BuildingId" />
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+
+                            <div class="form-group">
+                                <label for="UseTypeId1" class="form-label fw-semibold">Use Type</label>
+                                <select name="UseTypeId" id="UseTypeId1" class="form-control form-select shadow-sm" required asp-items="ViewBag.UseTypeId"></select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Name1" class="form-label fw-semibold">Building Name</label>
+                                <input type="text" name="Name" id="Name1" class="form-control shadow-sm" placeholder="Enter building name" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="BuildingTypeId" class="form-label fw-semibold">Building Type</label>
+                                <select name="BuildingTypeId" id="BuildingTypeId" class="form-control form-select shadow-sm" required asp-items="ViewBag.BuildingTypeId"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="CityId1" class="form-label fw-semibold">City</label>
+                                <select name="CityId" id="CityId1" class="form-control form-select shadow-sm" required="" asp-items="ViewBag.CityId"></select>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <div class="form-group">
+                                <label for="OwnerShipTypeId" class="form-label fw-semibold">Ownership Type</label>
+                                <select name="OwnerShipTypeId" id="OwnerShipTypeId" class="form-control form-select shadow-sm" required asp-items="ViewBag.OwnerShipTypeId"></select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="OwnerId" class="form-label fw-semibold">Owner</label>
+                                <select name="OwnerId" id="OwnerId" class="form-control form-select shadow-sm" required asp-items="ViewBag.OwnerId"></select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="NumberOfFloor" class="form-label fw-semibold">Number of Floors</label>
+                                <input type="number" name="NumberOfFloor" id="NumberOfFloor" class="form-control shadow-sm" placeholder="Enter number of floors" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="LocationId1" class="form-label fw-semibold">Location</label>
+                                <select name="LocationId" id="LocationId1" class="form-control form-select shadow-sm" required="" asp-items="ViewBag.LocationId"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light rounded-bottom">
+                    <button type="button" class="btn btn-secondary shadow-sm" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary shadow-sm">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteBuilding" tabindex="-1" aria-labelledby="deleteBuildingLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold" id="deleteBuildingLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-light">
+                <input type="hidden" id="BuildingId" name="BuildingId" />
+                <div class="alert alert-danger text-center">
+                    Are you sure you want to delete this Building?
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary shadow-sm" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="DeleteBuilding" asp-controller="Buildings" method="post">
+                    <input type="hidden" id="BuildingIdFormInput" name="BuildingId" />
+                    <button type="submit" class="btn btn-danger shadow-sm">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_read" tabindex="-1" aria-labelledby="modal_readLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modal_readLabel">Notification</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="mes"></div>
+            <div class="modal-footer">
+                <button type="button" onclick="Reload()" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="umodal_read" tabindex="-1" aria-labelledby="umodal_readLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="umodal_readLabel">User Profile</h1>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data" asp-action="Upload" asp-controller="Profile">
+                    <div class="form-group">
+                        <label for="imageUpload">Upload Profile Image</label>
+                        <input type="file" id="imageUpload" name="image" class="form-control" />
+                    </div>
+                    <div class="form-group mt-3">
+                        <label>Description</label>
+                        <input type="text" name="imagedescription" class="form-control" />
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Upload</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="Reload()" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editmodal_read" tabindex="-1" aria-labelledby="editmodal_readLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="editmodal_readLabel">Edit Profile</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data" asp-action="EditProfile" asp-controller="Profile">
+                    <div class="form-group">
+                        <label for="editImageUpload">Upload New Profile Image</label>
+                        <input type="file" id="editImageUpload" name="image" class="form-control" accept="image/*" />
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="imageDescription">Image Description</label>
+                        <input type="text" id="imageDescription" name="imagedescription" class="form-control" placeholder="Enter a brief description" />
+                    </div>
+                    <div id="currentImageContainer" class="mt-3">
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Update</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .emp-profile {
+        background: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+         margin-top: -175px; 
+      /*  margin-bottom : 50px; */
+    }
+
+    .profile-head h5 {
+        position : relative;
+        color: #007bff;
+        font-weight: bold;
+        margin-top : -90px;
+    }
+
+    .profile-head h6 {
+        color: #6c757d;
+        margin-top: -50px;
+    }
+
+    .profile-img img {
+        position : relative;
+        border-radius: 100%; 
+        margin-right : 60px;
+        border: 3px solid #007bff;
+        margin-top: -30px;
+    }
+    .my {
+        margin-top: -50px;
+    }
+
+    
+
+    .profile-work p {
+        font-weight: bold;
+        color: #343a40;
+    }
+
+    .modal-header {
+        background-color: #343a40;
+        color: white;
+    }
+
+    .modal-body {
+        background-color: #f8f9fa;
+    }
+</style>
+
+@section Scripts {
+    <style>
+        .bg-gradient-primary {
+            background: linear-gradient(to right, #4e54c8, #8f94fb) !important;
+        }
+
+    </style>
+   
+    <script>
+        $(function () {
+            let connection = new signalR.HubConnectionBuilder()
+                .withUrl("/NotificationHub")
+                .build();
+
+            connection.start().then(function () {
+                console.log("SignalR Connected.");
+            }).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            connection.on("ReceiveNotification", function (message) {
+                alert(message);
+                $("#notifications").append(`<tr><td>New Notification: ${message}</td></tr>`);
+                
+            });
+
+            connection.onclose(function () {
+                console.log("SignalR Connection closed. Trying to reconnect...");
+                setTimeout(function () {
+                    connection.start();
+                }, 5000);
+            });
+        });
+    </script>
+
+
+
+
+    <script>
+
+        function ChangeStatus(id ,Message) {
+          $("#mes").append(`<p>${Message}</p>`)
+
+            $.ajax({
+                type: 'POST',
+                url: '/Administrator/Notifications/MakeAsRead',
+                data: {
+                    'id': id
+                   
+                    },
+                success: function (response) {
+
+                   // location.reload();
+                },
+                error: function () {
+                    alert('Error .');
+                }
+            });
+        }
+        function Reload() {
+            location.reload();
+        }
+    
+    </script>
+    <script>
+        function openEditModal(imagePath, imageDescription) {
+            
+            $('#currentImageContainer').empty();
+
+           
+            $('#imageDescription').val(imageDescription);
+
+           
+            if (imagePath) {
+                $('#currentImageContainer').prepend(`<img src="${imagePath}" alt="Profile Image" style="max-width:200px; max-height:200px; display: block; margin-bottom: 10px;" />`);
+            }
+
+            
+            $('#editmodal_read').modal('show');
+        }
+
+
+
+          function setDeleteBuildingId(id) {
+
+            document.getElementById("BuildingId").value = id;
+            document.getElementById("BuildingIdFormInput").value = id;
+        }
+        function openEditBuildingModal(buildingId, bdName, bdType, bdOwnerType, bdOwnerId, NumberOfFloorId, bdUseType, dbLocation, dbCity) {
+
+            $("#NewBuildingId").val(buildingId);
+            $("#Name1").val(bdName);
+            $("#UseTypeId1").val(bdUseType);
+            $("#BuildingTypeId").val(bdType);
+            $("#OwnerShipTypeId").val(bdOwnerType);
+            $("#OwnerId").val(bdOwnerId);
+            $("#NumberOfFloor").val(NumberOfFloorId);
+            $("#CityId1").val(dbCity);
+            $("#LocationId1").val(dbLocation);
+
+          $('#editBuildingModal').modal('show');
+        }
+
+
+    </script>
+
+}

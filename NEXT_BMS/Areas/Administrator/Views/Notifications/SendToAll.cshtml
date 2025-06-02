@@ -1,0 +1,90 @@
+﻿@model Notification
+
+<div class="card">
+    <div class="card-header">
+        <h1>Send Notification to All Users</h1>
+    </div>
+    <div class="card-body">
+        <form asp-action="SendToAll" method="post">
+            <div class="form-group">
+                <label asp-for="Message"></label>
+                <textarea id="message" name="Message" class="form-control" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label asp-for="NotificationTypeId"></label>
+                <select id="notificationTypeId" name="NotificationTypeId" class="form-control" asp-items="ViewBag.NotificationTypeId"></select>
+            </div>
+            <input type="submit" id="sendNotification" value="Send Notification" class="btn btn-primary" />
+        </form>
+
+</div>
+<div class="card-footer">
+        <div>
+            <a asp-action="Index">Back to Notifications</a>
+        </div>
+</div>
+</div>
+@section Scripts {
+   
+      
+    <script src="~/Scripts/jquery.signalR-2.4.3.js"></script>
+    <script src="~/Signalr/hubs"></script>
+    <script>
+        $(function () {
+            console.log("Initializing SignalR connection...");
+
+            var chat = $.connection.notificationHub;
+
+            chat.client.receiveMessage = function (user, message) {
+                console.log("Received receiveMessage:", user, message);
+
+                var encodedUser = $('<div />').text(user).html();
+                var encodedMsg = $('<div />').text(message).html();
+
+                $('#discussion').append('<li><strong>' + encodedUser + '</strong>: ' + encodedMsg + '</li>');
+            };
+
+            $('#message').focus();
+
+            $.connection.hub.start().done(function () {
+                console.log("Connection established.");
+
+                $('#sendNotification').click(function (event) {
+                    event.preventDefault();
+
+                    let message = $('#message').val();
+                    let notificationTypeId = $('#notificationTypeId').val();
+                    let user = $('#displayname').val() || 'Anonymous';
+
+                    $.ajax({
+                        cache: false,
+                        type: 'POST',
+                        url: '@Url.Action("SendToAll", "Notifications")',
+                        data: {
+                            Message: message,
+                            NotificationTypeId: notificationTypeId
+                        },
+                        success: function () {
+                            $('#message').val('').focus();
+                            alert('Notification sent to all users!');
+                        },
+                        error: function (error) {
+                            console.log("AJAX error:", error);
+                        }
+                    });
+
+                    chat.server.sendMessage(user, message);
+                });
+            }).fail(function (error) {
+                console.log("SignalR connection error:", error);
+            });
+        });
+    </script>
+}
+
+
+  
+    
+
+
+   

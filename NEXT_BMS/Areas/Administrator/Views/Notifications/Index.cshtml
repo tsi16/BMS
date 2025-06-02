@@ -1,0 +1,86 @@
+﻿@model IEnumerable<NEXT_BMS.Models.Notification>
+@using Insya.Localization;
+@await Html.PartialAsync("Controls/_Common")
+@{
+    ViewData["Title"] = "Index";
+}
+
+ <div class="card">
+    <div class="card-header bg-light header-elements-inline">
+        <h5 class="card-title">
+            @Html.Raw(Localization.Get(ViewData["action"].ToString())) | @Html.Raw(Localization.Get(ViewData["pageName"].ToString()))
+        </h5>
+        <div class="header-elements">
+            <a asp-action="SendToUser" asp-controller="Notifications" class="btn btn-outline-info">
+                Send Notification to User
+            </a>
+
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.NotificationDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.IsActive)
+                    </th>
+                   
+                    <th>
+                        @Html.DisplayNameFor(model => model.NotificationStatus)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.NotificationType)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.User)
+                    </th>
+                    <th class="p-0 nosort text-center" style="width: 30px;"><i class="icon-menu-open2"></i></th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NotificationDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IsActive)
+                        </td>
+                       
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NotificationStatus.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NotificationType.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.User.Email)
+                        </td>
+                        <td class="text-right">
+                            <div class="list-icons">
+                                <div class="list-icons-item dropdown">
+                                    <a href="#" class="list-icons-item dropdown-toggle caret-0" data-toggle="dropdown"><i class="icon-menu9"></i></a>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="dropdown-item"><i class="icon-list3"></i>view </a>
+
+                                        <div class="dropdown-divider"></div>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="dropdown-item"><i class="icon-pencil7"></i> edit </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="dropdown-item"><i class="icon-cross2"></i> delete </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+    </div>
+</div> 
+

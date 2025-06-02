@@ -1,0 +1,69 @@
+﻿@model NEXT_BMS.Models.BuildingRequest
+@using Insya.Localization;
+@await Html.PartialAsync("Controls/_Common")
+@{
+    ViewData["Title"] = "Create";
+}
+<div class="card">
+    <div class="card-header bg-light header-elements-inline py-2">
+        <h5 class="card-title">
+            @Html.Raw(Localization.Get(ViewData["action"].ToString())) | @Html.Raw(Localization.Get(ViewData["pageName"].ToString()))
+        </h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+                <a class="list-icons-item" data-action="reload"></a>
+                <a class="list-icons-item" data-action="remove"></a>
+            </div>
+        </div>
+
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                  
+                    <div class="form-group">
+                        <label asp-for="Description" class="control-label"></label>
+                        <input asp-for="Description" class="form-control" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Amount" class="control-label"></label>
+                        <input asp-for="Amount" class="form-control" />
+                        <span asp-validation-for="Amount" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="LocationId" class="control-label"></label>
+                        <select asp-for="LocationId" class="form-control" asp-items="ViewBag.LocationId"></select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="BuildingTypeId" class="control-label"></label>
+                        <select asp-for="BuildingTypeId" class="form-control" asp-items="ViewBag.BuildingTypeId"></select>
+                    </div>
+                   
+                    <div class="form-group">
+                        <label asp-for="RequestedDate" class="control-label"></label>
+                        <input asp-for="RequestedDate" class="form-control" />
+                        <span asp-validation-for="RequestedDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div>
+            <a asp-action="Index">Back to List</a>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

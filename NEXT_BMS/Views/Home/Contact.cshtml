@@ -1,0 +1,70 @@
+﻿@{
+    ViewBag.Title = "Contact";
+
+}
+<div class="card">
+    <div class="card-body">
+        <div class="container">
+            <input type="text" id="message" />
+            <input type="button" id="sendmessage" value="Send" />
+            <input type="hidden" id="displayname" />
+            <ul id="discussion"></ul>
+        </div>
+        <hr />
+        @Html.TextBox("messageX")
+        <input type="button" value="Submit" onclick="TestData()" />
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+    @*@Scripts.Render("~/bundles/jqueryval")*@
+    <script src="~/Scripts/jquery.signalR-2.4.3.js"></script>
+    <script src="~/SignalR/hubs"></script>
+    <script type="text/javascript">
+
+
+            $(function () {
+              
+                var chat = $.connection.chat;
+            
+                chat.client.broadcastMessage = function (name, message) {
+                    
+                    var encodedName = $('<div />').text(name).html();
+                    var encodedMsg = $('<div />').text(message).html();
+                   
+                    $('#discussion').append('<li><strong>' + encodedName
+                        + '</strong>:  ' + encodedMsg + '</li>');
+                };
+           
+            $('#displayname').val(prompt('Enter your name:', ''));
+           
+            $('#message').focus();
+           
+                $.connection.hub.start().done(function () {
+                    $('#sendmessage').click(function () {
+                        let user = $('#displayname').val();
+                        let message = $('#message').val();
+
+                        chat.server.send(user, message);
+                        $('#message').val('').focus();
+                    });
+                });
+            });
+        function TestData() {
+            let message = $("#messageX").val();
+                $.ajax({
+                    cache: false,
+                    type: 'POST',
+                    url: '@Url.Action("RealTimeTest", "Home")',
+                    data: { 'messageX': message},
+                    async: false,
+                    success: function () {
+                      
+                    }
+                });
+            }
+    </script>
+}

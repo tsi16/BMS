@@ -1,0 +1,105 @@
+﻿@model IEnumerable<NEXT_BMS.Models.Notification>
+
+@{
+    var newCount = Model.Count(n => n.NotificationStatus?.Id == 1);
+}
+
+<div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-gradient-primary text-white">
+                <h5 class="modal-title" id="modalLabel">🔔 Notification</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" onclick="reloadPage()"></button>
+            </div>
+            <div class="modal-body" id="modalBody" style="font-size: 1rem;"></div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-dismiss="modal" onclick="reloadPage()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="card mt-7 shadow-lg border-0 rounded-4">
+    <div class="card-header bg-gradient bg-light d-flex justify-content-between align-items-center rounded-top-4 px-4 py-3">
+        <h4 class="mb-0 text-primary fw-bold">📬 Your Notifications</h4>
+        <span class="badge bg-primary bg-opacity-75 text-white px-3 py-2 rounded-pill shadow-sm">
+            @newCount new
+        </span>
+    </div>
+    <div class="card-body p-4">
+        <div class="table-responsive">
+            <table class="table align-middle table-hover table-bordered rounded">
+                <thead class="table-primary text-center">
+                    <tr class="fw-semibold">
+                        <th class="py-3">📌 Type</th>
+                        <th class="py-3">📅 Date</th>
+                        <th class="py-3">📍 Status</th>
+                        <th class="py-3">⚡ Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var notification in Model)
+                    {
+                        <tr class="text-center">
+                            <td class="text-dark fw-semibold">@notification.NotificationType?.Name</td>
+                            <td>@notification.NotificationDate.ToString("MMM dd, yyyy")</td>
+                            <td>
+                                @if (notification.NotificationStatus?.Id == 1)
+                                {
+                                    <span class="badge bg-danger bg-opacity-75 text-white px-3 py-2 rounded-pill">New</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success bg-opacity-75 text-white px-3 py-2 rounded-pill">Seen</span>
+                                }
+                            </td>
+                            <td>
+                                <button class="btn btn-info btn-sm rounded-pill px-3 shadow"
+                                        onclick="markAsRead('@notification.Id', `@Html.Raw(notification.Message.Replace("`", "\\`"))`)">
+                                    <i class="bi bi-eye"></i> Read
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function markAsRead(id, message) {
+            
+            $("#modalBody").html(`<p>${message}</p>`);
+            $("#notificationModal").modal("show");
+
+          
+            $.ajax({
+                type: 'POST',
+                url: '/Administrator/Notifications/MakeAsRead',
+                data: { id: id },
+                success: function () {
+                    console.log("Marked as read.");
+                },
+                error: function () {
+                    alert("Error marking notification as read.");
+                }
+            });
+        }
+
+        function reloadPage() {
+            location.reload();
+        }
+    </script>
+    <style>
+
+        .nav-link .badge {
+            font-size: 0.7rem;
+            padding: 4px 6px;
+        }
+
+    </style>
+
+}

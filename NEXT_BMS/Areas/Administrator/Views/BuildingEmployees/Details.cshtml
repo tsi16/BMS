@@ -1,0 +1,283 @@
+﻿@model NEXT_BMS.Models.BuildingEmployee
+@using Insya.Localization;
+@{ViewData["id"]=Model.Id;}
+@await Html.PartialAsync("Controls/_Common")
+
+<div class="card border-start border-start-width-2 border-start-secondary border-end border-end-width-1 border-end-secondary rounded-0">
+    <div class="card-header bg-light header-elements-inline">
+        <h5 class="card-title">
+            @Html.Raw(Localization.Get(ViewData["action"].ToString())) | @Html.Raw(Localization.Get(ViewData["pageName"].ToString()))
+        </h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+                <a class="list-icons-item" data-action="reload"></a>
+                <a class="list-icons-item" data-action="remove"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table table-xs">
+                    <tr>
+                        <td>
+                            @Html.DisplayNameFor(model => model.FullName)
+                        </td>
+                        <th>
+                            @Html.DisplayFor(model => model.FullName)
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DisplayNameFor(model => model.PhoneNumber)
+                        </td>
+                        <th>
+                            @Html.DisplayFor(model => model.PhoneNumber)
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DisplayNameFor(model => model.IsActive)
+                        </td>
+                        <th>
+                            @Html.DisplayFor(model => model.IsActive)
+                        </th>
+                    </tr>
+                   
+                  
+
+                </table>
+            </div>
+            <div class="col-md-6">
+                <table class="table table-xs">
+                   
+                   
+                    <tr>
+                        <td>
+                            @Html.DisplayNameFor(model => model.Building)
+                        </td>
+                        <th>
+                            @Html.DisplayFor(model => model.Building.ConstractionYear)
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DisplayNameFor(model => model.EmployeeType)
+                        </td>
+                        <th>
+                            @Html.DisplayFor(model => model.EmployeeType.Name)
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.DisplayNameFor(model => model.User)
+                        </td>
+                        <th>
+                            @Html.DisplayFor(model => model.User.FirstName)
+                        </th>
+                    </tr>
+                   
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+       
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal_linkuser" data-employee-id="@Model.Id">
+                    Link User
+                </button>
+
+                @if (ViewData["UserExists"] == null || !(bool)ViewData["UserExists"])
+                {
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#signupModal">
+                        Add User
+                    </button>
+                }
+                else
+                {
+
+                }
+          
+    </div>
+
+</div>
+
+ <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="signupModalLabel">
+                    <i class="fas fa-user-plus"></i> Add User
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="SignUp" asp-controller="BuildingEmployees" method="post" class="mx-1 mx-md-4">
+                    <input type="hidden" id="buildingemployeeId" name="buildingemployeeId" value="@Model.Id" /> 
+                    <div class="d-flex flex-row align-items-center mb-3">
+                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
+                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                            <input type="text" id="FirstName" name="firstName" class="form-control" placeholder="Your First Name" required />
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-row align-items-center mb-3">
+                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
+                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                            <input type="text" id="MiddleName" name="middleName" class="form-control" placeholder="Your Middle Name" />
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-row align-items-center mb-3">
+                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
+                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                            <input type="text" id="LastName" name="lastName" class="form-control" placeholder="Your Last Name" required />
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-row align-items-center mb-3">
+                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
+                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                            <input type="text" id="UserName" name="userName" class="form-control" placeholder="Your Username" required />
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-row align-items-center mb-3">
+                        <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
+                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                            <input type="password" id="Password" name="password" class="form-control" placeholder="Your Password" required />
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-row align-items-center mb-3">
+                        <i class="fas fa-phone fa-lg me-3 fa-fw"></i>
+                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                            <input type="text" id="PhoneNumber" name="phoneNumber" class="form-control" placeholder="Your Phone Number" required />
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-row align-items-center mb-3">
+                        <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
+                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                            <input type="email" id="Email" name="email" class="form-control" placeholder="Email" required />
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-row align-items-center mb-3">
+                        <i class="fas fa-venus-mars fa-lg me-3 fa-fw"></i>
+                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                            <select id="GenderId" name="genderId" class="form-control" required>
+                                <option value="" disabled selected>Select your gender</option>
+                                <option value="1">Male</option>
+                                <option value="2">Female</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                        <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg">Register</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_linkuser" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal_linkuserlabel">
+                    <i class="icon-link"></i> Link
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="searchData" class="form-control" placeholder="Phone number" required />
+                <button type="button" id="btn_search" onclick="searchbyphonenumber()">
+                    Search
+                </button>
+                <table class="table table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone Number</th>
+                            <th>Email</th>
+                            <th>Action</th> 
+                        </tr>
+                    </thead>
+                    <tbody id="userResults">
+                       
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+   <script>
+          var buildingEmployeeId; 
+          $('#modal_linkuser').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); 
+            buildingEmployeeId = button.data('employee-id'); 
+           });
+
+
+            function searchbyphonenumber() {
+               var searchData = $('#searchData').val();
+
+            $.ajax({
+                type: 'GET',
+                url: '/Administrator/BuildingEmployees/GetUsers',
+                data: { searchData: searchData },
+                success: function (data) {
+                    $('#userResults').empty();
+
+                    $(data).each(function(index, item) {
+                        var row = `
+        <tr>
+            <td>${item.firstName}</td>
+            <td>${item.phoneNumber}</td>
+            <td>${item.email}</td>
+            <td>
+                <button class="btn btn-success" onclick="linkUser(${item.id})">Link User</button>
+            </td>
+        </tr>
+                        `;
+                        $('#userResults').append(row);
+                    });
+
+                       if (data.length === 0) {
+                            $('#userResults').append('<tr><td colspan="4">No users found.</td></tr>');
+                    }
+                },
+                error: function () {
+                    alert('Error retrieving user data.');
+                }
+            });
+        }
+
+    function linkUser(userId) {
+        var buildingEmployeeId = @Model.Id;
+            $.ajax({
+                type: 'POST',
+                url: '/Administrator/BuildingEmployees/LinkUser',
+                data: {
+                    buildingEmployeeId: buildingEmployeeId, 
+                    userId: userId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('User linked successfully!');
+                        $('#modal_linkuser').modal('hide'); 
+                    } else {
+                        alert('Failed to link user: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Error linking the user. Please try again.');
+                }
+            });
+        }
+</script>

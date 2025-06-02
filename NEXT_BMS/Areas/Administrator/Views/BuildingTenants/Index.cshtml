@@ -1,0 +1,168 @@
+﻿ @model IEnumerable<NEXT_BMS.Models.Tenant>
+
+@using Insya.Localization
+@using Microsoft.Extensions.Options
+@{
+    ViewData["Title"] = "Index";
+    var approvedRoomRentalRequests = ViewBag.ApprovedRoomRentalRequests as List<int>;
+    
+    }
+<div class="container mt-4">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light text-center py-3">
+            <h2 class="mb-0">@Html.Raw(Localization.Get("Tenants Management"))</h2>
+        </div>
+        <div class="card-body">
+            <form id="filterForm" asp-action="Index" asp-controller="BuildingTenants" method="get" class="mb-3">
+                <div class="form-group">
+                    <label for="tenantId">@Html.Raw(Localization.Get("tenants"))</label>
+                    <select name="tenantId" id="tenantId" class="form-control" asp-items="@(ViewData["TenantId"] as SelectList)">
+                        <option value="">-- Select a Tenant Organization --</option>
+                    </select>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row">
+            @foreach (var te in Model)
+            {
+                <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                    <div class="card h-100 shadow-sm border-0 rounded-4">
+                        <div class="card-header bg-light border-0 rounded-top-4 py-2 px-3">
+                            <h6 class="mb-0 fw-semibold text-dark text-truncate">@te.Name</h6>
+                        </div>
+                        <div class="card-body small text-secondary px-3 py-2">
+                            <p class="mb-1"><strong>Building:</strong> @te.Building?.Name</p>
+                            <p class="mb-1"><strong>Type:</strong> @te.TenantType?.Name</p>
+                            <p class="mb-1"><strong>Contact:</strong> @te.Contact</p>
+                            <p class="mb-0"><strong>TIN:</strong> @te.Tin</p>
+                        </div>
+                        <div class="card-footer bg-white border-0 text-end py-2 px-3">
+                            <a asp-action="Details" asp-controller="BuildingTenants" asp-route-id="@te.Id" class="btn btn-sm btn-outline-primary">
+                                View
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center mt-3">
+            <p class="text-muted">You don't have any rented rooms!</p>
+        </div>
+    }
+
+    @if (approvedRoomRentalRequests != null && approvedRoomRentalRequests.Any())
+    {
+        <div class="text-end mt-3">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_addTenante">
+                <i class="icon-plus"></i> @Html.Raw(Localization.Get("Add Tenant"))
+            </button>
+        </div>
+    }
+</div>
+
+<div class="modal fade" id="modal_addTenante" tabindex="-1" aria-labelledby="modal_addTenante" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="ShopTenanteLabel">
+                    <i class="icon-plus2 mr-1"></i>
+                    @Html.Raw(Localization.Get("Add Tenantes"))
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label for="BuildingId">@Html.Raw(Localization.Get("buildings"))</label>
+                    <select name="BuildingId" id="BuildingId" class="form-control" asp-items="ViewBag.BuildingId"></select>
+                </div>
+                <div class="form-group">
+                    <label for="TenantTypeId">@Html.Raw(Localization.Get("tenanteTypes"))</label>
+                    <select name="TenantTypeId" id="TenantTypeId" class="form-control" asp-items="ViewBag.TenantTypeId"></select>
+                </div>
+                <div class="form-group">
+                    <label for="Name">@Html.Raw(Localization.Get("Name"))</label>
+                    <input type="text" id="Name" name="Name" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="Tin">@Html.Raw(Localization.Get("Tin"))</label>
+                    <input type="text" id="Tin" name="Tin" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="Description">@Html.Raw(Localization.Get("Description"))</label>
+                    <input type="text" id="Description" name="Description" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="Contact">@Html.Raw(Localization.Get("Contact"))</label>
+                    <input type="text" id="Contact" name="Contact" class="form-control" />
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-link" data-bs-dismiss="modal">
+                    <i class="icon-cross2 font-size-base mr-1"></i> Close
+                </button>
+                <button class="btn bg-primary" onclick="SaveTenant()">
+                    <i class="icon-checkmark3 font-size-base mr-1"></i> Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("js/_select2");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tenantSelect = document.getElementById('tenantId');
+            if (tenantSelect) {
+                tenantSelect.addEventListener('change', function () {
+                    document.getElementById('filterForm').submit();
+                });
+            }
+        });
+    </script>
+
+    <script>
+
+        function SaveTenant() {        
+            let buildingId = $('#BuildingId').val();
+            let tenantTypeId = $('#TenantTypeId').val();
+            let name = $('#Name').val();
+            let tin = $('#Tin').val();
+            let description = $('#Description').val();
+            let contact = $('#Contact').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/Administrator/BuildingTenants/AddTenant',
+                data: {
+                    'BuildingId': buildingId,
+                    'TenantTypeId': tenantTypeId,
+                    'Name': name,
+                    'Tin': tin,
+                    'Description': description,
+                    'Contact': contact
+        },
+        success: function (response) {
+            location.reload();
+        },
+        error: function () {
+            alert('Error adding tenant.');
+        }
+    });
+}
+</script>
+}

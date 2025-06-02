@@ -1,0 +1,583 @@
+﻿@model NEXT_BMS.Models.ShopItem
+
+@using Insya.Localization
+@using Microsoft.Extensions.Options
+@{
+    int ItemEntryCount = 1;
+
+    var itemImage = Model.Item.ItemImages.FirstOrDefault(x => x.IsActive);
+    var url = itemImage != null ? itemImage.Url : "";
+   
+}
+
+@if (TempData["Success"] != null)
+{
+    @TempData["Success"]
+}
+else
+{
+    @TempData["Error"]
+}
+
+<div class="card mx-auto" style="max-width: 900px;">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <img src="@url" width="150" height="150" style="border-radius: 15px;" />
+            </div>
+            <div class="col-md-8">
+                <h5 style="font-size: 2rem; color: #2196f3;">
+                    Item Entries
+                    <span class="float-end">
+                        <button type="button" class="btn btn-outline-info position-relative btn-sm">
+                            Total
+                            @if (Model.ItemEntries.Any(x => !x.IsDeleted))
+                            {
+                                <span class="position-absolute badge rounded-pill bg-danger" style="top: -10px; right: -10px;">
+                                    @Model.ItemEntries.Count(x => !x.IsDeleted)
+                                </span>
+                            }
+                        </button>
+                    </span>
+                </h5>
+
+                <p><strong>Item Name:</strong> @Model.Item.Name</p>
+                <p><strong>Available Quantity:</strong> @Model.ItemEntries.Sum(x => x.Quantity)</p>
+
+                <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
+                                data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">
+                            Home
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
+                                data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">
+                            Image
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+       
+        <div class="container mt-1">
+            <div class="d-flex justify-content-end mb-3">
+               
+            </div>
+
+            <div class="row">
+                @foreach (var item in Model.ItemEntries.Where(x => !x.IsDeleted))
+                {
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card shadow-lg p-3" style="border-radius: 15px; background-color: #ffffff;">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Entry Date: @item.EntryDate</h5>
+                                <p class="card-text"><strong>Quantity:</strong> @item.Quantity</p>
+                                <p class="card-text"><strong>Withdraw Quantity:</strong> @item.WithdrawQuantity</p>
+                                <p class="card-text"><strong>Price:</strong> $@item.Price</p>
+
+                                <div class="d-flex justify-content-center">
+                                    <button class="btn btn-outline-danger me-2" onclick="removeItemEntry('@item.Id')">Remove</button>
+                                    
+                                    <button class="btn btn-outline-primary me-2" onclick="setEditItemEntry('@item.Id','@item.Price','@item.Quantity')" data-bs-toggle="modal" data-bs-target="#modal_editItemEntry">Edit</button>
+                                    
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="variationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Variations
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="variationsDropdown">
+                                            <li>
+                                                <button class="btn btn-success" style="background-color: #28a745; border-color: #28a745; margin-left :200px;" onclick="setNItemEntryId('@item.Id')" data-bs-toggle="modal" data-bs-target="#modal_addItemEntryVariation">
+                                                    <i class="fa fa-plus-circle"></i> Add 
+                                                </button>
+                                            </li>
+                                            @foreach (var variation in item.ItemEntryVarations.Where(x => !x.IsDeleted))
+                                            {
+                                                <li>
+                                                    <a class="dropdown-item d-flex justify-content-between align-items-center">
+                                                        <span>
+                                                            <strong>@variation.VarationType.Name:</strong> @variation.Varation.Name
+                                                            <span><strong>Quantity:</strong> @variation.Quantity</span>
+                                                            <span><strong>Price:</strong> $@variation.Price</span>
+                                                        </span>
+                                                    </a>
+                                                        <span class="float-end" >
+
+                                                            <a class="dropdown-item text-danger me-2" onclick="removeVariation('@variation.Id')" style="color: red;">
+                                                                Remove
+                                                            </a>
+                                                            <a class="dropdown-item text-primary" style="margin-left : 70px; margin-top : -32px;" onclick="setEditItemEntryVariation('@variation.Id','@variation.VarationTypeId','@variation.VarationId','@variation.Quantity', '@variation.Price')" data-bs-toggle="modal" data-bs-target="#modal_editItemEntryVariation" style="color: blue;">
+                                                                Edit
+                                                            </a>
+                                                            
+                                                        </span>
+                                                        
+                                                   
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        <div class="card">
+            <div class="header">
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            @foreach (var image in Model.Item.ItemImages.Where(x => x.ItemId == Model.ItemId))
+                            {
+
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <img src="@image.Url" width="340" height="340" />
+                                        <div class="card-body">
+                                            <p> New Entry</p>
+                                        </div>
+                                        <div class="card-footer">
+                                            <a href="#" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editimagemodal_read"
+                                               onclick="seteditimage('@image.Id')">Edit itemimage</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#imagemodal_read">
+                    <i class="fas fa-camera"></i>
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_addItemEntry" tabindex="-1" aria-labelledby="modal_addItemEntry" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="ItemEntryLabel">
+                    <i class="icon-plus2 mr-1"></i>
+                    @Html.Raw(Localization.Get("Add Item Entry"))
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="hidden" id="ShopItemId" name="ShopItemId" value="@Model.Id">
+                  
+                </div>
+                <div class="form-group mb-3">
+                    <label for="EntryDate">@Html.Raw(Localization.Get("Entry Date"))</label>
+                    <input type="date" id="EntryDate" name="EntryDate" class="form-control" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="Quantity">@Html.Raw(Localization.Get("Quantity"))</label>
+                    <input type="number" id="Quantity" name="Quantity" class="form-control" min="0" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="WithdrawQuantity">@Html.Raw(Localization.Get("Withdraw Quantity"))</label>
+                    <input type="number" id="WithdrawQuantity" name="WithdrawQuantity" class="form-control">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="Price">@Html.Raw(Localization.Get("Price"))</label>
+                    <input type="text" id="Price" name="Price" class="form-control" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link" data-bs-dismiss="modal">
+                    <i class="icon-cross2 font-size-base mr-1"></i> Close
+                </button>
+                <button class="btn bg-primary" onclick="SaveItemEntry()">
+                    <i class="icon-checkmark3 font-size-base mr-1"></i> Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modal_editItemEntry" tabindex="-1" aria-labelledby="modal_editItemEntry" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="ItemEntryLabel">
+                    <i class="icon-pencil mr-1"></i>
+                    @Html.Raw(Localization.Get("Edit Item Entry"))
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="EditItemEntryId" />
+                <div class="form-group mb-3">
+                    <label for="EditQuantity">@Html.Raw(Localization.Get("Quantity"))</label>
+                    <input type="number" id="EditQuantity" name="Quantity" class="form-control" min="0" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="EditPrice">@Html.Raw(Localization.Get("Price"))</label>
+                    <input type="text" id="EditPrice" name="Price" class="form-control" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link" data-bs-dismiss="modal">
+                    <i class="icon-cross2 font-size-base mr-1"></i> Close
+                </button>
+                <button class="btn bg-primary" onclick="SaveEditedItemEntry()">
+                    <i class="icon-checkmark3 font-size-base mr-1"></i> Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_addItemEntryVariation" tabindex="-1" aria-labelledby="modal_addItemEntryVariation" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="ItemEntryVariationLabel">
+                    <i class="icon-plus2 mr-1"></i>
+                    @Html.Raw(Localization.Get("Add Item Entry Variation"))
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="hidden" id="ShopItemId" name="ShopItemId" value="@Model.Id">
+                   
+                </div>
+                <div class="form-group mb-3">
+                    <input type="hidden" id="NItemEntryId" name="ItemEntryId" />
+                </div>
+                <div class="form-group mb-3">
+                    <label for="VarationTypeId">@Html.Raw(Localization.Get("Varation Type"))</label>
+                    <select name="VarationTypeId" id="VarationTypeId" class="form-control" asp-items="ViewBag.VarationTypeId"></select>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="VarationId">@Html.Raw(Localization.Get("Varation"))</label>
+                    <select name="VarationId" id="VarationId" class="form-control" asp-items="ViewBag.VarationId"></select>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="Quantity">@Html.Raw(Localization.Get("Quantity"))</label>
+                    <input type="number" id="NQuantity" name="Quantity" class="form-control" min="0" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="Price">@Html.Raw(Localization.Get("Price"))</label>
+                    <input type="number" id="NPrice" name="Price" class="form-control" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link" data-bs-dismiss="modal">
+                    <i class="icon-cross2 font-size-base mr-1"></i> Close
+                </button>
+                <button class="btn bg-primary" onclick="SaveItemEntryVariation()">
+                    <i class="icon-checkmark3 font-size-base mr-1"></i> Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_editItemEntryVariation" tabindex="-1" aria-labelledby="modal_editItemEntryVariation" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="ItemEntryVariationLabel">
+                    <i class="icon-pencil mr-1"></i>
+                    @Html.Raw(Localization.Get("Edit Item Entry Variation"))
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="hidden" id="EditShopItemId" name="ShopItemId" value="@Model.Id">
+                    
+                </div>
+                <div class="form-group mb-3">
+                    <input type="hidden" id="MEditItemEntryId" name="ItemEntryId" />
+                </div>
+                <div class="form-group mb-3">
+                    <label for="EditVarationTypeId">@Html.Raw(Localization.Get("Varation Type"))</label>
+                    <select name="VarationTypeId" id="EditVarationTypeId" class="form-control" asp-items="ViewBag.VarationTypeId"></select>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="EditVarationId">@Html.Raw(Localization.Get("Varation"))</label>
+                    <select name="VarationId" id="EditVarationId" class="form-control" asp-items="ViewBag.VarationId"></select>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="EditQuantity">@Html.Raw(Localization.Get("Quantity"))</label>
+                    <input type="number" id="MEditQuantity" name="Quantity" class="form-control" min="0" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="EditPrice">@Html.Raw(Localization.Get("Price"))</label>
+                    <input type="number" id="MEditPrice" name="Price" class="form-control" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-link" data-bs-dismiss="modal">
+                    <i class="icon-cross2 font-size-base mr-1"></i> Close
+                </button>
+                <button class="btn bg-primary" onclick="SaveEditedItemEntryVariation()">
+                    <i class="icon-checkmark3 font-size-base mr-1"></i> Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="imagemodal_read" tabindex="-1" aria-labelledby="imagemodal_readLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="umodal_readLabel">item image</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data" asp-action="UploadItemImage" asp-controller="Shops">
+                    <div class="form-group">
+                        <label for="imageUpload">Upload Image</label>
+                        <input type="file" id="imageUpload" name="image" class="form-control" />
+                    </div>
+                    <div class="form-group">
+
+                        <input type="hidden" id="ItemId" name="itemId" value="@Model.ItemId" />
+                    </div>
+                   
+                    <button type="submit" class="btn btn-primary mt-3">Upload</button>
+                </form>
+                 </div>
+          
+            <div class="modal-footer">
+                <button type="button" onclick="Reload()" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editimagemodal_read" tabindex="-1" aria-labelledby="editimagemodal_readLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="editimagemodal_readLabel">Edit Image</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data" asp-action="Edititemimage" asp-controller="Shops">
+                    <div class="form-group">
+                        <label for="editImageUpload">Upload New Item Image</label>
+                        <input type="file" id="editImageUpload" name="image" class="form-control" accept="image/*" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="hidden" id="ItemImageId" name="itemImageId" />
+                    </div>
+                    <div id="currentImageContainer" class="mt-3">
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Update</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+   
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f2f5 0%, #d9d9d9 100%);
+        }
+
+        .card {
+            background-color: #ffffff; 
+            border: none; 
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-radius: 15px; 
+        }
+
+            .card:hover {
+                transform: scale(1.05); 
+            }
+
+        h2 {
+            color: #343a40; 
+        }
+
+        .list-group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: none; 
+        }
+
+        .badge {
+            margin-left: 10px;
+        }
+
+        .btn {
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+            .btn:hover {
+                background-color: #0d6efd; 
+                color: white; 
+            }
+    </style>
+   
+    <script>
+     function setNItemEntryId(id) {
+            $('#NItemEntryId').val(id);
+        };
+        function seteditimage(itemImageId) {
+            $('#ItemImageId').val(itemImageId);
+        };
+       
+function SaveItemEntry() {
+    let shopItemId = $('#ShopItemId').val();
+    let entryDate = $('#EntryDate').val();
+    let quantity = $('#Quantity').val();
+    let withdrawQuantity = $('#WithdrawQuantity').val();
+    let price = $('#Price').val();
+
+    $.ajax({
+        type: 'POST',
+        url: '/Shops/AddEntry', 
+        data: {
+            'ShopItemId': shopItemId,
+            'EntryDate': entryDate,
+            'Quantity': quantity,
+            'WithdrawQuantity': withdrawQuantity,
+            'Price': price
+        },
+        success: function (response) {
+            location.reload();
+        },
+        error: function () {
+            alert('Error adding item entry.');
+        }
+    });
+}
+        function setEditItemEntry(id,Price, Quantity) {
+
+            $('#EditItemEntryId').val(id);
+            $('#EditPrice').val(Price);
+            $('#EditQuantity').val(Quantity);
+
+        };
+
+
+        function SaveEditedItemEntry() {
+            let editItemEntryId = $('#EditItemEntryId').val();
+
+            let quantity = $('#EditQuantity').val(); 
+           
+            let price = $('#EditPrice').val();
+
+           
+            $.ajax({
+                type: 'POST',
+                url: '/Shops/EditItemEntry', 
+                data: {
+                    Id: editItemEntryId,
+                   
+                    Quantity: quantity,
+                   
+                    Price: price
+                },
+                success: function () {
+                    location.reload(); 
+                },
+                error: function () {
+                    alert('Error editing item entry.'); 
+                }
+            });
+        }
+       
+                
+        function SaveItemEntryVariation() {
+           
+            let varationTypeId = $('#VarationTypeId').val();
+            let shopItemId = $('#ShopItemId').val();
+            let varationId = $('#VarationId').val();
+            let itemEntryId = $('#NItemEntryId').val();
+            let quantity = $('#NQuantity').val();
+            let price = $('#NPrice').val();
+           
+             $.ajax({
+                type: 'POST',
+                url: '/Shops/AddItemEntryVariation',
+                data: {
+                    "VarationTypeId": varationTypeId,
+                    "ShopItemId" : shopItemId,
+                    "VarationId": varationId,
+                    "ItemEntryId": itemEntryId,
+                    "Quantity": quantity,
+                    "Price": price
+                },
+                success: function (response) {
+                     location.reload();
+                    // alert("new");
+                },
+                error: function (xhr) {
+                    alert('Error adding item entry variation: ' + xhr.responseText);
+                }
+            });
+        }
+
+        function setEditItemEntryVariation(id, variationTypeId, variationId, quantity, price) {
+            $('#MEditItemEntryId').val(id);
+            $('#EditVarationTypeId').val(variationTypeId);
+            $('#EditVarationId').val(variationId);
+            $('#MEditQuantity').val(quantity);
+            $('#MEditPrice').val(price);
+        }
+
+        function SaveEditedItemEntryVariation() {
+            let editItemEntryId = $('#MEditItemEntryId').val();
+            let variationTypeId = $('#EditVarationTypeId').val();
+            let variationId = $('#EditVarationId').val();
+            let quantity = $('#MEditQuantity').val();
+            let price = $('#MEditPrice').val();
+           $.ajax({
+                type: 'POST',
+                url: '/Shops/EditItemEntryVariation',
+                data: {
+                   
+                    Id: editItemEntryId,
+                    VarationTypeId: variationTypeId,
+                    VarationId: variationId,
+                    Quantity: quantity,
+                    Price: price
+                },
+                success: function () {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Error editing item entry variation.');
+                }
+            });
+        }
+
+</script>
+}

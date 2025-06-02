@@ -1,0 +1,189 @@
+﻿@model NEXT_BMS.Models.Building
+@using Insya.Localization
+
+@{
+    ViewData["Title"] = $"{Model.Name} - Building Details";
+}
+
+<a asp-action="Index"
+   asp-route-cityId="@ViewBag.CityId"
+   asp-route-locationId="@ViewBag.LocationId"
+   asp-route-useTypeId="@ViewBag.UseTypeId"
+   asp-route-page="@ViewBag.Page"
+   class="btn btn-outline-primary ms-4 mt-4">
+    ← Back to Building List
+</a>
+
+<div class="container py-2">
+    <div class="text-center mb-5">
+        <h1 class="building-title display-4 fw-semibold animate__animated animate__fadeInDown">@Model.Name</h1>
+        <p class="text-muted fs-5">Explore floors and available rooms</p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var floor in Model.Floors)
+        {
+            <div class="col">
+                <div class="card floor-card shadow h-100 animate__animated animate__fadeInUp">
+                    <div class="card-body">
+                        <h5 class="mb-3 fs-4 fw-semibold">@floor.Name</h5>
+
+                        @if (floor.Rooms != null && floor.Rooms.Any())
+                        {
+                            <a class="btn btn-outline-primary w-100"
+                               asp-action="RoomList"
+                               asp-controller="BuildingList"
+                               asp-route-id="@floor.Id">
+                                View Rooms
+                            </a>
+                        }
+                        else
+                        {
+                            <p class="alert alert-warning">No rooms available on this floor.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+<div id="room-list" class="mt-5"></div>
+</div>
+
+<div class="modal fade" id="modal_addRentalRequest" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form asp-action="saverentalRequest" asp-controller="BuildingList" class="modal-content bg-light rounded-4">
+            <div class="modal-header">
+                <h5 class="modal-title text-dark">@Html.Raw(Localization.Get("Rental Request"))</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="RequestRoomId" name="RoomId" value="@Model.Id" />
+                <div class="form-group mb-3">
+                    <label for="Description" class="text-dark">@Html.Raw(Localization.Get("Description"))</label>
+                    <input type="text" id="Description" name="Description" class="form-control" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function getRooms(floorId) {
+            $.ajax({
+                url: '/BuildingList/GetRooms',
+                type: 'GET',
+                data: { floorId: floorId },
+                success: function (data) {
+                    $('#room-list').empty();
+                    if (data && data.length > 0) {
+                        var html = `<div class="card shadow-sm p-4 mt-3">
+                            <h4 class="mb-4 text-dark">Rooms on Floor</h4>
+                            <ul class="list-group list-group-flush">`;
+                        data.forEach(room => {
+                            html += `<li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>${room.name}</strong> - ${room.roomStatus} |
+                                    ${room.width}x${room.length} m
+                                    <span class="small text-info">(Area: ${room.width * room.length} m²)</span>
+                                </div>`;
+                            if (room.rentalRequestId) {
+                                html += `<button class="btn btn-sm btn-danger" onclick="removeRentalRequest('${room.rentalRequestId}')">Remove</button>`;
+                            } else {
+                                html += `<button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modal_addRentalRequest" onclick="setRoomId(${room.roomId})">Request</button>`;
+                            }
+                            html += `</li>`;
+                        });
+                        html += `</ul></div>`;
+                        $('#room-list').html(html);
+                    } else {
+                        $('#room-list').html(`<div class="alert alert-warning">No rooms found.</div>`);
+                    }
+                },
+                error: function () {
+                    $('#room-list').html(`<div class="alert alert-danger">Error loading rooms.</div>`);
+                }
+            });
+        }
+
+        function setRoomId(roomId) {
+            $("#RequestRoomId").val(roomId);
+        }
+
+        function removeRentalRequest(rentalRequestId) {
+            if (confirm("Are you sure you want to delete this rental request?")) {
+                $.post('/BuildingList/Deleterentalrequest', { id: rentalRequestId }, function () {
+                    alert("Rental request removed.");
+                    location.reload();
+                });
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .building-title {
+            background: linear-gradient(90deg, #6c63ff, #a084dc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .floor-card {
+            border-radius: 1rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .floor-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            }
+
+        .card-body {
+            padding: 1.75rem;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            border-radius: 0.5rem;
+        }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+                border-color: #0056b3;
+            }
+
+        .list-group-item {
+            border: none;
+            font-size: 0.95rem;
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-content {
+            border-radius: 1rem;
+            background-color: #ffffff;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #e1e1e1;
+        }
+
+        #room-list .card {
+            border-radius: 1rem;
+            background-color: #fff;
+        }
+
+    </style>
+}

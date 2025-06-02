@@ -1,0 +1,213 @@
+﻿@model NEXT_BMS.Models.User
+@using Insya.Localization
+@using Microsoft.Extensions.Options
+@using NEXT_BMS.ViewModels;
+@inject IOptions<AppConfig> AppConfig
+
+@await Html.PartialAsync("Controls/_Common")
+
+<div class="card">
+    <div class="card-header bg-light header-elements-inline">
+        <h5 class="card-title">
+            @Html.Raw(Localization.Get(ViewData["action"].ToString())) | @Html.Raw(Localization.Get(ViewData["pageName"].ToString()))
+        </h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+                <a class="list-icons-item" data-action="reload"></a>
+                <a class="list-icons-item" data-action="remove"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-auto">
+                <img src="@Context.Session.GetString("PhotoUrl")" class="img-fluid" width="200" />
+                <div class="card-img-actions">
+                  
+                   <div class="card-img-actions-overlay card-img-top">
+                      
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <table class="table table-xs table-striped table-hover">
+                    <tr>
+                        <th>@Html.Raw(Localization.Get("FullName"))</th>
+                        <td>@Html.DisplayFor(model => model.FirstName)</td>
+                    </tr>
+                    <tr>
+                        <th>@Html.Raw(Localization.Get("MobileNumber"))</th>
+                        <td>@Html.DisplayFor(model => model.PhoneNumber)</td>
+                    </tr>
+                    <tr>
+                        <th>@Html.Raw(Localization.Get("Email"))</th>
+                        <td>@Html.DisplayFor(model => model.Email)</td>
+                    </tr>
+                    <tr>
+                        <th>@Html.Raw(Localization.Get("UserName"))</th>
+                        <td>@Html.DisplayFor(model => model.UserName)</td>
+                    </tr>
+                    <tr>
+                        <th>@Html.Raw(Localization.Get("Status"))</th>
+                        <td class="text-right">
+                            @if (Model.IsActive)
+                            {
+                                <a href="#" class="badge bg-success dropdown-toggle" data-toggle="dropdown">Active</a>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a href="@Url.Action("Block","Users",new{Id=Model.Id })" class="dropdown-item"><span class="badge badge-mark mr-2 bg-danger border-danger"></span> Block</a>
+                                </div>
+                            }
+                            else
+                            {
+                                <a href="#" class="badge bg-danger dropdown-toggle" data-toggle="dropdown">Blocked</a>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a href="@Url.Action("Activate","Users",new{Id=Model.Id })" class="dropdown-item"><span class="badge badge-mark mr-2 bg-success border-success"></span> Activate</a>
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <table class="table table-xs table-striped table-hover">
+                    <tr>
+                        <th>@Html.Raw(Localization.Get("CreatedDate"))</th>
+                        <td>@Html.DisplayFor(model => model.CreatedDate)</td>
+                    </tr>
+                    <tr>
+                        <th>@Html.Raw(Localization.Get("LastLogon"))</th>
+                        <td>@Html.DisplayFor(model => model.LastLogon)</td>
+                    </tr>
+                    <tr>
+                        <th>@Html.Raw(Localization.Get("FailureCount"))</th>
+                        <td>@Html.DisplayFor(model => model.FailureCount)</td>
+                    </tr>
+                    <tr>
+                        <th>@Html.Raw(Localization.Get("BlockEndDate"))</th>
+                        <td>
+                            @if (Model.BlockEndDate == null)
+                            {
+                                <i class="icon-minus2"></i> <i class="icon-minus2"></i> }
+                            else
+                            {
+                                @Html.DisplayFor(model => model.BlockEndDate)
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <a href="@Url.Action("ResendPasswordToEmail", "Users",new { Id=Model.Id})">Resend password</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-light header-elements-inline py-1">
+        <h5 class="card-title">
+            @Html.Raw(Localization.Get("User Roles"))
+            <span class="badge bg-info-800 badge-pill">@Model.UserRoles.Count(x => x.IsActive && x.IsDeleted == false)</span>
+        </h5>
+        <div class="header-elements">
+            <button class="btn btn-outline-success" Data-toggle="modal" data-target="#modal_addRole">
+                <i class="icon-plus22"></i>   @Html.Raw(Localization.Get("Add Role"))
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-1">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.Raw(Localization.Get("No."))
+                    </th>
+                    <th>
+                        @Html.Raw(Localization.Get("Role"))
+                    </th>
+                    <th>
+                        @Html.Raw(Localization.Get("IsDeforlt"))
+                    </th>
+                    <th>
+                        @Html.Raw(Localization.Get("IsActive"))
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int roleCount = 1;
+                }
+                @foreach (var role in Model.UserRoles.Where(x=>x.IsDeleted==false))
+                {
+                    <tr>
+                        <td>
+                            @roleCount
+                        </td>
+                        <td>
+                            @role.Role.Name
+                        </td>
+                        <td>
+                            @role.IsDefault
+                        </td>
+                        <td>
+                            @role.IsActive
+                        </td>
+                    </tr>
+                    roleCount++;
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="modal_addRole" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header mt-0 @AppConfig.Value.BrandColor">
+                <h4 class="modal-title">
+                    @Html.Raw(Localization.Get("Add Role"))
+                </h4>
+                <a href="#" class="pt-2" data-dismiss="modal">
+                    <i class="icon-cross text-white"></i>
+                </a>
+           
+            </div>
+
+            <form asp-action="saveRoles" asp-controller="Users">
+                <div class="modal-body">
+                    <input type="hidden" name="userId" value="@Model.Id" />
+                    <div class="form-group">
+                        @Html.Raw(Localization.Get("Select Role"))
+                        <select name="selectedRoles" multiple="multiple" class="select-search form-control" placeholder="role_info">
+                            <option></option>
+                            @foreach (var role in (IEnumerable<SelectListItem>)ViewBag.RoleId)
+                            {
+                                int roleId = int.Parse(role.Value);
+                                <option selected="@(Model.UserRoles.Any(c => c.RoleId == roleId && c.IsActive))" value="@role.Value">@role.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-link" data-dismiss="modal"><i class="icon-cross2 font-size-base mr-1"></i> Close</button>
+                    <button class="btn bg-primary"><i class="icon-checkmark3 font-size-base mr-1"></i> Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("js/_select2");}
+    @{await Html.RenderPartialAsync("js/_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("js/_alertify");}
+    <script type="text/javascript">
+
+    </script>
+}

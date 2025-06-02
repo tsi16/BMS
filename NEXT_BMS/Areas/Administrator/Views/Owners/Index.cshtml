@@ -1,0 +1,108 @@
+﻿@model IEnumerable<NEXT_BMS.Models.Owner>
+@using Insya.Localization;
+@await Html.PartialAsync("Controls/_Common")
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="card">
+<div class="card-header bg-light header-elements-inline py-2">
+    <h5 class="card-title">
+        @Html.Raw(Localization.Get(ViewData["action"].ToString())) | @Html.Raw(Localization.Get(ViewData["pageName"].ToString()))
+    </h5>
+
+    <div class="header-elements">
+           
+        <div class="list-icons">
+            <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Search items..." id="searchBar" onkeyup="filterItems()" />
+            </div>
+               
+            <a class="list-icons-item" data-action="collapse"></a>
+            <a class="list-icons-item" data-action="reload"></a>
+            <a class="list-icons-item" data-action="remove"></a>
+        </div>
+    </div>
+</div>
+
+<div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FullName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Tin)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Verified)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.RegisteredDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.IsActive)
+                    </th>
+                   
+                    <th>
+                        @Html.DisplayNameFor(model => model.Document)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.OwnershipType)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="text-info-800"> @Html.DisplayFor(modelItem => item.FullName) </a>
+
+                           
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Tin)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Verified)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RegisteredDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IsActive)
+                        </td>
+                       
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Document.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.OwnershipType.Description)
+                        </td>
+                        <td class="text-right">
+                            <div class="list-icons">
+                                <div class="list-icons-item dropdown">
+                                    <a href="#" class="list-icons-item dropdown-toggle caret-0" data-toggle="dropdown"><i class="icon-menu9"></i></a>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="dropdown-item"><i class="icon-list3"></i>view </a>
+
+                                        <div class="dropdown-divider"></div>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="dropdown-item"><i class="icon-pencil7"></i> edit </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="dropdown-item"><i class="icon-cross2"></i> delete </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+</div>
+<div class="card-footer">
+
+</div>
+
+</div>
