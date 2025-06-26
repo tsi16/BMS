@@ -1,42 +1,61 @@
 ﻿@model IEnumerable<NEXT_BMS.Models.Shop>
 
-<div class=" navbar d-flex  justify-content-flex p-3  top-nav-bar">
-   
-    <div class="filter-item me-4">
+<div class="container">
 
-        <select id="city" name="cityId" asp-items="ViewBag.CityId" class="form-control dropdown-filter" onchange="filterShops()">
-            <option value="">All Cities</option>
-        </select>
+    <div class="text-center mb-5">
+        <h2 class="display-6 fw-bold text-primary">Discover Shops in Your Area</h2>
+
+        <p class="text-muted fs-7">Filter by city, location, or category to find the perfect shop for your needs.</p>
     </div>
 
-  
-    <div class="filter-item me-4">
+    <div class="card border-0 shadow rounded-4 p-4 mb-4">
+        <form method="get" asp-action="Index" class="row gy-3 gx-4 align-items-center">
 
-        <select id="location" name="locationId" asp-items="ViewBag.LocationId" class="form-control dropdown-filter" onchange="filterShops()">
-            <option value="">All Locations</option>
-        </select>
+            <div class="col-lg-3 col-md-6">
+                <label for="city" class="form-label text-muted small fw-semibold">
+                    <i class="bi bi-building text-primary me-1"></i> City
+                </label>
+                <select id="city" name="cityId" asp-items="ViewBag.CityId" class="form-select form-select-sm rounded-3 shadow-sm" onchange="filterShops()">
+                    <option value="">All Cities</option>
+                </select>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <label for="location" class="form-label text-muted small fw-semibold">
+                    <i class="bi bi-geo-alt text-success me-1"></i> Location
+                </label>
+                <select id="location" name="locationId" asp-items="ViewBag.LocationId" class="form-select form-select-sm rounded-3 shadow-sm" onchange="filterShops()">
+                    <option value="">All Locations</option>
+                </select>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <label for="businessArea" class="form-label text-muted small fw-semibold">
+                    <i class="bi bi-tags text-warning me-1"></i> Category
+                </label>
+                <select id="businessArea" name="businessAreaId" asp-items="ViewBag.BusinessAreaId" class="form-select form-select-sm rounded-3 shadow-sm" onchange="filterShops()">
+                    <option value="">All Categories</option>
+                </select>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <label for="searchItem" class="form-label text-muted small fw-semibold">
+                    <i class="bi bi-search me-1 text-info"></i> Search Product
+                </label>
+                <div class="input-group input-group-sm shadow-sm">
+                    <input type="text" id="searchItem" name="searchItem" class="form-control rounded-start-3" placeholder="Enter product name" />
+                    <button type="submit" class="btn btn-outline-primary rounded-end-3">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
-
-   
-    <div class="filter-item">
-
-        <select id="businessArea" name="businessAreaId" asp-items="ViewBag.BusinessAreaId" class="form-control dropdown-filter" onchange="filterShops()">
-            <option value="">Category</option>
-        </select>
-    </div>
-
-    <form method="get" asp-action="Index" class="d-flex ms-auto shop-search-bar ">
-
-        <input type="text" id="searchItem" name="searchItem" class="form-control" placeholder="Enter product name" />
-
-        <button type="submit" class="btn btn-primary ">
-            <i class="bi bi-search"></i> 
-        </button>
-    </form>
 
 </div>
 
-<div class="container my-4">
+
+
 <div class="container my-4">
     <h2 class="text-center mb-4" style="font-family: Arial, sans-serif; font-weight: bold; color: #333;">Shops</h2>
     <div class="row">
@@ -59,9 +78,9 @@
                                 @item.BusinessArea.Name
                             </p>
                            
-                            <a a asp-action="Details" asp-route-id="@item.Id" 
-                           class="btn btn-sm w-100"  
-                           style="background-color: #FF7E00; color: white; border: none; padding: 10px; text-align: center;
+                            <a a asp-action="Details" asp-route-id="@item.Id"
+                               class="btn-brand-teal"
+                           style= color: white; border: none; padding: 10px; text-align: center;
                                   transition: background-color 0.3s ease; text-decoration: none;">
                             View Details
                         </a>
@@ -156,5 +175,23 @@
 
 
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+    :root {
+        --teal-base: #1abc9c;
+    }
+    h2.display-6.fw-bold.text-primary {
+        color: var(--teal-base) !important;
+    }
+    .form-label {
+        font-size: 0.85rem;
+    }
+
+    .text-primary {
+        color: var(--teal-base) !important;
+    }
+    .form-select, .form-control {
+        font-size: 0.85rem;
+    }
+</style>
 
 

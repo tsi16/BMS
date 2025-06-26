@@ -351,12 +351,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return Ok();
         }
 
-
-
-
-
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddEmployee(string Name, int BuildingId, string PhoneNumber, int EmployeeTypeId)
@@ -406,101 +400,101 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
        public async Task<IActionResult> AddBuilding(
-    string Name,
-    int UseTypeId,
-    int UserId,
-    int NumberOfFloor,
-    int BuildingTypeId,
-    int OwnerId,
-    int OwnerShipTypeId,
-    int CityId,
-    int LocationId,
-    string Description)
-{
-    int maxBuilding = 7;
+            string Name,
+            int UseTypeId,
+            int UserId,
+            int NumberOfFloor,
+            int BuildingTypeId,
+            int OwnerId,
+            int OwnerShipTypeId,
+            int CityId,
+            int LocationId,
+            string Description)
+        {
+            int maxBuilding = 7;
 
-    int creatingBuildings = getOwnerBuildingCount(OwnerId);
-    if (creatingBuildings >= maxBuilding)
-    {
-        TempData["info"] = "You have reached the maximum";
-        return RedirectToAction(nameof(Index));
-    }
+            int creatingBuildings = getOwnerBuildingCount(OwnerId);
+            if (creatingBuildings >= maxBuilding)
+            {
+                TempData["info"] = "You have reached the maximum";
+                return RedirectToAction(nameof(Index));
+            }
 
-    int? userId = HttpContext.Session.GetInt32("UserId");
-    if (!userId.HasValue)
-    {
-        TempData["error"] = "User is not authenticated.";
-        return RedirectToAction(nameof(Index));
-    }
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (!userId.HasValue)
+            {
+                TempData["error"] = "User is not authenticated.";
+                return RedirectToAction(nameof(Index));
+            }
 
-    if (!ModelState.IsValid)
-    {
-        TempData["error"] = "Invalid input data.";
-        return View();
-    }
+            if (!ModelState.IsValid)
+            {
+                TempData["error"] = "Invalid input data.";
+                return View();
+            }
 
    
-    var buildingRequestStatuses = await _context.BuildingRequestStatuses
-        .FirstOrDefaultAsync(br => br.Id == userId.Value);
+            var buildingRequestStatuses = await _context.BuildingRequestStatuses
+                .FirstOrDefaultAsync(br => br.Id == userId.Value);
 
-    if (buildingRequestStatuses == null)
-    {
-        TempData["error"] = "Please send a request before creating a building.";
-        return RedirectToAction(nameof(Index));
-    }
+            if (buildingRequestStatuses == null)
+            {
+                TempData["error"] = "Please send a request before creating a building.";
+                return RedirectToAction(nameof(Index));
+            }
 
     
-    if (buildingRequestStatuses.Id == 3)
-    {
-        TempData["error"] = "Your request has been rejected, and you cannot create buildings.";
-        return RedirectToAction(nameof(Index));
-    }
+            if (buildingRequestStatuses.Id == 3)
+            {
+                TempData["error"] = "Your request has been rejected, and you cannot create buildings.";
+                return RedirectToAction(nameof(Index));
+            }
 
-    if (buildingRequestStatuses.Id != 2)
-    {
-        TempData["error"] = "Please send a request before creating a building.";
-        return RedirectToAction(nameof(Index));
-    }
+            if (buildingRequestStatuses.Id != 2)
+            {
+                TempData["error"] = "Please send a request before creating a building.";
+                return RedirectToAction(nameof(Index));
+            }
 
-    var existingBuilding = _context.Buildings
-        .Any(b => b.Name.ToLower() == Name.ToLower() && b.OwnerId == OwnerId);
+            var existingBuilding = _context.Buildings
+                .Any(b => b.Name.ToLower() == Name.ToLower() && b.OwnerId == OwnerId);
 
-    if (existingBuilding)
-    {
-        TempData["info"] = "A building with this name already exists at the specified location.";
-        return RedirectToAction(nameof(Index));
-    }
+            if (existingBuilding)
+            {
+                TempData["info"] = "A building with this name already exists at the specified location.";
+                return RedirectToAction(nameof(Index));
+            }
 
-    var building = new Building
-    {
-        Name = Name,
-        UseTypeId = UseTypeId,
-        ConstractionYear = DateTime.Now.ToString("yyyy-MM-dd"),
-        NumberOfFloor = NumberOfFloor,
-        BuildingTypeId = BuildingTypeId,
-        OwnerId = OwnerId,
-        OwnershipTypeId = OwnerShipTypeId,
-        CityId = CityId,
-        LocationId = LocationId,
-        Description = Description,
-        UserId = userId.Value,
-        IsActive = true,
-        IsDeleted = false
-    };
+            var building = new Building
+            {
+                Name = Name,
+                UseTypeId = UseTypeId,
+                ConstractionYear = DateTime.Now.ToString("yyyy-MM-dd"),
+                NumberOfFloor = NumberOfFloor,
+                BuildingTypeId = BuildingTypeId,
+                OwnerId = OwnerId,
+                OwnershipTypeId = OwnerShipTypeId,
+                CityId = CityId,
+                LocationId = LocationId,
+                Description = Description,
+                UserId = userId.Value,
+                IsActive = true,
+                IsDeleted = false
+            };
 
-    try
-    {
-        _context.Buildings.Add(building);
-        await _context.SaveChangesAsync();
-        TempData["success"] = "Building added successfully!";
-    }
-    catch (Exception ex)
-    {
-        TempData["error"] = $"An error occurred while saving: {ex.Message}";
-    }
+            try
+            {
+                _context.Buildings.Add(building);
+                await _context.SaveChangesAsync();
+                TempData["success"] = "Building added successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = $"An error occurred while saving: {ex.Message}";
+            }
 
-    return RedirectToAction(nameof(Index));
-}
+            return RedirectToAction(nameof(Index));
+        }
 
         private int getOwnerBuildingCount(int ownerId)
         {
@@ -754,7 +748,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]

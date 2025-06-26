@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "LogIn";
 }
 
@@ -12,7 +11,7 @@
                         Create Account
                     </h4>
                     <p>
-                        User user name and password to login
+                        
                     </p>
                 </div>
                 <div class="card-body">
@@ -94,9 +93,73 @@
 
                 </div>
                 <div class="card-footer text-center py-3">
-                    <div class="small"><a href="#">Need an account? Sign up!</a></div>
+                    <div class="small"><a asp-action="LogIn" asp-controller="Account">Back to Login</a></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background-color: #008080;
+        color: white;
+    }
+
+        .card-header h4 {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-header p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #e0f7f7;
+        }
+
+    .form-control::placeholder {
+        color: #adb5bd;
+        opacity: 1;
+    }
+
+    .btn-primary {
+        background-color: #008080;
+        border-color: #008080;
+        font-weight: 600;
+        padding: 10px 20px;
+        border-radius: 6px;
+    }
+
+        .btn-primary:hover {
+            background-color: #006666;
+            border-color: #006666;
+        }
+
+    .card-footer {
+        background-color: #f0fdfa;
+    }
+
+        .card-footer a {
+            color: #008080;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+            .card-footer a:hover {
+                text-decoration: underline;
+            }
+
+    i.fa-lg {
+        color: #008080;
+    }
+</style>

@@ -1,56 +1,261 @@
-﻿@using Insya.Localization;
+﻿@using Insya.Localization
+@using NEXT_BMS.Models
+@{
+    ViewData["Title"] = "Home";
+    var popularBuildings = ViewBag.PopularBuildings as List<Building>;
+    var popularShops = ViewBag.PopularShops as List<Shop>;
+}
 
+<!-- === HERO SECTION (UNCHANGED) === -->
+<section class="hero-section position-relative overflow-hidden"
+         style="background: linear-gradient(135deg, #157347, #FFFFF0); height: 450px; border-radius :25px;">
+    <div class="container h-100 d-flex align-items-center position-relative" style="z-index: 3;">
+        <div class="row w-100 align-items-center">
+            <div class="col-md-5 text-start">
+                <h1 class="fw-bold mb-2 animated fadeInDown" style="font-size: 4rem; color: #FFFFFF;">
+                    Welcome to <span class="text-warning">Next BMS</span>
+                </h1>
+                <p class="mb-3 animated fadeInUp" style="font-size: 1.1rem; color: #FFFFFF;">
+                    Your all-in-one Building Management System to manage shops, offices & more.
+                </p>
+                <a href="#explore" class="btn btn-sm btn-warning rounded-pill fw-bold shadow px-4 py-2">
+                    Get Started <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            </div>
+            <div class="col-md-2 position-relative text-center d-none d-md-block">
+                <div class="between-shape mx-auto"></div>
+            </div>
+            <div class="col-md-5 text-center">
+                <img src="~/assets/img/bms_home.png" alt="Building Icon"
+                     class="img-fluid animated fadeInRight"
+                     style="max-height: 360px;" />
+            </div>
+        </div>
+    </div>
+</section>
 
-<div class="mb-3">
-    <h6 class="mb-0 font-weight-semibold">
-       
-    </h6>
-   
+<!-- === Explore Section === -->
+<div id="explore" class="container text-center my-5">
+    <h2 class="fancy-heading fw-bold mb-5 text-teal">🔍 What Are You Looking For?</h2>
+    <div class="row g-4 justify-content-center">
+        <div class="col-12 col-sm-6 col-md-4">
+            <a asp-action="Index" asp-controller="Shops" class="card-link">
+                <div class="explore-card p-4 rounded-4 shadow-lg h-100 hover-scale">
+                    <img class="img-fluid rounded-3" src="~/assets/img/1a2w863s.bmp" alt="Shops" style="height: 200px; object-fit: cover;" />
+                    <h4 class="mt-3 text-teal fw-bold">🛍 Shops</h4>
+                </div>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4">
+            <a href="#" class="card-link">
+                <div class="explore-card p-4 rounded-4 shadow-lg h-100 hover-scale">
+                    <img class="img-fluid rounded-3" src="~/assets/img/iib7hmjj.bmp" alt="Rent" style="height: 200px; object-fit: cover;" />
+                    <h4 class="mt-3 text-teal fw-bold">🏠 Rent Shop or Office</h4>
+                </div>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4">
+            <a asp-action="Index" asp-controller="BuildingRequests" class="card-link">
+                <div class="explore-card p-4 rounded-4 shadow-lg h-100 hover-scale">
+                    <img class="img-fluid rounded-3" src="~/assets/img/lrx9z5v2.bmp" alt="BMS System" style="height: 200px; object-fit: cover;" />
+                    <h4 class="mt-3 text-teal fw-bold">📊 Use Our BMS System</h4>
+                </div>
+            </a>
+        </div>
+    </div>
 </div>
 
-<link rel="stylesheet" href="~/assets/css/lilo.css" />
-     <partial name="components/_hero" />
-
-<div class="row">
-    <h1 class="home-heading">What Are You Looking For?</h1>
-
-    <a class="m-auto col-11 col-md-6 col-lg-3"
-       asp-action="Index" asp-controller="Shops">
-        <div class="home-link">
-            <img class="home-image" src="~/assets/img/1a2w863s.bmp" alt="Shops" />
-            <h1 class="home-card">Shops</h1>
-        </div>
-    </a>
-
-    <a class="m-auto col-11 col-md-6 col-lg-3">
-        <div class="home-link">
-            <img class="home-image" src="~/assets/img/iib7hmjj.bmp" alt="Rent" />
-            <h1 class="home-card">Rent Shop Or Office</h1>
-        </div>
-    </a>
-
-    <a class="m-auto col-11 col-md-6 col-lg-3"
-       asp-action="Index" asp-controller="BuildingRequests">
-        <div class="home-link">
-            <img class="home-image" src="~/assets/img/lrx9z5v2.bmp" />
-            <h1 class="home-card">To Use Our BMS System</h1>
-        </div>
-    </a>
+<!-- Fancy Divider -->
+<div class="text-center my-5">
+    <div class="d-flex align-items-center justify-content-center">
+        <hr class="flex-grow-1 mx-3 gradient-divider" />
+        <i class="bi bi-stars text-teal fs-2"></i>
+        <hr class="flex-grow-1 mx-3 gradient-divider" />
+    </div>
+    <p class="mt-3 text-muted fw-medium">Our most visited buildings this month</p>
 </div>
 
+<!-- === Popular Buildings Section === -->
+@if (popularBuildings != null && popularBuildings.Any())
+{
+    <div class="container my-5">
+        <h2 class="text-teal text-center fw-bold mb-4">🏢 Popular Buildings</h2>
+        <div class="row g-4">
+            @foreach (var b in popularBuildings)
+            {
+                var image = b.BuildingImages?.FirstOrDefault();
+                var availableRooms = b.Floors.SelectMany(f => f.Rooms).Count();
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-lg rounded-4 h-100 hover-scale bg-white">
+                        @if (image != null)
+                        {
+                            <img src="@image.Url" class="card-img-top rounded-top-4" style="height: 200px; object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <div class="bg-secondary text-white text-center py-5 rounded-top-4" style="height: 200px;">
+                                <i class="bi bi-building display-4"></i>
+                                <div>No Image</div>
+                            </div>
+                        }
+                        <div class="card-body">
+                            <h5 class="fw-bold text-teal">@b.Name</h5>
+                            <p class="small text-muted">@b.Location?.City?.Name - @b.Location?.Name</p>
+                            <p class="text-secondary small">@b.Description</p>
+                            <span class="badge bg-@(availableRooms > 0 ? "success" : "secondary") mt-2">
+                                @(availableRooms > 0 ? $"🛏 {availableRooms} Room(s) Available" : "No Rooms Available")
+                            </span>
+                            <div class="text-end mt-3">
+                                <a asp-controller="BuildingList" asp-action="Details" asp-route-id="@b.Id"
+                                   class="btn btn-outline-teal btn-sm rounded-pill px-3 glow-button">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="text-center mt-4">
+            <a asp-controller="BuildingList" asp-action="Index" class="btn btn-custom rounded-pill px-4 py-2 glow-button">
+                See More Buildings →
+            </a>
+        </div>
+    </div>
+}
+
+<!-- Divider Before Shops -->
+<div class="text-center my-5">
+    <hr class="w-50 mx-auto border-2 border-dark" />
+    <h3 class="text-muted">Explore Trending Shops Near You</h3>
+</div>
+
+<!-- === Popular Shops Section === -->
+@if (popularShops != null && popularShops.Any())
+{
+    <div class="container my-5">
+        <h2 class="text-teal fw-bold text-center mb-4">🛍 Popular Shops</h2>
+        <div class="row g-4">
+            @foreach (var shop in popularShops)
+            {
+                var image = shop.ShopImages?.FirstOrDefault();
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-lg rounded-4 h-100 hover-scale bg-white">
+                        @if (image != null)
+                        {
+                            <img src="@image.ImageUrl" class="card-img-top rounded-top-4" style="height: 200px; object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <div class="bg-dark text-white text-center py-5 rounded-top-4" style="height: 200px;">
+                                <i class="bi bi-shop display-4"></i>
+                                <div>No Image</div>
+                            </div>
+                        }
+                        <div class="card-body">
+                            <h5 class="fw-bold text-teal">@shop.Name</h5>
+                            <p class="small text-muted">@shop.ShopLocations</p>
+                            <p class="text-secondary small">@shop.Description</p>
+                            <div class="text-end mt-3">
+                                <a asp-controller="Shops" asp-action="Details" asp-route-id="@shop.Id"
+                                   class="btn btn-outline-teal btn-sm rounded-pill px-3 glow-button">
+                                    View Shop
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="text-center mt-4">
+            <a asp-controller="Shops" asp-action="Index" class="btn btn-custom rounded-pill px-4 py-2 glow-button">
+                See More Shops →
+            </a>
+        </div>
+    </div>
+}
+
+<!-- Scripts -->
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-   
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-   
     <script src="~/content/js/_slidshow.js"></script>
-
     <script>
         $(document).ready(function () {
-            const id = 1; 
-            const height = 500;
-            LoadSlidShow(id, height); 
+            LoadSlidShow(1, 500);
         });
-        </script>
-  }  
-    
+    </script>
+}
+
+<style>
+    .hover-scale {
+        transition: transform 0.3s ease;
+    }
+
+        .hover-scale:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+    .gradient-divider {
+        border: none;
+        height: 2px;
+        background: linear-gradient(to right, #20c997, #157347);
+    }
+
+    .btn-custom {
+        background-color: #157347;
+        color: white;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .btn-custom:hover {
+            background-color: #145c39;
+            color: #fff;
+        }
+
+    .btn-outline-teal {
+        color: #157347;
+        border: 2px solid #157347;
+    }
+
+        .btn-outline-teal:hover {
+            background-color: #157347;
+            color: white;
+        }
+
+    .glow-button {
+        box-shadow: 0 0 10px rgba(32, 201, 151, 0.6), 0 0 20px rgba(21, 115, 71, 0.5);
+        transition: all 0.3s ease;
+    }
+
+        .glow-button:hover {
+            box-shadow: 0 0 20px rgba(21, 115, 71, 0.9), 0 0 40px rgba(21, 115, 71, 0.7);
+            transform: scale(1.05);
+        }
+
+    .fancy-heading {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 2.5rem;
+        color: #157347;
+        letter-spacing: 2px;
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .text-teal {
+        color: #157347 !important;
+    }
+
+    .between-shape {
+        width: 100px;
+        height: 300px;
+        background: linear-gradient(135deg, rgba(32, 201, 151, 0.25), rgba(21, 115, 71, 0.25));
+        clip-path: polygon(0 0, 100% 20%, 100% 80%, 0% 100%);
+        margin-top: 50px;
+        opacity: 1;
+        box-shadow: 0 0 18px rgba(32, 201, 151, 0.3), 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+
+
+</style>
