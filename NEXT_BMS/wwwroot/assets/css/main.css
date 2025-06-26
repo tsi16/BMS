@@ -29,12 +29,12 @@
 
 /* Nav Menu Colors - The following color variables are used specifically for the navigation menu. They are separate from the global colors to allow for more customization options */
 :root {
-  --nav-color: #556270;  /* The default color of the main navmenu links */
-  --nav-hover-color: #d9232d; /* Applied to main navmenu links when they are hovered over or active */
-  --nav-mobile-background-color: #ffffff; /* Used as the background color for mobile navigation menu */
-  --nav-dropdown-background-color: #ffffff; /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
-  --nav-dropdown-color: #556270; /* Used for navigation links of the dropdown items in the navigation menu. */
-  --nav-dropdown-hover-color: #d9232d; /* Similar to --nav-hover-color, this color is applied to dropdown navigation links when they are hovered over. */
+    --nav-color: #556270; /* The default color of the main navmenu links */
+    --nav-hover-color: #c5c5d9; /*#d9232d;*/ /* Applied to main navmenu links when they are hovered over or active */
+    --nav-mobile-background-color: #ffffff; /* Used as the background color for mobile navigation menu */
+    --nav-dropdown-background-color: #ffffff; /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
+    --nav-dropdown-color: #556270; /* Used for navigation links of the dropdown items in the navigation menu. */
+    --nav-dropdown-hover-color: #d9232d; /* Similar to --nav-hover-color, this color is applied to dropdown navigation links when they are hovered over. */
 }
 
 /* Color Presets - These classes override global colors when applied to any section or element, providing reuse of the sam color scheme. */
@@ -145,7 +145,7 @@ h6 {
 --------------------------------------------------------------*/
 .header {
     color: #ffffff; /* White font color */
-    background-color: #33333C; /* Light dark blue background color */
+    background-color: #0a462a;; /* Light dark blue background color */
     padding: 15px 0;
     transition: all 0.5s;
     z-index: 997;

@@ -73,12 +73,12 @@
         }],
         "columns": [
             { "data": "id", "name": "Id", "autoWidth": true },
-            //{
-                //"render": function (data, type, row, meta) {
-                    //return `<a href="/RoomPropertyTypes/Details/${row.id}" class="text-info-800">${row.name}</a>`;
-                //}
-            //},
-            { "data": "name", "name": "Name", "autoWidth": true },
+            {
+                "render": function (data, type, row, meta) {
+                    return `<a href="/Administrator/RoomPropertyTypes/Details/${row.id}" class="text-info-800">${row.name}</a>`;
+                }
+            },
+            // { "data": "name", "name": "Name", "autoWidth": true },
             { "data": "isActive", "name": "IsActive", "autoWidth": true },
             { "data": "isDeleted", "name": "IsDeleted", "autoWidth": true },
             {
@@ -87,10 +87,10 @@
                             <div class="list-icons-item dropdown">
                                 <a href="#" class="list-icons-item dropdown-toggle caret-0" data-toggle="dropdown"><i class="icon-menu9"></i></a>
                                 <div class="dropdown-menu dropdown-menu-right">
-                                    <a href="/RoomPropertyTypes/Details/${row.id}" class="dropdown-item"><i class="icon-list3"></i>@Html.Raw(Localization.Get("viewdetails"))</a>
+                                    <a href=/Administrator/RoomPropertyTypes/Details/${row.id}" class="dropdown-item"><i class="icon-list3"></i>@Html.Raw(Localization.Get("viewdetails"))</a>
                                     <div class="dropdown-divider"></div>
-                                    <a href="/RoomPropertyTypes/Edit/${row.id}" class="dropdown-item"><i class="icon-pencil7"></i> @Html.Raw(Localization.Get("edit"))</a>
-                                    <a href="/RoomPropertyTypes/Delete/${row.id}" class="dropdown-item"><i class="icon-cross2"></i> @Html.Raw(Localization.Get("remove"))</a>
+                                    <a href="/Administrator/RoomPropertyTypes/Edit/${row.id}" class="dropdown-item"><i class="icon-pencil7"></i> @Html.Raw(Localization.Get("edit"))</a>
+                                    <a href="/Administrator/RoomPropertyTypes/Delete/${row.id}" class="dropdown-item"><i class="icon-cross2"></i> @Html.Raw(Localization.Get("remove"))</a>
                                 </div>
                             </div>
                         </div>`;

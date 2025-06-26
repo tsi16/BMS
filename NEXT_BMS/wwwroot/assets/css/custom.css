@@ -1,0 +1,20 @@
+﻿.btn-brand-teal {
+    background-color: #157347; /* Teal */
+    color: white !important; /* Ensure text is white */
+    padding: 8px 30px; /* Reduced height, longer width */
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    display: inline-block;
+    transition: background 0.4s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 8px rgba(21, 115, 71, 0.3);
+}
+
+    .btn-brand-teal:hover {
+        background: linear-gradient(45deg, #0f4d2f, #28a745); /* darker green to bright green */
+        color: white !important;
+        text-decoration: none;
+        box-shadow: 0 6px 12px rgba(15, 77, 47, 0.8);
+        filter: brightness(1.1);
+    }

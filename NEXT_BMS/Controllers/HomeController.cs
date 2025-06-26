@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using NEXT_BMS.Models;
 using NEXT_BMS.ViewModels;
@@ -14,8 +15,27 @@ namespace NEXT_BMS.Controllers
             _context = context;
           
         }
-      public ActionResult Index()
+        public IActionResult Index()
         {
+            var popularBuildings = _context.Buildings
+                .Include(b => b.Location).ThenInclude(l => l.City)
+                .Include(b => b.Floors).ThenInclude(f => f.Rooms)
+                .Include(b => b.BuildingImages)
+                .OrderByDescending(b => b.Floors.SelectMany(f => f.Rooms).Count()) 
+                .Take(3)
+                .ToList();
+
+            var popularShops = _context.Shops
+                .Include(s => s.ShopLocations)
+                .Include(s => s.ShopImages)
+                .Include(s => s.BusinessArea)
+                .OrderByDescending(s => s.CreatedDate) 
+                .Take(3)
+                .ToList();
+
+            ViewBag.PopularBuildings = popularBuildings;
+            ViewBag.PopularShops = popularShops;
+
             return View();
         }
 

@@ -35,6 +35,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Views\Home\2shxm2qx.fki~" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="bin\Debug\net8.0\Localization\file.json" />
   </ItemGroup>
 	<ItemGroup>

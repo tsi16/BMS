@@ -4,16 +4,17 @@
     ViewData["Title"] = "Home";
 }
 
-<div class="container my-5">
+<div class="container my-3">
     <div class="text-center mb-5">
-        <h1 class="display-5 fw-bold text-primary">🏙 Explore Our Featured Buildings</h1>
-        <p class="text-muted fs-5">Discover top-rated buildings with modern facilities and prime locations.</p>
+        <h2 class="display-6 fw-bold text-primary"> Explore Our Featured Buildings</h2>
+        <p class="text-muted fs-7">Discover top-rated buildings with modern facilities and prime locations.</p>
     </div>
-    <div class="card border-0 shadow-sm rounded-4 mb-4 px-3 py-4" style="background-color: #f8f9fa;">
-        <form asp-action="Index" method="get" class="row g-3 align-items-end">
-
-            <div class="col-md-3">
-                <label for="cityDropdown" class="form-label fw-medium small">🏙 City</label>
+    <div class="card border-0 shadow rounded-4 p-4 mb-4 filter-card">
+        <form asp-action="Index" method="get" class="row gy-3 gx-4 align-items-center">
+            <div class="col-lg-3 col-md-6">
+                <label for="cityDropdown" class="form-label text-muted small fw-semibold">
+                    <i class="bi bi-building me-1 text-primary"></i> City
+                </label>
                 <select class="form-select form-select-sm rounded-3 shadow-sm" name="cityId" id="cityDropdown">
                     <option value="">All Cities</option>
                     @foreach (var city in (List<NEXT_BMS.Models.City>)ViewBag.Cities)
@@ -24,8 +25,10 @@
                 </select>
             </div>
 
-            <div class="col-md-3">
-                <label for="locationDropdown" class="form-label fw-medium small">📍 Location</label>
+            <div class="col-lg-3 col-md-6">
+                <label for="locationDropdown" class="form-label text-muted small fw-semibold">
+                    <i class="bi bi-geo-alt me-1 text-success"></i> Location
+                </label>
                 <select class="form-select form-select-sm rounded-3 shadow-sm" name="locationId" id="locationDropdown">
                     <option value="">All Locations</option>
                     @foreach (var location in (List<NEXT_BMS.Models.Location>)ViewBag.Locations)
@@ -36,8 +39,10 @@
                 </select>
             </div>
 
-            <div class="col-md-3">
-                <label class="form-label fw-medium small">🏢 Use Type</label>
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label text-muted small fw-semibold">
+                    <i class="bi bi-layers me-1 text-warning"></i> Use Type
+                </label>
                 <select class="form-select form-select-sm rounded-3 shadow-sm" name="useTypeId">
                     <option value="">All Use Types</option>
                     @foreach (var useType in (List<NEXT_BMS.Models.UseType>)ViewBag.UseTypes)
@@ -48,78 +53,85 @@
                 </select>
             </div>
 
-            <div class="col-md-3 d-grid">
-                <button type="submit" class="btn btn-sm btn-outline-primary rounded-3 shadow-sm">
-                    🔍 Filter
+            <div class="col-lg-3 col-md-6 d-grid pt-4">
+                <button type="submit" class="btn btn-outline-teal btn-sm rounded-3 shadow-sm fw-semibold">
+                    <i class="bi bi-search me-1"></i> Filter
                 </button>
             </div>
         </form>
     </div>
-   
-   
-    <div class="row g-4">
+
+    <div class="row g-3">
         @foreach (var item in Model)
         {
             var availableRoomCount = item.Floors.SelectMany(f => f.Rooms).Count();
             var image = item.BuildingImages?.FirstOrDefault();
 
-            <div class="col-md-6 col-lg-4">
+            <div class="col-sm-6 col-md-4">
                 <div class="card border-0 shadow-sm rounded-4 h-100 bg-light building-card hover-scale">
 
                     @if (image != null)
                     {
-                        <img src="@image.Url" class="card-img-top rounded-top-4" style="height: 240px; object-fit: cover;" />
+                        <img src="@image.Url" class="card-img-top rounded-top-4" />
                     }
                     else
                     {
-                        <div class="bg-secondary text-white text-center py-5 rounded-top-4" style="height: 240px;">
-                            <i class="bi bi-building display-4"></i>
-                            <div>No Image</div>
+                        <div class="bg-secondary text-white text-center py-5 rounded-top-4" style="height: 160px;">
+                            <i class="bi bi-building display-6"></i>
+                            <div class="small mt-2">No Image</div>
                         </div>
                     }
 
-                    <div class="card-body d-flex flex-column p-4">
-                        <div class="mb-3">
-                            <h5 class="card-title text-primary fw-bold">@item.Name</h5>
-                            <div class="text-muted small mb-2">
-                                <i class="bi bi-geo-alt-fill me-1"></i>
-                                @item.Location?.City?.Name - @item.Location?.Name
-                            </div>
-                            <p class="card-text text-secondary small">@item.Description</p>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-primary fw-semibold">@item.Name</h5>
+                        <div class="text-muted small mb-1">
+                            <i class="bi bi-geo-alt-fill me-1"></i>
+                            @item.Location?.City?.Name - @item.Location?.Name
+                        </div>
+                        <p class="card-text text-secondary">@item.Description</p>
 
+                        <div class="mt-auto">
                             @if (availableRoomCount > 0)
                             {
-                                <span class="badge bg-success rounded-pill mt-2">
-                                    🛏 @availableRoomCount Room@(availableRoomCount > 1 ? "s" : "") Available
-                                </span>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-success rounded-pill">
+                                        🛏 @availableRoomCount Room@(availableRoomCount > 1 ? "s" : "") Available
+                                    </span>
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.Id"
+                                       asp-route-cityId="@ViewBag.SelectedCityId"
+                                       asp-route-locationId="@ViewBag.SelectedLocationId"
+                                       asp-route-useTypeId="@ViewBag.SelectedUseTypeId"
+                                       asp-route-page="@ViewBag.CurrentPage"
+                                       class="btn-brand-teal rounded-pill ms-2">
+                                        View
+                                    </a>
+                                </div>
                             }
                             else
                             {
-                                <span class="badge bg-secondary rounded-pill mt-2">
-                                    No Rooms Available
-                                </span>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-secondary rounded-pill">
+                                        No Rooms Available
+                                    </span>
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.Id"
+                                       asp-route-cityId="@ViewBag.SelectedCityId"
+                                       asp-route-locationId="@ViewBag.SelectedLocationId"
+                                       asp-route-useTypeId="@ViewBag.SelectedUseTypeId"
+                                       asp-route-page="@ViewBag.CurrentPage"
+                                       class="btn-brand-teal rounded-pill ms-2">
+                                        View
+                                    </a>
+                                </div>
                             }
-                        </div>
-
-                        <div class="mt-auto text-end">
-                            <a asp-action="Details"
-                               asp-route-id="@item.Id"
-                               asp-route-cityId="@ViewBag.SelectedCityId"
-                               asp-route-locationId="@ViewBag.SelectedLocationId"
-                               asp-route-useTypeId="@ViewBag.SelectedUseTypeId"
-                               asp-route-page="@ViewBag.CurrentPage"
-                               class="btn btn-outline-info btn-sm rounded-pill px-4">
-                                View Details
-                            </a>
                         </div>
                     </div>
                 </div>
             </div>
         }
     </div>
-
-   
-    <nav aria-label="Page navigation" class="mt-4">
+        <nav>
         <ul class="pagination justify-content-center">
             @for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
             {
@@ -177,31 +189,197 @@
     </script>
 }
 
-<!-- 🎨 Styles -->
 <style>
-    .btn-gradient {
-        background: linear-gradient(to right, #667eea, #764ba2);
+    .btn-brand-teal {
+        background-color: #008080;
         color: white;
         border: none;
+        padding: 4px 10px;
+        font-size: 0.8rem;
+        line-height: 1.2;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
     }
 
-        .btn-gradient:hover {
-            background: linear-gradient(to right, #5a67d8, #6b46c1);
-        }
-
-    .hover-scale {
-        transition: transform 0.3s ease-in-out;
-    }
-
-        .hover-scale:hover {
-            transform: scale(1.03);
+        .btn-brand-teal:hover {
+            background-color: #006666;
+            color: white;
         }
 
     .building-card {
-        transition: box-shadow 0.3s;
+        max-height: 400px;
     }
 
-        .building-card:hover {
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    .card-img-top {
+        height: 160px;
+        object-fit: cover;
+    }
+
+    .card-body {
+        padding: 0.75rem !important;
+    }
+
+    .card-title {
+        font-size: 1rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .card-text {
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .badge {
+        font-size: 0.7rem;
+        padding: 4px 8px;
+    }
+
+    .btn-brand-teal {
+        background-color: #008080;
+        color: white;
+        border: none;
+        padding: 4px 16px;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+    }
+
+        .btn-brand-teal:hover {
+            background-color: #006666;
+            color: white;
         }
+
+
+    .filter-card {
+        background-color: #ffffff;
+        border-left: 4px solid var(--teal-base);
+        transition: box-shadow 0.3s ease;
+    }
+
+        .filter-card:hover {
+            box-shadow: 0 0 12px rgba(0, 128, 128, 0.1);
+        }
+
+    .btn-outline-teal {
+        color: var(--teal-base);
+        border-color: var(--teal-base);
+    }
+
+        .btn-outline-teal:hover {
+            background-color: var(--teal-base);
+            color: #fff;
+        }
+
+:root {
+  --teal-base: #157347;
+  --teal-light: #1e7e4f;
+  --teal-dark: #125f3b;
+  --teal-muted: #66b28a;
+  --teal-accent: #0f4d2f;
+}
+
+h2.display-6.fw-bold.text-primary {
+    color: var(--teal-base) !important;
+}
+
+.form-select {
+    border: 1.5px solid var(--teal-muted);
+    transition: border-color 0.3s ease;
+}
+
+.form-select:focus {
+    border-color: var(--teal-base);
+    box-shadow: 0 0 8px var(--teal-light);
+    outline: none;
+}
+
+.btn-outline-primary {
+    color: var(--teal-base);
+    border-color: var(--teal-base);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background-color: var(--teal-base);
+    color: #fff !important;
+    border-color: var(--teal-dark);
+    box-shadow: 0 0 8px var(--teal-light);
+}
+
+.card.building-card {
+    background-color: #f9fafb;
+    border: 1px solid var(--teal-muted);
+    box-shadow: 0 2px 8px rgba(21, 115, 71, 0.15);
+    transition: box-shadow 0.3s ease;
+}
+
+.card.building-card:hover {
+    box-shadow: 0 8px 20px rgba(21, 115, 71, 0.3);
+}
+
+.card-title.text-primary {
+    color: var(--teal-base) !important;
+}
+
+.text-muted,
+.card-text.text-secondary {
+    color: #4f6f5b;
+}
+
+.badge.bg-success {
+    background-color: var(--teal-base);
+    color: white;
+    font-weight: 600;
+    padding: 0.45em 0.9em;
+}
+
+.badge.bg-secondary {
+    background-color: #b2b2b2;
+    color: white;
+    font-weight: 600;
+    padding: 0.45em 0.9em;
+}
+
+.btn-outline-info {
+    color: var(--teal-base);
+    border-color: var(--teal-base);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-info:hover,
+.btn-outline-info:focus {
+    background-color: var(--teal-base);
+    color: white !important;
+    border-color: var(--teal-dark);
+    box-shadow: 0 0 10px var(--teal-light);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--teal-base);
+    border-color: var(--teal-base);
+    color: white;
+    font-weight: 700;
+}
+
+.pagination .page-link {
+    color: var(--teal-base);
+    border-color: var(--teal-muted);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination .page-link:hover {
+    background-color: var(--teal-light);
+    color: white;
+    border-color: var(--teal-dark);
+}
+
+.hover-scale {
+    transition: transform 0.3s ease-in-out;
+}
+
+.hover-scale:hover {
+    transform: scale(1.03);
+}
 </style>

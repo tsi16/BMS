@@ -1,70 +1,284 @@
 ﻿@{
-    ViewBag.Title = "Contact";
-
+    ViewBag.Title = "Contact Us";
 }
-<div class="card">
-    <div class="card-body">
-        <div class="container">
-            <input type="text" id="message" />
-            <input type="button" id="sendmessage" value="Send" />
-            <input type="hidden" id="displayname" />
-            <ul id="discussion"></ul>
+
+<div class="contact-container" role="main" aria-label="Contact us form and company information py-0">
+    <section class="contact-info" aria-labelledby="contact-info-heading">
+        <h2 id="contact-info-heading">Get in Touch</h2>
+        <div class="info-item">
+            <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+            <span>Hwassa, Piyasa</span>
         </div>
-        <hr />
-        @Html.TextBox("messageX")
-        <input type="button" value="Submit" onclick="TestData()" />
-    </div>
+        <div class="info-item">
+            <i class="fas fa-phone" aria-hidden="true"></i>
+            <a href="tel:+251973532516" style="color:inherit; text-decoration:none;">+251 973 532 516</a>
+        </div>
+        <div class="info-item">
+            <i class="fas fa-envelope" aria-hidden="true"></i>
+            <a href="mailto:ngcs344@gmail.com" style="color:inherit; text-decoration:none;">ngcs344@gmail.com</a>
+        </div>
+
+        <div class="social-links" aria-label="Social media links">
+            <a href="https://facebook.com/ngcs" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+            <a href="https://twitter.com/ngcs" target="_blank" rel="noopener" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="https://linkedin.com/company/ngcs" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+        </div>
+
+        <div class="map-container" aria-label="Company location map">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3998.764179569999!2d38.46640681519325!3d6.786575194985761!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x17b15a2d0027c3eb%3A0xe26d326d45e7960b!2sHawassa%20Piyasa!5e0!3m2!1sen!2set!4v1685926938155!5m2!1sen!2set"
+                width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade" title="Google Map of Hawassa Piyasa"></iframe>
+        </div>
+    </section>
+
+    <form class="contact-form" id="contactForm" novalidate aria-label="Contact form">
+        <label for="name">Name <span aria-hidden="true" style="color:#e53935;">*</span></label>
+        <input type="text" id="name" name="name" placeholder="Your full name" aria-required="true" />
+        <div class="error-message" id="error-name">Please enter your name.</div>
+
+        <label for="email">Email <span aria-hidden="true" style="color:#e53935;">*</span></label>
+        <input type="email" id="email" name="email" placeholder="your.email@example.com" aria-required="true" />
+        <div class="error-message" id="error-email">Please enter a valid email.</div>
+
+        <label for="message">Message <span aria-hidden="true" style="color:#e53935;">*</span></label>
+        <textarea id="message" name="message" rows="5" placeholder="Write your message here..." aria-required="true"></textarea>
+        <div class="error-message" id="error-message">Please enter your message.</div>
+
+        <button type="submit" class="submit-btn" aria-label="Send your message">Send Message</button>
+    </form>
 </div>
 
-
-
-
 @section Scripts {
-    @*@Scripts.Render("~/bundles/jqueryval")*@
-    <script src="~/Scripts/jquery.signalR-2.4.3.js"></script>
-    <script src="~/SignalR/hubs"></script>
-    <script type="text/javascript">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <text>
+    <script>
+        (function () {
+            const form = document.getElementById('contactForm');
+            const nameInput = form.name;
+            const emailInput = form.email;
+            const messageInput = form.message;
 
+            const errorName = document.getElementById('error-name');
+            const errorEmail = document.getElementById('error-email');
+            const errorMessage = document.getElementById('error-message');
 
-            $(function () {
-              
-                var chat = $.connection.chat;
-            
-                chat.client.broadcastMessage = function (name, message) {
-                    
-                    var encodedName = $('<div />').text(name).html();
-                    var encodedMsg = $('<div />').text(message).html();
-                   
-                    $('#discussion').append('<li><strong>' + encodedName
-                        + '</strong>:  ' + encodedMsg + '</li>');
-                };
-           
-            $('#displayname').val(prompt('Enter your name:', ''));
-           
-            $('#message').focus();
-           
-                $.connection.hub.start().done(function () {
-                    $('#sendmessage').click(function () {
-                        let user = $('#displayname').val();
-                        let message = $('#message').val();
-
-                        chat.server.send(user, message);
-                        $('#message').val('').focus();
-                    });
-                });
-            });
-        function TestData() {
-            let message = $("#messageX").val();
-                $.ajax({
-                    cache: false,
-                    type: 'POST',
-                    url: '@Url.Action("RealTimeTest", "Home")',
-                    data: { 'messageX': message},
-                    async: false,
-                    success: function () {
-                      
-                    }
-                });
+            function validateEmail(email) {
+                // Simple email regex
+                return /\S+\S+\.\S+/.test(email);
             }
+
+            form.addEventListener('submit', function (e) {
+                let valid = true;
+
+                // Name validation
+                if (!nameInput.value.trim()) {
+                    valid = false;
+                    nameInput.classList.add('error');
+                    errorName.classList.add('active');
+                } else {
+                    nameInput.classList.remove('error');
+                    errorName.classList.remove('active');
+                }
+
+                // Email validation
+                if (!validateEmail(emailInput.value.trim())) {
+                    valid = false;
+                    emailInput.classList.add('error');
+                    errorEmail.classList.add('active');
+                } else {
+                    emailInput.classList.remove('error');
+                    errorEmail.classList.remove('active');
+                }
+
+                // Message validation
+                if (!messageInput.value.trim()) {
+                    valid = false;
+                    messageInput.classList.add('error');
+                    errorMessage.classList.add('active');
+                } else {
+                    messageInput.classList.remove('error');
+                    errorMessage.classList.remove('active');
+                }
+
+                if (!valid) {
+                    e.preventDefault();
+                }
+            });
+        })();
     </script>
+</text>
+
+    <style>
+        /* Background & Container */
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+            background-image: url('https://www.transparenttextures.com/patterns/geometry2.png');
+            color: #004d40;
+        }
+
+        .contact-container {
+            max-width: 900px;
+            margin: 60px auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            padding: 40px 50px;
+            display: flex;
+            gap: 50px;
+            flex-wrap: wrap;
+            margin-top :-15px;
+        }
+        /* Left info panel */
+        .contact-info {
+            flex: 1 1 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 25px;
+        }
+
+            .contact-info h2 {
+                margin-bottom: 15px;
+                color: #00796b;
+                font-weight: 700;
+                font-size: 1.8rem;
+                border-left: 6px solid #00796b;
+                padding-left: 10px;
+                letter-spacing: 0.5px;
+            }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1rem;
+            color: #004d40;
+            transition: color 0.3s ease;
+        }
+
+            .info-item:hover {
+                color: #20c997;
+                cursor: default;
+            }
+
+            .info-item i {
+                font-size: 1.5rem;
+                min-width: 30px;
+            }
+        /* Social links */
+        .social-links {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+            .social-links a {
+                display: inline-block;
+                color: #004d40;
+                font-size: 1.6rem;
+                transition: color 0.3s ease;
+            }
+
+                .social-links a:hover {
+                    color: #20c997;
+                }
+
+        /* Form styles */
+        form.contact-form {
+            flex: 1 1 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+            form.contact-form label {
+                font-weight: 600;
+                color: #00796b;
+                margin-bottom: 6px;
+            }
+
+            form.contact-form input,
+            form.contact-form textarea {
+                padding: 12px 15px;
+                border: 2px solid #b2dfdb;
+                border-radius: 8px;
+                font-size: 1rem;
+                transition: border-color 0.3s ease, box-shadow 0.3s ease;
+                resize: vertical;
+            }
+
+                form.contact-form input:focus,
+                form.contact-form textarea:focus {
+                    outline: none;
+                    border-color: #20c997;
+                    box-shadow: 0 0 8px #20c997aa;
+                }
+
+        .error {
+            border-color: #e53935 !important;
+            box-shadow: 0 0 8px #e5393533 !important;
+        }
+
+        .error-message {
+            color: #e53935;
+            font-size: 0.85rem;
+            margin-top: -15px;
+            margin-bottom: 10px;
+            font-style: italic;
+            display: none;
+        }
+
+            .error-message.active {
+                display: block;
+            }
+
+        /* Submit button */
+        button.submit-btn {
+            padding: 14px;
+            background: linear-gradient(45deg, #20c997, #157347);
+            border: none;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(32,201,151,0.6);
+            transition: background 0.4s ease, transform 0.3s ease;
+        }
+
+            button.submit-btn:hover {
+                background: linear-gradient(45deg, #157347, #20c997);
+                transform: scale(1.05);
+                box-shadow: 0 8px 20px rgba(21,115,71,0.8);
+            }
+
+        /* Map container */
+        .map-container {
+            width: 100%;
+            height: 280px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        {
+            .contact-container
+
+        {
+            padding: 30px 20px;
+            flex-direction: column;
+        }
+
+        form.contact-form, .contact-info {
+            flex: 1 1 100%;
+        }
+
+        }
+    </style>
+
 }
