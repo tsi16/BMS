@@ -92,9 +92,9 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
 
         public IActionResult Create()
         {
-            ViewData["ApplicationId"] = new SelectList(_context.Applications  .Where(x=>x.IsDeleted==false), "Id", "Id");
-            ViewData["MenuTypeId"] = new SelectList(_context.MenuTypes  .Where(x=>x.IsDeleted==false), "Id", "Id");
-            ViewData["ParentId"] = new SelectList(_context.MenuCategories  .Where(x=>x.IsDeleted==false), "Id", "Id");
+            ViewData["ApplicationId"] = new SelectList(_context.Applications  .Where(x=>x.IsDeleted==false), "Id", "Name");
+            ViewData["MenuTypeId"] = new SelectList(_context.MenuTypes  .Where(x=>x.IsDeleted==false), "Id", "Name");
+            ViewData["ParentId"] = new SelectList(_context.MenuCategories  .Where(x=>x.IsDeleted==false), "Id", "Name");
             return View();
         }
 
@@ -110,9 +110,9 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
                 return RedirectToAction(nameof(Index));
             }
             TempData["Error"] = "An error occured while saving menuCategory. Please review your input.";
-            ViewData["ApplicationId"] = new SelectList(_context.Applications .Where(x=>x.IsDeleted==false), "Id", "Id", menuCategory.ApplicationId);
-            ViewData["MenuTypeId"] = new SelectList(_context.MenuTypes .Where(x=>x.IsDeleted==false), "Id", "Id", menuCategory.MenuTypeId);
-            ViewData["ParentId"] = new SelectList(_context.MenuCategories .Where(x=>x.IsDeleted==false), "Id", "Id", menuCategory.ParentId);
+            ViewData["ApplicationId"] = new SelectList(_context.Applications .Where(x=>x.IsDeleted==false), "Id", "Name", menuCategory.ApplicationId);
+            ViewData["MenuTypeId"] = new SelectList(_context.MenuTypes .Where(x=>x.IsDeleted==false), "Id", "Name", menuCategory.MenuTypeId);
+            ViewData["ParentId"] = new SelectList(_context.MenuCategories .Where(x=>x.IsDeleted==false), "Id", "Name", menuCategory.ParentId);
             return View(menuCategory);
         }
 
@@ -130,9 +130,9 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
                 TempData["Error"] = "The information you're looking for was not found!";
                 return RedirectToAction("Index");
             }
-            ViewData["ApplicationId"] = new SelectList(_context.Applications  .Where(x=>x.IsDeleted==false), "Id", "Id", menuCategory.ApplicationId);
-            ViewData["MenuTypeId"] = new SelectList(_context.MenuTypes  .Where(x=>x.IsDeleted==false), "Id", "Id", menuCategory.MenuTypeId);
-            ViewData["ParentId"] = new SelectList(_context.MenuCategories  .Where(x=>x.IsDeleted==false), "Id", "Id", menuCategory.ParentId);
+            ViewData["ApplicationId"] = new SelectList(_context.Applications.Where(x => x.IsDeleted == false), "Id", "Name", menuCategory.ApplicationId);
+            ViewData["MenuTypeId"] = new SelectList(_context.MenuTypes.Where(x => x.IsDeleted == false), "Id", "Name", menuCategory.MenuTypeId);
+            ViewData["ParentId"] = new SelectList(_context.MenuCategories.Where(x => x.IsDeleted == false), "Id", "Name", menuCategory.ParentId);
             return View(menuCategory);
         }
 
@@ -169,9 +169,9 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
                 return RedirectToAction(nameof(Index));
             }
             TempData["Error"] = "An error occured while saving menuCategory. Please review your input.";
-            ViewData["ApplicationId"] = new SelectList(_context.Applications  .Where(x=>x.IsDeleted==false), "Id", "Id", menuCategory.ApplicationId);
-            ViewData["MenuTypeId"] = new SelectList(_context.MenuTypes  .Where(x=>x.IsDeleted==false), "Id", "Id", menuCategory.MenuTypeId);
-            ViewData["ParentId"] = new SelectList(_context.MenuCategories  .Where(x=>x.IsDeleted==false), "Id", "Id", menuCategory.ParentId);
+            ViewData["ApplicationId"] = new SelectList(_context.Applications.Where(x => x.IsDeleted == false), "Id", "Name", menuCategory.ApplicationId);
+            ViewData["MenuTypeId"] = new SelectList(_context.MenuTypes.Where(x => x.IsDeleted == false), "Id", "Name", menuCategory.MenuTypeId);
+            ViewData["ParentId"] = new SelectList(_context.MenuCategories.Where(x => x.IsDeleted == false), "Id", "Name", menuCategory.ParentId);
             return View(menuCategory);
         }
 

@@ -2,35 +2,34 @@
 @using Insya.Localization;
 @await Html.PartialAsync("Controls/_Common")
 <div class="card">
-    <div class="card-header bg-light header-elements-inline">
+    <div class="card-header bg-light header-elements-inline py-2">
         <h5 class="card-title">
             @Html.Raw(Localization.Get(ViewData["action"].ToString())) | @Html.Raw(Localization.Get(ViewData["pageName"].ToString()))
         </h5>
         <div class="header-elements">
-            <div class="list-icons">
-                <a class="list-icons-item" data-action="collapse"></a>
-                <a class="list-icons-item" data-action="reload"></a>
-                <a class="list-icons-item" data-action="remove"></a>
-            </div>
+            
         </div>
     </div>
     <div class="card-body p-1">
          <table class="table datatable-init no-footer table-xs table-hover">
             <thead>
                 <tr>
-                     <th>
-                        @Html.DisplayNameFor(model => model.Id)
+                    <th>
+                        Id
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.CityId)
+                        Name
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.OwnerId)
+                        City
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.IsActive)
+                        Owner
                     </th>
-                   
+                    <th>
+                        Is Active
+                    </th>
+
                     <th class="p-0 nosort text-center" style="width: 30px;"><i class="icon-menu-open2"></i></th>
                 </tr>
             </thead>
@@ -81,12 +80,9 @@
                     return `<a href="/Administrator/Buildings/Details/${row.id}" class="text-info-800">${row.name}</a>`;
                 }
             },
-           
-            { "data": "cityId", "name": "CityId", "autoWidth": true },
-           
-            { "data": "ownerId", "name": "OwnerId", "autoWidth": true },
+            { "data": "city", "name": "City", "autoWidth": true },
+            { "data": "owner", "name": "Owner", "autoWidth": true },
             { "data": "isActive", "name": "IsActive", "autoWidth": true },
-           
             {
                 "render": function (data, type, row, meta) {
                 return`<div class="list-icons">

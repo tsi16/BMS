@@ -2,19 +2,12 @@
 @using Insya.Localization;
 @await Html.PartialAsync("Controls/_Common")
 <div class="card">
-    <div class="card-header bg-light header-elements-inline">
+    <div class="card-header bg-light header-elements-inline py-2">
         <h5 class="card-title">
             @Html.Raw(Localization.Get(ViewData["action"].ToString())) | @Html.Raw(Localization.Get(ViewData["pageName"].ToString()))
         </h5>
-        <div class="header-elements">
-            <div class="list-icons">
-                <a class="list-icons-item" data-action="collapse"></a>
-                <a class="list-icons-item" data-action="reload"></a>
-                <a class="list-icons-item" data-action="remove"></a>
-            </div>
-        </div>
     </div>
-    <div class="card-body p-1">
+    <div class="card-body px-1">
          <table class="table datatable-init no-footer table-xs table-hover">
             <thead>
                 <tr>
@@ -24,9 +17,6 @@
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.IsActive)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.IsDeleted)
                     </th>
                     <th class="p-0 nosort text-center" style="width: 30px;"><i class="icon-menu-open2"></i></th>
                 </tr>
@@ -38,55 +28,60 @@
     @{await Html.RenderPartialAsync("js/_datatables");}
     <script type="text/javascript">
         $('.datatable-init').DataTable({
-        buttons: {
-            dom: {
-                button: {
-                    className: 'btn btn-light'
-                }
+            buttons: {
+                dom: {
+                    button: {
+                        className: 'btn btn-light'
+                    }
+                },
+                buttons: [
+                    { extend: 'copy' },
+                    { extend: 'csv' },
+                    { extend: 'excel' },
+                    { extend: 'pdf' },
+                    { extend: 'print' }
+                ]
             },
-            buttons: [
-                { extend: 'copy' },
-                { extend: 'csv' },
-                { extend: 'excel' },
-                { extend: 'pdf' },
-                { extend: 'print' }
-            ]
-        },
-        "processing": true,
-        "serverSide": true,
-        "filter": true,
-        "ajax": {
-            "url": '@Url.Action("GetCities")',
-            "type": "POST",
-            "datatype": "json",
-            global: false
-        },
-        "columnDefs": [{
-            "targets": [0],
-            "visible": false,
-            "searchable": false
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "ajax": {
+                "url": '@Url.Action("GetCities")',
+                "type": "POST",
+                "datatype": "json",
+                global: false
+            },
+            "columnDefs": [{
+                "targets": [0],
+                "visible": false,
+                "searchable": false
             },
             {
-            "aTargets": ['nosort'],
-            "orderable": false,
-            "searchable": false
-        }],
-           "columns": [
-        { "data": "id", "visible": false },
-        {
-            "data": "name",
-            "render": function (data, type, row, meta) {
-                return `<a href="/Administrator/Cities/Details/${row.id}" class="text-info-800">${data}</a>`;
-            }
-        },
-        { "data": "isActive", "name": "IsActive", "autoWidth": true },
-        { "data": "isDeleted", "name": "IsDeleted", "autoWidth": true },
-        {
-            "data": null,
-            "orderable": false,
-            "searchable": false,
-            "render": function (data, type, row, meta) {
-                return `<div class="list-icons">
+                "aTargets": ['nosort'],
+                "orderable": false,
+                "searchable": false
+            }],
+            "columns": [
+                { "data": "id", "visible": false },
+                {
+                    "data": "name",
+                    "render": function (data, type, row, meta) {
+                        return `<a href="/Administrator/Cities/Details/${row.id}" class="text-info-800">${data}</a>`;
+                    }
+                },
+                {
+                    "data": "isActive", "name": "IsActive", "autoWidth": true,
+                    "render": function (data, type, row, meta) {
+                        return `<input type="checkbox" disabled value="${row.isActive}" ${row.isActive ? 'checked' : ''}>`;
+                    }
+                }
+                ,
+                {
+                    "data": null,
+                    "orderable": false,
+                    "searchable": false,
+                    "render": function (data, type, row, meta) {
+                        return `<div class="list-icons">
                             <div class="list-icons-item dropdown">
                                 <a href="#" class="list-icons-item dropdown-toggle caret-0" data-toggle="dropdown"><i class="icon-menu9"></i></a>
                                 <div class="dropdown-menu dropdown-menu-right">
@@ -97,7 +92,7 @@
                                 </div>
                             </div>
                         </div>`;
-            }
+                    }
                 }
             ]
         });

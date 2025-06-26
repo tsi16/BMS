@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NEXT_BMS.Models;
@@ -29,7 +30,18 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
                 int pageSize = length != null ? Convert.ToInt32(length) : 0;
                 int skip = start != null ? Convert.ToInt32(start) : 0;
                 int recordsTotal = 0;
-                var returnData = (from manudata in _context.Buildings.Where(x => x.IsDeleted == false) select manudata);
+                var returnData = (from manudata in
+                                      _context.Buildings.Where(x => x.IsDeleted == false)
+                                      .Select(s => new { 
+                                      s.Id,
+                                      s.Name,
+                                    
+                                          City=s.City.Name,
+                                          Owner= s.Owner.FullName,
+                                          s.IsActive
+                                          
+                                      })
+                                  select manudata);
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
                 {
                     //returnData = returnData.OrderBy(sortColumn + " " + sortColumnDirection);
@@ -72,7 +84,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
 
         }
 
-        // GET: Buildings/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -135,7 +146,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View(building);
         }
 
-        // GET: Buildings/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -158,9 +168,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View(building);
         }
 
-        // POST: Buildings/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,UseTypeId,UserId,CityId,LocationId,Name,Description,ConstractionYear,NumberOfFloor,BuildingTypeId,OwnershipTypeId,OwnerId,IsActive,IsDeleted")] Building building)
@@ -200,7 +207,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View(building);
         }
 
-        // GET: Buildings/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -225,7 +231,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             return View(building);
         }
 
-        // POST: Buildings/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -287,9 +292,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
                 .Include(x => x.Building)
                 .Include(x => x.RoomRentals).ThenInclude(x=>x.BusinessArea)
                  .Include(x => x.RoomRentals).ThenInclude(x => x.Room)
-                 // .Include(x => x.RoomRentals).ThenInclude(x => x.Tenant)
-                //.Include(x => x.Floors).ThenInclude(x => x.Rooms)
-                //.Include(x => x.City)
                 .Include(x => x.TenantType)
                 .FirstOrDefault(m => m.Id == id);
             int? userId = HttpContext.Session.GetInt32("UserId");

@@ -85,7 +85,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             }
         }
 
-       
         public IActionResult Index()
         {
 
@@ -447,7 +446,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
 
             return Ok();
         }
-
 
     }
 }

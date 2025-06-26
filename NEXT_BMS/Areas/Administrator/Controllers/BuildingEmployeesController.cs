@@ -69,8 +69,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             {
                 TempData["Error"] = "The information you're looking for was not found!";return RedirectToAction("Index");
             }
-
-            
             var userExists = _context.Users.Any(u => u.PhoneNumber == buildingEmployee.PhoneNumber); 
                                                       
             ViewData["UserExists"] = userExists; 
@@ -332,7 +330,6 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
             }
         }
 
-
         private void encryptPassword(int userId, string password)
         {
             var user = _context.Users.FirstOrDefault(x => x.Id == userId);
@@ -426,6 +423,5 @@ namespace NEXT_BMS.Areas.Administrator.Controllers
                 .FirstOrDefault(x => x.Id == id);
             return View(buildings);
         }
-
     }
 }
